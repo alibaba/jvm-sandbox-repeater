@@ -1,0 +1,3 @@
+java.io.File=com.caucho.hessian.io.FileDeserializer
+java.math.BigDecimal=com.caucho.hessian.io.BigDecimalDeserializer
+javax.management.ObjectName=com.caucho.hessian.io.ObjectNameDeserializer

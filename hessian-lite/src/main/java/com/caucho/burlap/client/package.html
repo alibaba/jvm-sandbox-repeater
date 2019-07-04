@@ -1,0 +1,59 @@
+<html>
+<body>
+Portable client code for using Burlap services.  Since this package is
+independent of all Resin code, its classes can be copied to a
+non-Resin client jar.
+
+<h2>RPC Proxy Clients - BurlapProxyFactory</h2>
+
+Most application clients will use BurlapProxyFactory to
+create stub objects.  The stub objects can be called with normal
+Java calls.  Because the objects are remote, the client application needs
+to be able to deal with IOException caused by an unavailable server or
+a protocol error.
+
+<pre>
+import com.caucho.burlap.client.BurlapProxyFactory;
+
+...
+
+URL url = new URL("http://localhost:8080/ejb/hello");
+HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
+
+System.out.println("hello: " + hello.hello());
+</pre>
+
+<h2>Serialization</h2>
+
+Since the Burlap protocol serializes Java objects to XML, the
+BurlapSerializerOutput and BurlapSerializerInput
+can be used for serialization.
+
+<h4>Serialization</h4>
+<pre>
+OutputStream os = new FileOutputStream("test.xml");
+BurlapOutput out = new BurlapSerializerOutput(os);
+
+out.writeObject(obj);
+os.close();
+</pre>
+
+<h4>Deserialization</h4>
+<pre>
+InputStream is = new FileInputStream("test.xml");
+BurlapInput in = new BurlapSerializerInput(in);
+
+Object obj = in.readObject();
+
+is.close();
+</pre>
+
+<h2>MicroBurlapInput and MicroBurlapOutput</h2>
+
+These two classes only require classes from Java MicroEdition.  So they
+can be extracted separately into a burlap-micro.jar.  Because of this
+restriction and their small size, these two classes
+are ideal for limited size devices like mobile phones and PDAs.
+
+</body>
+</html>

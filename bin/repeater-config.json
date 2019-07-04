@@ -1,0 +1,54 @@
+{
+  "degrade": false,
+  "exceptionThreshold": 1000,
+  "httpEntrancePatterns": [
+    "^/regress/.*$"
+  ],
+  "javaEntranceBehaviors": [
+    {
+      "classPattern": "com.alibaba.repeater.console.service.impl.RegressServiceImpl",
+      "includeSubClasses": false,
+      "methodPatterns": [
+        "getRegress"
+      ]
+    }
+  ],
+  "javaSubInvokeBehaviors": [
+    {
+      "classPattern": "com.alibaba.repeater.console.service.impl.RegressServiceImpl",
+      "includeSubClasses": false,
+      "methodPatterns": [
+        "getRegressInner"
+      ]
+    },
+    {
+      "classPattern": "com.alibaba.repeater.console.service.impl.RegressServiceImpl",
+      "includeSubClasses": false,
+      "methodPatterns": [
+        "findPartner"
+      ]
+    },
+    {
+      "classPattern": "com.alibaba.repeater.console.service.impl.RegressServiceImpl",
+      "includeSubClasses": false,
+      "methodPatterns": [
+        "slogan"
+      ]
+    }
+  ],
+  "pluginIdentities": [
+    "http",
+    "java-entrance",
+    "java-subInvoke",
+    "mybatis",
+    "ibatis",
+    "dubbo-provider",
+    "dubbo-consumer"
+  ],
+  "repeatIdentities": [
+    "java",
+    "http"
+  ],
+  "sampleRate": 10000,
+  "useTtl": true
+}
