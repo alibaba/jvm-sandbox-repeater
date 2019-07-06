@@ -54,42 +54,47 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
          * mock执行条件
          */
         if (!skipMock(event, entrance, context) && context != null && context.getMeta().isMock()) {
-            /*
-             * 构建mock请求
-             */
-            final MockRequest request = MockRequest.builder()
-                    .argumentArray(this.assembleRequest(event))
-                    .event(event)
-                    .identity(this.assembleIdentity(event))
-                    .meta(context.getMeta())
-                    .recordModel(context.getRecordModel())
-                    .traceId(context.getTraceId())
-                    .type(type)
-                    .repeatId(context.getMeta().getRepeatId())
-                    .index(SequenceGenerator.generate(context.getTraceId()))
-                    .build();
-            /*
-             * 执行mock动作
-             */
-            final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().getStrategyType()).execute(request);
-            /*
-             * 处理策略推荐结果
-             */
-            switch (mr.action) {
-                case SKIP_IMMEDIATELY:
-                    break;
-                case THROWS_IMMEDIATELY:
-                    ProcessControlException.throwThrowsImmediately(mr.throwable);
-                    break;
-                case RETURN_IMMEDIATELY:
-                    ProcessControlException.throwReturnImmediately(assembleMockResponse(event, mr.invocation));
-                    break;
-                default:
-                    ProcessControlException.throwThrowsImmediately(new RepeatException("invalid action"));
-                    break;
+            try {
+                /*
+                 * 构建mock请求
+                 */
+                final MockRequest request = MockRequest.builder()
+                        .argumentArray(this.assembleRequest(event))
+                        .event(event)
+                        .identity(this.assembleIdentity(event))
+                        .meta(context.getMeta())
+                        .recordModel(context.getRecordModel())
+                        .traceId(context.getTraceId())
+                        .type(type)
+                        .repeatId(context.getMeta().getRepeatId())
+                        .index(SequenceGenerator.generate(context.getTraceId()))
+                        .build();
+                /*
+                 * 执行mock动作
+                 */
+                final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().getStrategyType()).execute(request);
+                /*
+                 * 处理策略推荐结果
+                 */
+                switch (mr.action) {
+                    case SKIP_IMMEDIATELY:
+                        break;
+                    case THROWS_IMMEDIATELY:
+                        ProcessControlException.throwThrowsImmediately(mr.throwable);
+                        break;
+                    case RETURN_IMMEDIATELY:
+                        ProcessControlException.throwReturnImmediately(assembleMockResponse(event, mr.invocation));
+                        break;
+                    default:
+                        ProcessControlException.throwThrowsImmediately(new RepeatException("invalid action"));
+                        break;
+                }
+            } catch (ProcessControlException pce) {
+                throw pce;
+            } catch (Throwable throwable) {
+                ProcessControlException.throwThrowsImmediately(new RepeatException("unexpected code snippet here.", throwable));
             }
         }
-        ProcessControlException.throwThrowsImmediately(new RepeatException("unexpected code snippet here."));
     }
 
     @Override
@@ -112,9 +117,9 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         return getMethodDesc(event.javaMethodName, classes.toArray(new Class[0]));
     }
 
-    protected String getMethodDesc(String methodName, Class<?>[] parameterTypes){
+    protected String getMethodDesc(String methodName, Class<?>[] parameterTypes) {
         StringBuilder builder = new StringBuilder(methodName);
-        if (parameterTypes != null && parameterTypes.length > 0){
+        if (parameterTypes != null && parameterTypes.length > 0) {
             builder.append("~");
             for (Class<?> parameterType : parameterTypes) {
                 String className = parameterType.getSimpleName();
@@ -137,7 +142,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
      *
      * @return extra map
      */
-    protected Map<String, String> getExtra(){
+    protected Map<String, String> getExtra() {
         return null;
     }
 

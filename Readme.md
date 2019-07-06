@@ -6,7 +6,21 @@
 
 # 基于[JVM-Sandbox](https://github.com/alibaba/JVM-Sandbox)的录制/回放通用解决方案
 
-## 项目简介：
+> [jvm-sandbox-repeater](https://github.com/alibaba/jvm-sandbox-repeater)是[JVM-Sandbox](https://github.com/alibaba/JVM-Sandbox)生态体系下的重要模块，它具备了JVM-Sandbox的所有特点，插件式设计便于快速适配各种中间件，封装请求录制/回放基础协议，也提供了通用可扩展的各种丰富API。
+
+## 目标人群 - 面向测试开发工程师
+
+- 线上有个用户请求一直不成功，我想在测试环境Debug一下，能帮我复现一下吗？
+- 压测流量不知道怎么构造，数据结构太复杂，压测模型也难以评估，有什么好的办法吗？
+- 不想写接口测试脚本了，我想做一个流量录制系统，把线上用户场景做业务回归，可能会接入很多服务系统，不想让每个系统都进行改造，有好的框架选择吗？
+- 我想做一个业务监控系统，对线上核心接口采样之后做一些业务校验，实时监控业务正确性。
+
+如果你有以上的想法或需求，[jvm-sandbox-repeater](https://github.com/alibaba/jvm-sandbox-repeater) 都将是你的不二选择方案；框架基于JVM-Sandbox，拥有JVM-Sandbox的一切特性，同时封装了以下能力：
+
+- 录制/回放基础协议，可快速配置/编码实现一类中间件的录制/回放
+- 开放数据上报，对于录制结果可上报到自己的服务端，进行监控、回归、问题排查等上层平台搭建
+
+## 项目简介
 
 ### repeater的核心能力是什么？
 
@@ -40,50 +54,137 @@
 
 - 0成本录制HTTP/Dubbo等入口流量，作为压测流量模型进行压测
 
-## 快速开始
+#### 4. 实时业务监控
 
-### 1. 本地standalone工作
+- 动态业务监控，基于核心接口数据录制回流到平台，对接口返回数据正确性进行校验和监控
 
-#### step0 安装sandbox/启动bootstrap
+## 核心原理
 
-```shell
-cd bin
-./bootstrap.sh
+### 流量录制
+
+对于Java调用，一次流量录制包括一次入口调用(`entranceInvocation`)（eg：HTTP/Dubbo/Java）和若干次子调用(`subInvocations`)。流量的录制过程就是把入口调用和子调用绑定成一次完整的记录，框架抽象了基础录制协议，调用的组装由调用插件([InvokePlugin](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/InvokePlugin.java))来完成，需要考虑解决的核心问题：
+
+- 快速开发和适配新插件
+- 绑定入口调用和子调用（解决多线程上下文传递问题）
+- `invocation`唯一定位，保障回放时精确匹配
+- 自定义流量采样、过滤、发送、存储
+
+框架的核心逻辑录制协议基于JVM-Sandbox的`BEFORE`、`RETRUN`、`THROW`事件机制进行录制流程控制，详见[DefaultEventListener](repeater-plugin-core/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/core/impl/api/DefaultEventListener.java)：
+
+> 基于[TTL](https://github.com/alibaba/transmittable-thread-local)解决跨线程上下文传递问题，开启`RepeaterConfig.useTtl`之后支持多线程子调用录制
+>
+> 开放插件定义enhance埋点/自定义调用组装方式快速实现插件适配
+>
+> [Invocation](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/Invocation.java)抽象[Identity](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/Identity.java)统一定位由插件自己扩展实现
+>
+> 基于[Tracer](repeater-plugin-core/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/core/trace/Tracer.java)实现应用内链路追踪、采样；同时支持多种过滤方式，插件可自由扩展；
+
+```java
+public void onEvent(Event event) throws Throwable {
+    try {
+        /*
+         * event过滤；针对单个listener，只处理top的事件
+         */
+        /** -------- **/
+        /*
+         * 初始化Tracer开启上下文追踪[基于TTL，支持多线程上下文传递]
+         */
+        /** -------- **/
+        /*
+         * 执行基础过滤
+         */
+        /** -------- **/
+        /*
+         * 执行采样计算
+         */
+        /** -------- **/
+        /*
+         * processor filter
+         */
+        /** -------- **/
+        /*
+         * 分发事件处理
+         */
+    } catch (ProcessControlException pe) {
+        /*
+         * sandbox流程干预
+         */
+    } catch (Throwable throwable) {
+    	 /*
+    	  * 统计异常
+    	  */
+    } finally {
+        /*
+         * 清理上下文
+         */
+    }
+}
+
 ```
-等待SpringBoot应用启动完成 -> `Started Application in 4.797 seconds (JVM running for 6.586)`
 
-#### step1 开始录制
+### 流量回放
 
-一起喊出我们的 [Slogan](http://127.0.0.1:8001/regress/slogan?Repeat-TraceId=127000000001156034386424510000ed) << 单击打开链接单击打开链接或执行`curl操作`
+流量回放，获取录制流量的入口调用入参，再次发起调用。注意：**读接口或者幂等写接口可以直接回放，否则在生产环境请谨慎使用，可能会造成脏数据**；用户可自行选择mock回放或者非mock，回放过程要解决的核心问题：
 
-```shell
-curl -s 'http://127.0.0.1:8001/regress/slogan?Repeat-TraceId=127000000001156034386424510000ed'
+- 多种入口(HTTP/Dubbo/Java)的回放发起
+- 自定义回放流量数据来源、回放结果的上报
+- 自定义mock/非mock回放、回放策略
+- 开放回放流程关键节点hook
+
+回放过程通过异步EventBus方式订阅回放请求；基于[FlowDispather](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/api/FlowDispatcher.java)进行回放流量分发，每个类型回放插件实现[Repeater](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/Repeater.java)SPI完成回放请求发起；每次回放请求可决定本地回放是否mock，插件也自由实现mock逻辑，mock流程代码
+
+> mock回放：回放流量子调用（eg:mybatis/dubbo)不发生真实调用，从录制子调用中根据 [MockStrategy](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/MockStrategy.java) 搜索匹配的子调用，利用JVM-Sandbox的流程干预能力，有匹配结果，进行`throwReturnImmediately`返回，没有匹配结果则抛出异常阻断流程，避免重复调用污染数据
+
+```java
+public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws ProcessControlException {
+    /*
+     * 获取回放上下文
+     */
+    RepeatContext context = RepeatCache.getRepeatContext(Tracer.getTraceId());
+    /*
+     * mock执行条件
+     */
+    if (!skipMock(event, entrance, context) && context != null && context.getMeta().isMock()) {
+        try {
+            /*
+             * 构建mock请求
+             */
+            final MockRequest request = MockRequest.builder()
+                    ...
+                    .build();
+            /*
+             * 执行mock动作
+             */
+            final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().getStrategyType()).execute(request);
+            /*
+             * 处理策略推荐结果
+             */
+            switch (mr.action) {
+  					...
+            }
+        } catch (ProcessControlException pce) {
+            throw pce;
+        } catch (Throwable throwable) {
+            ProcessControlException.throwThrowsImmediately(new RepeatException("unexpected code snippet here.", throwable));
+        }
+    }
+}
 ```
 
-> 是不是看到了Java程序员多年的心声；我们希望让这一刻永远定格；
+## 已支持的插件列表
 
-> 访问链接时，repeater插件通过Repeat-TraceId=127000000001156034386424510000ed，唯一追踪到了这一次请求，后台服务返回了`JAVA是世界上最好的语言!`，repeater把画面定格在了这一秒并将结果和127000000001156034386424510000ed绑定
+> Java生态中间件及各种框架众多，各公司技术选型差异较大没办法统一适配，目前适配了几款常用插件作为示例，如有需求可以通过issue方式提交，同时也欢迎大家来贡献开发插件
 
-#### step2 开始回放
+|    				      	插件类型     		            | 录制   |  回放  | Mock  | 支持时间 |                  贡献者                    |
+| -----------------------------------------------   | ----- | :---: | :---: | :-----: |   :----------------------------------:    |
+| [http-plugin](repeater-plugins/http-plugin)       |   √   |   √   |   ×   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [dubbo-plugin](repeater-plugins/dubbo-plugin)     |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [ibatis-plugin](repeater-plugins/ibatis-plugin)   |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [mybatis-plugin](repeater-plugins/mybatis-plugin) |   √   |   ×   |   √   | 201906  |[ztbsuper](https://github.com/ztbsuper)    |
+| [java-plugin](repeater-plugins/java-plugin)       |   √   |   √   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [redis-plugin](repeater-plugins/redis-plugin)     |   ×   |   ×   |   ×   | 预期7月底|                      NA/NA                |
 
-"昨日重现"  [Slogan Repeat](http://127.0.0.1:8001/regress/slogan?Repeat-TraceId-X=127000000001156034386424510000ed)  << 单击打开链接或执行`curl操作`
+## 相关文档
 
-```shell
-curl -s 'http://127.0.0.1:8001/regress/slogan?Repeat-TraceId-X=127000000001156034386424510000ed'
-```
-
-> 无论我们多少次访问这个地址，都将返回Repeat-TraceId=127000000001156034386424510000ed绑定的录制信息`JAVA是世界上最好的语言!`；如果重新访问[Slogan](http://127.0.0.1:8001/regress/slogan?Repeat-TraceId=127000000001156034386424510000ed)后又会将最新的返回结果绑定到Repeat-TraceId=127000000001156034386424510000ed（为了快速演示，将链路追踪的标志提到参数中进行透传了）
-
-> 想要知道应用层面发生了什么吗？请看《[Slogan Demo究竟发生了什么]()》
-
-### 2. 快速录制目标应用数据
-
-#### step0 安装sandbox和插件到应用服务器（**请不要直接在生产服务器使用**）
-
-#### step1 修改repeater-config.json，启用拦截点和插件信息
-
-#### step2 attach sandbox到目标进程
-
-#### step3 enjoy it！
-
-### 3. 更多请看[用户手册]()
+- [用户使用手册](docs/user-guide-cn.md)
+- [插件开发手册](docs/plugin-development.md)
