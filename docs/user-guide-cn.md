@@ -143,8 +143,8 @@ url			: http://ip:port/sandbox/default/module/http/repeater/repeat
 params		: _data
 ```
 
-> 其中 port 是jvm-sandbox启动时候绑定的port，可以在attach sandbox时增加`-P 12580`指定，或者执行`~/sandbox/bin/sandbox.sh -v` 查看`SERVER_PORT`
-> _data 是由[RepeatMeta](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/RepeatMeta.java)经过hessian序列化之后的值，具体调用方式参见[AbstractRecordService](/repeater-console/repeater-console-service/src/main/java/com/alibaba/repeater/console/service/impl/AbstractRecordService.java) 和[RecordFacadeApi](/repeater-console/repeater-console-start/src/main/java/com/alibaba/repeater/console/start/controller/AbstractRecordService.java)
+> 其中 port 是jvm-sandbox启动时候绑定的port，可以在attach sandbox时增加`-P 12580`指定，或者执行`~/sandbox/bin/sandbox.sh -p {pid} -v` 查看`SERVER_PORT`
+> _data 是由[RepeatMeta](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/RepeatMeta.java)经过hessian序列化之后的值，具体调用方式参见[AbstractRecordService](/repeater-console/repeater-console-service/src/main/java/com/alibaba/repeater/console/service/impl/AbstractRecordService.java) 和[RecordFacadeApi](/repeater-console/repeater-console-start/src/main/java/com/alibaba/repeater/console/start/controller/RecordFacadeApi.java)
 
 #### 方式二：针对HTTP接口，可以像`Slogan Demo`一样进行参数或者Header透传方式进行MOCK回放
 
