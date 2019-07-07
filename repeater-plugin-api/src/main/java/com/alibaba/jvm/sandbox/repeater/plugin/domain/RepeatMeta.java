@@ -13,18 +13,33 @@ import java.util.Map;
  */
 public class RepeatMeta implements java.io.Serializable {
 
+    /**
+     * 回放应用名
+     */
     private String appName;
-
+    /**
+     * 回放traceId
+     */
     private String traceId;
-
+    /**
+     * 是否启用mock；启用后子调用不发生真实调用
+     */
     private boolean mock;
-
+    /**
+     * 子调用匹配查找策略，开启mock回放后生效
+     */
     private StrategyType strategyType;
-
+    /**
+     * 回放ID
+     */
     private String repeatId;
-
+    /**
+     * 相似度对比，具体参见{@link StrategyType#PARAMETER_MATCH}
+     */
     private double matchPercentage = 100;
-
+    /**
+     * 回放数据源；服务端可指定module从何处加载回放数据源；http接口
+     */
     private String datasource;
 
     private Map<String,String> extension = new HashMap<String, String>();

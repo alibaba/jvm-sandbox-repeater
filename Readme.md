@@ -62,22 +62,22 @@
 
 ### 流量录制
 
-对于Java调用，一次流量录制包括一次入口调用(`entranceInvocation`)（eg：HTTP/Dubbo/Java）和若干次子调用(`subInvocations`)。流量的录制过程就是把入口调用和子调用绑定成一次完整的记录，框架抽象了基础录制协议，调用的组装由调用插件([InvokePlugin](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/InvokePlugin.java))来完成，需要考虑解决的核心问题：
+对于Java调用，一次流量录制包括一次入口调用(`entranceInvocation`)（eg：HTTP/Dubbo/Java）和若干次子调用(`subInvocations`)。流量的录制过程就是把入口调用和子调用绑定成一次完整的记录，框架抽象了基础录制协议，调用的组装由调用插件([InvokePlugin](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/InvokePlugin.java))来完成，需要考虑解决的核心问题：
 
 - 快速开发和适配新插件
 - 绑定入口调用和子调用（解决多线程上下文传递问题）
 - `invocation`唯一定位，保障回放时精确匹配
 - 自定义流量采样、过滤、发送、存储
 
-框架的核心逻辑录制协议基于JVM-Sandbox的`BEFORE`、`RETRUN`、`THROW`事件机制进行录制流程控制，详见[DefaultEventListener](repeater-plugin-core/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/core/impl/api/DefaultEventListener.java)：
+框架的核心逻辑录制协议基于JVM-Sandbox的`BEFORE`、`RETRUN`、`THROW`事件机制进行录制流程控制，详见[DefaultEventListener](/repeater-plugin-core/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/core/impl/api/DefaultEventListener.java)：
 
 > 基于[TTL](https://github.com/alibaba/transmittable-thread-local)解决跨线程上下文传递问题，开启`RepeaterConfig.useTtl`之后支持多线程子调用录制
 >
 > 开放插件定义enhance埋点/自定义调用组装方式快速实现插件适配
 >
-> [Invocation](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/Invocation.java)抽象[Identity](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/Identity.java)统一定位由插件自己扩展实现
+> [Invocation](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/Invocation.java)抽象[Identity](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/Identity.java)统一定位由插件自己扩展实现
 >
-> 基于[Tracer](repeater-plugin-core/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/core/trace/Tracer.java)实现应用内链路追踪、采样；同时支持多种过滤方式，插件可自由扩展；
+> 基于[Tracer](/repeater-plugin-core/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/core/trace/Tracer.java)实现应用内链路追踪、采样；同时支持多种过滤方式，插件可自由扩展；
 
 ```java
 public void onEvent(Event event) throws Throwable {
@@ -131,9 +131,9 @@ public void onEvent(Event event) throws Throwable {
 - 自定义mock/非mock回放、回放策略
 - 开放回放流程关键节点hook
 
-回放过程通过异步EventBus方式订阅回放请求；基于[FlowDispather](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/api/FlowDispatcher.java)进行回放流量分发，每个类型回放插件实现[Repeater](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/Repeater.java)SPI完成回放请求发起；每次回放请求可决定本地回放是否mock，插件也自由实现mock逻辑，mock流程代码
+回放过程通过异步EventBus方式订阅回放请求；基于[FlowDispather](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/api/FlowDispatcher.java)进行回放流量分发，每个类型回放插件实现[Repeater](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/Repeater.java)SPI完成回放请求发起；每次回放请求可决定本地回放是否mock，插件也自由实现mock逻辑，mock流程代码
 
-> mock回放：回放流量子调用（eg:mybatis/dubbo)不发生真实调用，从录制子调用中根据 [MockStrategy](repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/MockStrategy.java) 搜索匹配的子调用，利用JVM-Sandbox的流程干预能力，有匹配结果，进行`throwReturnImmediately`返回，没有匹配结果则抛出异常阻断流程，避免重复调用污染数据
+> mock回放：回放流量子调用（eg:mybatis/dubbo)不发生真实调用，从录制子调用中根据 [MockStrategy](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/spi/MockStrategy.java) 搜索匹配的子调用，利用JVM-Sandbox的流程干预能力，有匹配结果，进行`throwReturnImmediately`返回，没有匹配结果则抛出异常阻断流程，避免重复调用污染数据
 
 ```java
 public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws ProcessControlException {
@@ -177,14 +177,14 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
 
 |    				      	插件类型     		            | 录制   |  回放  | Mock  | 支持时间 |                  贡献者                    |
 | -----------------------------------------------   | ----- | :---: | :---: | :-----: |   :----------------------------------:    |
-| [http-plugin](repeater-plugins/http-plugin)       |   √   |   √   |   ×   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [dubbo-plugin](repeater-plugins/dubbo-plugin)     |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [ibatis-plugin](repeater-plugins/ibatis-plugin)   |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [mybatis-plugin](repeater-plugins/mybatis-plugin) |   √   |   ×   |   √   | 201906  |[ztbsuper](https://github.com/ztbsuper)    |
-| [java-plugin](repeater-plugins/java-plugin)       |   √   |   √   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [redis-plugin](repeater-plugins/redis-plugin)     |   ×   |   ×   |   ×   | 预期7月底|                      NA/NA                |
+| [http-plugin](/repeater-plugins/http-plugin)       |   √   |   √   |   ×   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [dubbo-plugin](/repeater-plugins/dubbo-plugin)     |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [ibatis-plugin](/repeater-plugins/ibatis-plugin)   |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [mybatis-plugin](/repeater-plugins/mybatis-plugin) |   √   |   ×   |   √   | 201906  |[ztbsuper](https://github.com/ztbsuper)    |
+| [java-plugin](/repeater-plugins/java-plugin)       |   √   |   √   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [redis-plugin](/repeater-plugins/redis-plugin)     |   ×   |   ×   |   ×   | 预期7月底|                      NA/NA                |
 
 ## 相关文档
 
-- [用户使用手册](docs/user-guide-cn.md)
-- [插件开发手册](docs/plugin-development.md)
+- [用户使用手册](/docs/user-guide-cn.md)
+- [插件开发手册](/docs/plugin-development.md)

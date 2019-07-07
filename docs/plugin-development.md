@@ -147,19 +147,19 @@ class MybatisProcessor extends DefaultInvocationProcessor {
 
 ### 第五步 实现流量回放器`Repeater`
 
-> 可选。只有入口类型的插件需要实现，用来发起一次回放调用，流量回放可参考[http-plugin](repeater-plugins/http-plugin)和[java-plugin](repeater-plugins/java-plugin)的实现
+> 可选。只有入口类型的插件需要实现，用来发起一次回放调用，流量回放可参考[http-plugin](/repeater-plugins/http-plugin)和[java-plugin](/repeater-plugins/java-plugin)的实现
 
 
 ## 已支持的插件列表
 
 |    				      	插件类型     		            | 录制   |  回放  | Mock  | 支持时间 |                  贡献者                    |
 | -----------------------------------------------   | ----- | :---: | :---: | :-----: |   :----------------------------------:    |
-| [http-plugin](repeater-plugins/http-plugin)       |   √   |   √   |   ×   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [dubbo-plugin](repeater-plugins/dubbo-plugin)     |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [ibatis-plugin](repeater-plugins/ibatis-plugin)   |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [mybatis-plugin](repeater-plugins/mybatis-plugin) |   √   |   ×   |   √   | 201906  |[ztbsuper](https://github.com/ztbsuper)    |
-| [java-plugin](repeater-plugins/java-plugin)       |   √   |   √   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [redis-plugin](repeater-plugins/redis-plugin)     |   ×   |   ×   |   ×   | 预期7月底|                      NA/NA                |
+| [http-plugin](/repeater-plugins/http-plugin)       |   √   |   √   |   ×   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [dubbo-plugin](/repeater-plugins/dubbo-plugin)     |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [ibatis-plugin](/repeater-plugins/ibatis-plugin)   |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [mybatis-plugin](/repeater-plugins/mybatis-plugin) |   √   |   ×   |   √   | 201906  |[ztbsuper](https://github.com/ztbsuper)    |
+| [java-plugin](/repeater-plugins/java-plugin)       |   √   |   √   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
+| [redis-plugin](/repeater-plugins/redis-plugin)     |   ×   |   ×   |   ×   | 预期7月底|                      NA/NA                |
 
 
 期待大家贡献更多的插件~
