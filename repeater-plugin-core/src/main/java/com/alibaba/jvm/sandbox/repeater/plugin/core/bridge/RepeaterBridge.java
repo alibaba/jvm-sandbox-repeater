@@ -17,7 +17,7 @@ public class RepeaterBridge {
 
     private RepeaterBridge() {}
 
-    private volatile Map<InvokeType, Repeater> cached = new HashMap<InvokeType, Repeater>();
+    private volatile Map<String, Repeater> cached = new HashMap<String, Repeater>();
 
     public static RepeaterBridge instance() {
         return RepeaterBridge.LazyInstanceHolder.INSTANCE;
@@ -28,7 +28,7 @@ public class RepeaterBridge {
         // reset repeat'er container
         cached.clear();
         for (Repeater repeater : rs) {
-            cached.put(repeater.getType(), repeater);
+            cached.put(repeater.getType().name(), repeater);
         }
     }
 
@@ -43,6 +43,6 @@ public class RepeaterBridge {
      * @return 回放器
      */
     public Repeater select(InvokeType type) {
-        return cached.get(type);
+        return cached.get(type.name());
     }
 }
