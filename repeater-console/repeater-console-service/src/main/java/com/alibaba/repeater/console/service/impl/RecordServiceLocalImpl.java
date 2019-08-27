@@ -96,6 +96,7 @@ public class RecordServiceLocalImpl extends AbstractRecordService implements Rec
         RepeaterResult<String> pr = repeat(record, repeatId);
         if (pr.isSuccess()) {
             repeatCache.put(pr.getData(), record);
+            recordRepeatMap.put(pr.getData(), record.getTraceId());
         }
         return pr;
     }
