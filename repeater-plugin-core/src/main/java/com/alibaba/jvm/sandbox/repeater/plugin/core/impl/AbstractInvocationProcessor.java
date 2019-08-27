@@ -111,6 +111,9 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         List<Class<?>> classes = Lists.newArrayList();
         if (event.argumentArray != null && event.argumentArray.length > 0) {
             for (Object object : event.argumentArray) {
+                if(object == null){
+                    continue;
+                }
                 classes.add(object.getClass());
             }
         }
