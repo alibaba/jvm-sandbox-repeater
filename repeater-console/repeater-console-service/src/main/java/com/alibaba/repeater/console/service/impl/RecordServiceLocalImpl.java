@@ -185,7 +185,6 @@ public class RecordServiceLocalImpl extends AbstractRecordService implements Rec
                 records.add(recordCache.get(key));
             }
         }
-
         return records;
 
     }
