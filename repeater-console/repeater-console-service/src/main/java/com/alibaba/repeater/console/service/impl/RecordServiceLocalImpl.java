@@ -110,14 +110,14 @@ public class RecordServiceLocalImpl extends AbstractRecordService implements Rec
         }
         List<RepeaterResult<String>> results = new ArrayList<RepeaterResult<String>>();
 
-        records.forEach(record -> {
+        for(Record record: records){
             RepeaterResult<String> pr = repeat(record, null);
             if (pr.isSuccess()) {
                 repeatCache.put(pr.getData(), record);
                 recordRepeatMap.put(pr.getData(), record.getTraceId());
             }
             results.add(pr);
-        });
+        }
 
         return RepeaterResult.builder().success(true).message("operate success").data(results).build();
     }
@@ -139,14 +139,25 @@ public class RecordServiceLocalImpl extends AbstractRecordService implements Rec
     public RepeaterResult<List<RepeatModel>> batchCallback(String appName) {
         List<Record> records = getRecordByAppName(appName);
         // 根据appName获取对应的traceId
-        List<String> traceIds = records.stream().map(record -> record.getTraceId()).collect(Collectors.toList());
+        List<String> traceIds = new ArrayList<>();
+        for(Record record : records){
+            traceIds.add(record.getTraceId());
+        }
 
         // 根据traceId从执行结果记录中获取对应的执行结果记录
-        List<String> repeatIds = recordRepeatMap.keySet().stream().filter(key -> traceIds.contains(recordRepeatMap.get(key))).collect(Collectors.toList());
+        List<String> repeatIds = new ArrayList<>();
+        for(String key : recordRepeatMap.keySet()){
+            if( traceIds.contains(recordRepeatMap.get(key))){
+                repeatIds.add(key);
+            }
+        }
+        
 
         // 根据从基于traceId过滤获取的执行结果记录中获取其repeatId
         List<RepeatModel> repeatModels = repeatIds.stream().map(key -> repeatModelCache.get(key)).collect(Collectors.toList());
-
+        for(String repeatId : repeatIds){
+            repeatModels.add(repeatModelCache.get(repeatId));
+        }
 
         // 当执行中缓存中存在所需要获取的执行结果记录的repeatId时，则认为这次批量录取回放还在执行中
         for(String repeatId:repeatIds){
