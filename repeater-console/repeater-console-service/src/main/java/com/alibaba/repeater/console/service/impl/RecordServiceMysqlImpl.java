@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * {@link RecordServiceMysqlImpl} 使用mysql实现存储
@@ -64,7 +65,17 @@ public class RecordServiceMysqlImpl extends AbstractRecordService implements Rec
     }
 
     @Override
+    public RepeaterResult<List<RepeaterResult>> batchRepeat(String appName) {
+        return null;
+    }
+
+    @Override
     public RepeaterResult<RepeatModel> callback(String repeatId) {
+        return null;
+    }
+
+    @Override
+    public RepeaterResult<List<RepeatModel>> batchCallback(String appName) {
         return null;
     }
 }

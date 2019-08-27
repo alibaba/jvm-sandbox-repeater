@@ -3,6 +3,8 @@ package com.alibaba.repeater.console.service;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 
+import java.util.List;
+
 /**
  * {@link RecordService} 存储服务示例
  * <p>
@@ -48,6 +50,17 @@ public interface RecordService {
     RepeaterResult<String> repeat(String appName, String traceId, String repeatId);
 
 
+
+    /**
+     * 批量执行回放
+     *
+     * @param appName  应用名
+     * @return 回放结果
+     */
+    RepeaterResult<List<RepeaterResult>> batchRepeat(String appName);
+
+
+
     /**
      * 查询回放结果
      *
@@ -55,4 +68,12 @@ public interface RecordService {
      * @return 回放结果
      */
     RepeaterResult<RepeatModel> callback(String repeatId);
+
+    /**
+     * 查询回放结果
+     *
+     * @param appName 应用名
+     * @return 回放结果
+     */
+    RepeaterResult<List<RepeatModel>> batchCallback(String appName);
 }

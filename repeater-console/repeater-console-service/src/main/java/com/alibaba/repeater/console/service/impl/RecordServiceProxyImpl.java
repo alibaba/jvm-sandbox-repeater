@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * {@link RecordServiceProxyImpl} 示例存储服务代理实现
@@ -47,8 +48,18 @@ public class RecordServiceProxyImpl implements RecordService {
     }
 
     @Override
+    public RepeaterResult<List<RepeaterResult>> batchRepeat(String appName) {
+        return select().batchRepeat(appName);
+    }
+
+    @Override
     public RepeaterResult<RepeatModel> callback(String repeatId) {
         return select().callback(repeatId);
+    }
+
+    @Override
+    public RepeaterResult<List<RepeatModel>> batchCallback(String appName) {
+        return select().batchCallback(appName);
     }
 
     private RecordService select() {
