@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * {@link RecordFacadeApi} Demo工程；作为repeater录制回放的数据存储
@@ -34,6 +35,11 @@ public class RecordFacadeApi {
         return recordService.repeat(appName, traceId, request.getHeader("RepeatId"));
     }
 
+    @RequestMapping(value = "repeat/batch/{appName}", method = RequestMethod.GET)
+    public RepeaterResult<List<RepeaterResult>> batchRepeat(@PathVariable("appName") String appName) {
+        return recordService.batchRepeat(appName);
+    }
+
     @RequestMapping(value = "record/save", method = RequestMethod.POST)
     public RepeaterResult<String> recordSave(@RequestBody String body) {
         return recordService.saveRecord(body);
@@ -47,6 +53,11 @@ public class RecordFacadeApi {
     @RequestMapping(value = "repeat/callback/{repeatId}", method = RequestMethod.GET)
     public RepeaterResult<RepeatModel> callback(@PathVariable("repeatId") String repeatId) {
         return recordService.callback(repeatId);
+    }
+
+    @RequestMapping(value = "repeat/callback/batch/{appName}", method = RequestMethod.GET)
+    public RepeaterResult<List<RepeatModel>> batchCallback(@PathVariable("appName") String appName) {
+        return recordService.batchCallback(appName);
     }
 
 }
