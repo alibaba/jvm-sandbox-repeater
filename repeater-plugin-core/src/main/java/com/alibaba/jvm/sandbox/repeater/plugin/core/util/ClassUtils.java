@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
  *
  * @author zhaoyb1990
  */
+@Deprecated
 public class ClassUtils {
 
     private static final Map<String, Class> JVM_BASIC_TYPE_MAP = Maps.newHashMap();

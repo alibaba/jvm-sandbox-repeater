@@ -104,9 +104,17 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
 
     @Override
     public Identity assembleIdentity(BeforeEvent event) {
-        return new Identity(getType().name(), event.javaClassName, getMethodSpec(event), getExtra());
+        return new Identity(getType().name(), event.javaClassName, event.javaMethodName + "~" + event.javaMethodDesc, getExtra());
     }
 
+    @Override
+    public boolean inTimeSerializeRequest(Invocation invocation, BeforeEvent event) {
+        return true;
+    }
+
+    /* 考虑到 event.argumentArray 中可能存在null的情况，无法还原原始类型；采用event.javaMethodDesc来还原 */
+
+    @Deprecated
     private String getMethodSpec(BeforeEvent event) {
         List<Class<?>> classes = Lists.newArrayList();
         if (event.argumentArray != null && event.argumentArray.length > 0) {
@@ -117,6 +125,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         return getMethodDesc(event.javaMethodName, classes.toArray(new Class[0]));
     }
 
+    @Deprecated
     protected String getMethodDesc(String methodName, Class<?>[] parameterTypes) {
         StringBuilder builder = new StringBuilder(methodName);
         if (parameterTypes != null && parameterTypes.length > 0) {

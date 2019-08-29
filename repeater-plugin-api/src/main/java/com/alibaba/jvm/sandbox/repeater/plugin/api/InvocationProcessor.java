@@ -66,4 +66,20 @@ public interface InvocationProcessor extends InvocationFilter {
      * @return mock结果
      */
     Object assembleMockResponse(BeforeEvent event, Invocation invocation);
+
+
+    /**
+     * 是否及时序列化请求参数；
+     *
+     * 因为请求参数在后续的调用过程中，可能会被篡改；因此在录制的过程中，默认会在before事件时候直接序列化
+     *
+     * 但有一些特殊场景例如：Mybatis的insert开启自动生成ID，会把入参里面ID补全，及时序列化录不到ID，会导致后续流程出错；
+     *
+     * 这样的场景可以在return时去序列化
+     *
+     * @param invocation 调用
+     * @param event before事件
+     * @return true / false
+     */
+    boolean inTimeSerializeRequest(Invocation invocation, BeforeEvent event);
 }

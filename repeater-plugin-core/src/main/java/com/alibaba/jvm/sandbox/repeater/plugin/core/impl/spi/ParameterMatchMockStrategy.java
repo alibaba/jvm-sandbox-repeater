@@ -39,9 +39,11 @@ public class ParameterMatchMockStrategy extends AbstractMockStrategy {
         List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
         List<Invocation> target = Lists.newArrayList();
         // 先根据URI进行过滤
-        for (Invocation invocation : subInvocations){
-            if (invocation.getIdentity().getUri().equals(request.getIdentity().getUri())) {
-                target.add(invocation);
+        if (CollectionUtils.isNotEmpty(subInvocations)) {
+            for (Invocation invocation : subInvocations){
+                if (invocation.getIdentity().getUri().equals(request.getIdentity().getUri())) {
+                    target.add(invocation);
+                }
             }
         }
         if (CollectionUtils.isEmpty(target)) {
@@ -99,7 +101,7 @@ public class ParameterMatchMockStrategy extends AbstractMockStrategy {
         });
         Double similarity = scores.get(0);
         Invocation invocation = invocationMap.get(similarity);
-        log.info("find invocation by {},but similarity not match similarity={},identity={}, invocation={}", similarity, type().name(), request.getIdentity().getUri(), invocation);
+        log.info("find invocation by {},but similarity not match similarity={},identity={}, invocation={}", type().name(), similarity, request.getIdentity().getUri(), invocation);
         return SelectResult.builder().match(false).invocation(invocation).cost(stopwatch.stop().elapsed(TimeUnit.MILLISECONDS)).build();
     }
 

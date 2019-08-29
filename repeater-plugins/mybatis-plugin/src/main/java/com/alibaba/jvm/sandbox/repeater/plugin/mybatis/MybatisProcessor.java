@@ -3,6 +3,7 @@ package com.alibaba.jvm.sandbox.repeater.plugin.mybatis;
 import com.alibaba.jvm.sandbox.api.event.BeforeEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultInvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -44,5 +45,10 @@ class MybatisProcessor extends DefaultInvocationProcessor {
         // MapperMethod#execute(SqlSession sqlSession, Object[] args)
         // args可能存在不可序序列化异常（例如使用tk.mybatis)
         return new Object[]{event.argumentArray[1]};
+    }
+
+    @Override
+    public boolean inTimeSerializeRequest(Invocation invocation, BeforeEvent event) {
+        return false;
     }
 }

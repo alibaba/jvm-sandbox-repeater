@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
  *
  * @author zhaoyb1990.
  */
+@Deprecated
 public class LocalDateTimeDeserializer extends AbstractDeserializer {
 
     @Override

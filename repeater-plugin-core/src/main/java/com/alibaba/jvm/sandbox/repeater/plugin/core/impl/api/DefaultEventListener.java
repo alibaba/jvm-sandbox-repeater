@@ -165,7 +165,10 @@ public class DefaultEventListener implements EventListener {
         invocation.setResponse(processor.assembleResponse(event));
         invocation.setSerializeToken(ClassloaderBridge.instance().encode(event.javaClassLoader));
         try {
-            SerializerWrapper.inTimeSerialize(invocation);
+            // fix issue#14 : useGeneratedKeys
+            if (processor.inTimeSerializeRequest(invocation, event)) {
+                SerializerWrapper.inTimeSerialize(invocation);
+            }
         } catch (SerializeException e) {
             Tracer.getContext().setSampled(false);
             log.error("Error occurred serialize", e);

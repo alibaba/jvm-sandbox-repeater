@@ -54,12 +54,18 @@ class DubboProcessor extends DefaultInvocationProcessor {
 
     @Override
     public Object[] assembleRequest(BeforeEvent event) {
-        // onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {}
-        if (!ON_RESPONSE.equals(event.javaMethodName)) {
-            throw new RuntimeException("DubboProcessor#assembleRequest only receive #onResponse behavior");
+        Object invocation;
+        if (ON_RESPONSE.equals(event.javaMethodName)) {
+            // for record parameter assemble
+            // onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {}
+            invocation = event.argumentArray[2];
+        } else {
+            // for repeater parameter assemble
+            // invoke(Invoker<?> invoker, Invocation invocation)
+            invocation = event.argumentArray[1];
         }
         try {
-            return (Object[]) MethodUtils.invokeMethod(event.argumentArray[2], "getArguments");
+            return (Object[]) MethodUtils.invokeMethod(invocation, "getArguments");
         } catch (Exception e) {
             // ignore
             LogUtil.error("error occurred when assemble dubbo request", e);
