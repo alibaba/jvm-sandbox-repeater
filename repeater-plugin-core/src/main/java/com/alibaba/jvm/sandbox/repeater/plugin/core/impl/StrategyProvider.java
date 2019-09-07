@@ -16,7 +16,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.spi.MockStrategy.StrategyType;
  *
  * @author zhaoyb1990
  */
-class StrategyProvider {
+public class StrategyProvider {
 
     private final static StrategyProvider INSTANCE = new StrategyProvider();
 
@@ -33,7 +33,7 @@ class StrategyProvider {
         }
     }
 
-    MockStrategy provide(StrategyType type) {
+    public MockStrategy provide(StrategyType type) {
         final MockStrategy strategy = strategyCached.get(type);
         return strategy == null ? strategyCached.get(StrategyType.DEFAULT) : strategy;
     }

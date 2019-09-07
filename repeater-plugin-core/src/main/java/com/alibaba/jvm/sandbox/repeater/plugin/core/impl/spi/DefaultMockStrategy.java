@@ -17,11 +17,12 @@ import org.kohsuke.MetaInfServices;
 public class DefaultMockStrategy extends AbstractMockStrategy {
 
     @Override
-    protected SelectResult select(MockRequest request) {
+    public SelectResult select(MockRequest request, Boolean removeFromSubInvocationIfFound) {
+        log.debug("使用了默认的Mock策略");
         return SelectResult.builder()
-            .cost(0L)
-            .match(false)
-            .build();
+                .cost(0L)
+                .match(false)
+                .build();
     }
 
     @Override

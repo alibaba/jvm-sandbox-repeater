@@ -24,14 +24,6 @@ public abstract class AbstractMockStrategy implements MockStrategy {
 
     protected final static Logger log = LoggerFactory.getLogger(AbstractMockStrategy.class);
 
-    /**
-     * 选择出回放的invocation
-     *
-     * @param request mock回放请求
-     * @return 选择结果
-     */
-    protected abstract SelectResult select(final MockRequest request);
-
     @Override
     public MockResponse execute(final MockRequest request) {
         MockResponse response;
@@ -43,7 +35,7 @@ public abstract class AbstractMockStrategy implements MockStrategy {
             /*
              * do select
              */
-            SelectResult select = select(request);
+            SelectResult select = select(request, true);
             Invocation invocation = select.getInvocation();
             MockInvocation mi = new MockInvocation();
             mi.setIndex(SequenceGenerator.generate(request.getTraceId() + "#"));

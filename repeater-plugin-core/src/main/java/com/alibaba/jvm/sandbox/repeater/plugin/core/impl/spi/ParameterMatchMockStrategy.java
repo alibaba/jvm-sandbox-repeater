@@ -34,7 +34,7 @@ import org.kohsuke.MetaInfServices;
 public class ParameterMatchMockStrategy extends AbstractMockStrategy {
 
     @Override
-    protected SelectResult select(MockRequest request) {
+    public SelectResult select(MockRequest request, Boolean removeFromSubInvocationIfFound) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
         List<Invocation> target = Lists.newArrayList();
@@ -74,11 +74,11 @@ public class ParameterMatchMockStrategy extends AbstractMockStrategy {
                 log.error("serialize request occurred error, identity={}", type().name(), e);
                 return SelectResult.builder().match(false).cost(stopwatch.stop().elapsed(TimeUnit.MILLISECONDS)).build();
             }
-            // 如果匹配就直接返回了
+            // 如果匹配就直接返回了，并根据removeIfFound标签判断是否删除匹配的调用
             if (similarity >= request.getMeta().getMatchPercentage() / 100) {
                 Iterator<Invocation> ite = subInvocations.iterator();
                 while (ite.hasNext()) {
-                    if (invocation.equals(ite.next())) {
+                    if (invocation.equals(ite.next()) && removeFromSubInvocationIfFound) {
                         ite.remove();
                         break;
                     }
