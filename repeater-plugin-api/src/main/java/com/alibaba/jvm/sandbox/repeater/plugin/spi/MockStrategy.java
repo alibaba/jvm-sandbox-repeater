@@ -32,7 +32,18 @@ public interface MockStrategy {
 
 
     /**
+     *  选择出回放的invocation 并删除命中的invocation
+     *  一般情况下，为了保证回放匹配效率，在回放流程中默认是true，而在其他步骤调用则按需要选择即可
+     *
+     * @param request mock回放请求
+     * @return 选择结果
+     */
+    SelectResult select(final MockRequest request);
+
+
+    /**
      *  选择出回放的invocation 并根据需要看是否要删除命中的invocation
+     *  一般情况下，为了保证回放匹配效率，在回放流程中默认是true，而在其他步骤调用则按需要选择即可
      *
      * @param request mock回放请求
      * @Param removeFromSubInvocationIfFound 找到后是否需要删除子调用中的命中的invocation

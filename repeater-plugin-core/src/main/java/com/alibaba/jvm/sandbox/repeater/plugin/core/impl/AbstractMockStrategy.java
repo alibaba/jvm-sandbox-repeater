@@ -25,6 +25,11 @@ public abstract class AbstractMockStrategy implements MockStrategy {
     protected final static Logger log = LoggerFactory.getLogger(AbstractMockStrategy.class);
 
     @Override
+    public SelectResult select(MockRequest request) {
+        return select(request, true);
+    }
+
+    @Override
     public MockResponse execute(final MockRequest request) {
         MockResponse response;
         try {
@@ -35,7 +40,7 @@ public abstract class AbstractMockStrategy implements MockStrategy {
             /*
              * do select
              */
-            SelectResult select = select(request, true);
+            SelectResult select = select(request);
             Invocation invocation = select.getInvocation();
             MockInvocation mi = new MockInvocation();
             mi.setIndex(SequenceGenerator.generate(request.getTraceId() + "#"));
