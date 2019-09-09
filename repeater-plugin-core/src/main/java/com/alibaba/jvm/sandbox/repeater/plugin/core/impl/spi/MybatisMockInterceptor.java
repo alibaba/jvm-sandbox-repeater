@@ -15,7 +15,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.kohsuke.MetaInfServices;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @MetaInfServices(MockInterceptor.class)
 public class MybatisMockInterceptor implements MockInterceptor {
@@ -25,6 +27,7 @@ public class MybatisMockInterceptor implements MockInterceptor {
     @Override
     public void beforeSelect(final MockRequest request) {
         RepeatMeta meta = request.getMeta();
+        JSONObject mapperConfig = (JSONObject) request.getArgumentArray()[1];
         SelectResult selectResult = StrategyProvider.instance().provide(meta.getStrategyType()).select(request,false);
         Invocation selectInvocation = selectResult.getInvocation();
         if (selectInvocation == null) {
@@ -35,9 +38,31 @@ public class MybatisMockInterceptor implements MockInterceptor {
         // 这里只兼容insert单个对象的操作，所以取的是入参的第一个值
         Object recordArgument = ((Object[]) selectInvocation.getRequest()[0])[0];
         Object mockArgument = ((Object[]) request.getArgumentArray()[0])[0];
-        JSONObject mapperConfig = (JSONObject) request.getArgumentArray()[1];
-        setKeyPropertiesValueToMockRequest(recordArgument, mockArgument, mapperConfig);
 
+        if(!recordArgument.getClass().equals(mockArgument.getClass())){
+            LogUtil.error("MybatisMockInterceptor set id to insertObject beforeSelect fail:  type of record first arguments is different than type of mock first argument");
+            return;
+        }
+
+        // 非集合直接设置id
+        if(!(mockArgument instanceof Collection)){
+            setKeyPropertiesValueToMockRequest(recordArgument, mockArgument, mapperConfig);
+            return;
+        }
+
+
+        List recordArgumentList = new ArrayList((Collection) recordArgument);
+        List mockArgumentList = new ArrayList((Collection) mockArgument);
+
+        // 如果集合长度不同，直接不处理设值以免出现数组越界
+        if(recordArgumentList.size() != mockArgumentList.size()){
+            LogUtil.error("MybatisMockInterceptor set id to insertObject beforeSelect fail: size of record arguments list is different than size of  type of mock first argument list");
+            return;
+        }
+
+        for(int i=0; i<mockArgumentList.size();i++){
+            setKeyPropertiesValueToMockRequest(recordArgumentList.get(i), mockArgumentList.get(i), mapperConfig);
+        }
 
     }
 
@@ -48,7 +73,7 @@ public class MybatisMockInterceptor implements MockInterceptor {
 
     @Override
     public boolean matchingSelect(final MockRequest request) {
-        // 仅在调用类型为mybatis 且 操作类型是插入 且 插入方法的入参 且入参不为集合 有且只有一个 且 keyProperties只有一个 的情况下，才进一步判断isUserGenerateKey，否则一律不作处理
+        // 仅在调用类型为mybatis 且 操作类型是插入 且 插入方法的入参 有且只有一个 且 keyProperties只有一个 的情况下，才进一步判断isUserGenerateKey，否则一律不作处理
         if (!request.getType().equals(InvokeType.MYBATIS)) {
             return false;
         }
@@ -60,12 +85,6 @@ public class MybatisMockInterceptor implements MockInterceptor {
         // org.apache.ibatis.binding.MapperMethod.execute(SqlSession sqlSession, Object[] args)
         Object[] insertParam = (Object[]) request.getArgumentArray()[0];
         if (insertParam.length != 1) {
-            return false;
-        }
-
-        // 如果插入对象为集合，则不处理；不兼容批量插入的场景
-        Object insertObject = insertParam[0];
-        if(insertObject instanceof Iterable){
             return false;
         }
 
