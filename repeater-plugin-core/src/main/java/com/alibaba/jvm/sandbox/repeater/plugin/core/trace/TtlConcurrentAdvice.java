@@ -64,13 +64,15 @@ public class TtlConcurrentAdvice {
                     protected void before(Advice advice) throws Throwable {
                         // 包装成ttl
                         final Object[] parameterArray = advice.getParameterArray();
+                        final Class<?>[] parameterTypeArray = advice.getBehavior().getParameterTypes();
                         if (parameterArray == null || parameterArray.length < 1) {return;}
                         if (parameterArray[0] instanceof com.alibaba.ttl.TtlEnhanced) {return;}
-                        if (parameterArray[0] instanceof Runnable) {
-                            parameterArray[0] = TtlRunnable.get((Runnable)parameterArray[0]);
+                        Class<?> parameter0Type = parameterTypeArray[0];
+                        if (parameter0Type.isAssignableFrom(Runnable.class)) {
+                            parameterArray[0] = TtlRunnable.get((Runnable) parameterArray[0]);
                         }
-                        if (parameterArray[0] instanceof Callable) {
-                            parameterArray[0] = TtlCallable.get((Callable)parameterArray[0]);
+                        if (parameter0Type.isAssignableFrom(Callable.class)) {
+                            parameterArray[0] = TtlCallable.get((Callable) parameterArray[0]);
                         }
                     }
                 }), Type.BEFORE);
