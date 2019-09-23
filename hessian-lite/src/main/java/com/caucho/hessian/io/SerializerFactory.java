@@ -225,7 +225,7 @@ public class SerializerFactory extends AbstractSerializerFactory
       if (_classFactory == null) {
         _classFactory = new ClassFactory(getClassLoader());
       }
-      
+
       return _classFactory;
     }
   }
@@ -705,8 +705,14 @@ public class SerializerFactory extends AbstractSerializerFactory
     else {
       try {
         //Class cl = Class.forName(type, false, getClassLoader());
-        
-        Class cl = loadSerializedClass(type);
+        // intercept hessian type here;
+        Class cl;
+        if (type.startsWith("com.caucho.hessian")) {
+          // using sandbox module classloader
+          cl = this.getClass().getClassLoader().loadClass(type);
+        } else {
+          cl = loadSerializedClass(type);
+        }
         
         deserializer = getDeserializer(cl);
       } catch (Exception e) {
