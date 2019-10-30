@@ -17,7 +17,9 @@
 
 具体实现代码见`com.alibaba.jvm.sandbox.repeater.plugin.redis.RedisPlugin`类。
 
-*由于获取接口方法名需要直接通过类来获取，所以引入了Jedis的3.0.0的库，该埋点方法基于Jedis库3.0.0版本实现。*
+> 原本方案是通过类来获取需要埋点的方法名，则引入了Jedis的3.0.0的库。而引入库会导致插件体积过大，可能会在挂载时导致OOM。
+> 于是改为代码中从上述接口类读取出方法名称后，采取硬编码的方式写入到插件中。
+> 并且对比了2.9、2.10.2、3.0.0、3.1.0等版本的对应接口，将这几个版本的接口方法都进行了埋点。理论上是兼容这几个版本的。
 
 
 ## 设计思路
@@ -53,8 +55,8 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
 
 | 验证版本    | 配套框架                                      | 验证操作                                   |
 | ----------- | --------------------------------------------- | ------------------------------------------ |
-| Jedis:2.9.0 | spring-boot-starter-data-redis :1.5.9 RELEASE | `GET`、`SET`、`SETEX`、`EXISTS`、`EVALSHA` |
-| Jedis:2.9.1 | spring-boot-starter-redis:1.3.2.RELEASE       | `GET`、`SET`、`EXISTS`、`EXPIRE`           |
+| Jedis:2.9.0 | spring-boot-starter-data-redis :1.5.9 RELEASE | `GET`、`EVALSHA`、`hgetAll` |
+| Jedis:2.9.1 | spring-boot-starter-redis:1.3.2.RELEASE       | `GET`、`SET`、`EXISTS`、`PEEXPIRE`、`DEL`  |
 | Jedis 3.1.0 | 直接调用`Jedis`、`BinaryJedis`                | `GET`、`SET`、`EXISTS`、`EXPIRE`、`DEL`    |
 
 如果使用`spring-boot-starter-data-redis`进行redis操作，需要注意在2.0以上的版本默认依赖`lettuce`作为redis的操作库，使用该插件需要调整为jedis依赖库进行操作。
