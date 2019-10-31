@@ -88,7 +88,7 @@ public class TraceContext {
      */
     public boolean inTimeSample(InvokeType invokeType) {
         // 第一级入口流量才会计算采样；非自身入口类型直接抛弃
-        if (this.invokeType == null || this.invokeType == invokeType) {
+        if (this.invokeType == null || this.invokeType.equals(invokeType)) {
             boolean sampled = isValid(traceId) && parseLong(getSampleBit(traceId)) % 10000 < ApplicationModel.instance().getSampleRate();
             this.invokeType = invokeType;
             this.sampled = sampled;

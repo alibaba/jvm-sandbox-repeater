@@ -9,17 +9,17 @@ package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 public class Behavior {
     private String classPattern;
     private String[] methodPatterns;
-    private boolean isIncludeSubClasses;
+    private boolean includeSubClasses;
 
     public Behavior(String classPattern, String... methodPatterns) {
         this.classPattern = classPattern;
         this.methodPatterns = methodPatterns;
     }
 
-    public Behavior(String classPattern, String[] methodPatterns, boolean isIncludeSubClasses) {
+    public Behavior(String classPattern, String[] methodPatterns, boolean includeSubClasses) {
         this.classPattern = classPattern;
         this.methodPatterns = methodPatterns;
-        this.isIncludeSubClasses = isIncludeSubClasses;
+        this.includeSubClasses = includeSubClasses;
     }
 
     public String getClassPattern() {
@@ -39,10 +39,10 @@ public class Behavior {
     }
 
     public boolean isIncludeSubClasses() {
-        return isIncludeSubClasses;
+        return includeSubClasses;
     }
 
     public void setIncludeSubClasses(boolean includeSubClasses) {
-        isIncludeSubClasses = includeSubClasses;
+        this.includeSubClasses = includeSubClasses;
     }
 }

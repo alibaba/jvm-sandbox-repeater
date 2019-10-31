@@ -7,54 +7,51 @@ package com.alibaba.jvm.sandbox.repeater.plugin.domain;
  *
  * @author zhaoyb1990
  */
-public interface InvokeType extends java.io.Serializable {
+public class InvokeType implements java.io.Serializable {
 
-    InvokeType HTTP = new InvokeType() {
-        @Override
-        public String name() {
-            return "http";
+    public static InvokeType HTTP = new InvokeType("http");
+
+    public static InvokeType JAVA = new InvokeType("java");
+
+    public static InvokeType MYBATIS = new InvokeType("mybatis");
+
+    public static InvokeType IBATIS = new InvokeType("ibatis");
+
+    public static InvokeType REDIS = new InvokeType("redis");
+
+    public static InvokeType DUBBO = new InvokeType("dubbo");
+
+    private String name;
+
+    public InvokeType(String name) {
+        this.name = name;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-    };
-
-    InvokeType JAVA = new InvokeType() {
-        @Override
-        public String name() {
-            return "java";
+        if (o == null || getClass() != o.getClass()) {
+            return false;
         }
-    };
+        InvokeType that = (InvokeType) o;
+        return name.equals(that.name);
+    }
 
-    InvokeType MYBATIS = new InvokeType() {
-        @Override
-        public String name() {
-            return "mybatis";
-        }
-    };
+    @Override
+    public int hashCode() {
+        return name == null ? 0 : name.hashCode();
+    }
 
-    InvokeType IBATIS = new InvokeType() {
-        @Override
-        public String name() {
-            return "ibatis";
-        }
-    };
-
-    InvokeType REDIS = new InvokeType() {
-        @Override
-        public String name() {
-            return "redis";
-        }
-    };
-
-    InvokeType DUBBO = new InvokeType() {
-        @Override
-        public String name() {
-            return "dubbo";
-        }
-    };
-
-    /**
-     * 调用类型名称
-     *
-     * @return name
-     */
-    String name();
+    @Override
+    public String toString() {
+        return "InvokeType{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

@@ -27,11 +27,11 @@ public class DubboConsumerPlugin extends AbstractInvokePluginAdapter {
     protected List<EnhanceModel> getEnhanceModels() {
         EnhanceModel onResponse = EnhanceModel.builder().classPattern("org.apache.dubbo.rpc.filter.ConsumerContextFilter$ConsumerContextListener")
                 .methodPatterns(EnhanceModel.MethodPattern.transform("onResponse"))
-                .watchTypes(Event.Type.BEFORE,Event.Type.RETURN, Event.Type.THROWS)
+                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
         EnhanceModel invoke = EnhanceModel.builder().classPattern("org.apache.dubbo.rpc.filter.ConsumerContextFilter")
                 .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
-                .watchTypes(Event.Type.BEFORE,Event.Type.RETURN, Event.Type.THROWS)
+                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
         return Lists.newArrayList(onResponse, invoke);
     }

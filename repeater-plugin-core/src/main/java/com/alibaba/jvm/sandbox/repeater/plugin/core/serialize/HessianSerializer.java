@@ -1,8 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.serialize;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.hessian.LocalDateTimeDeserializer;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.hessian.LocalDateTimeSerializer;
 import com.caucho.hessian.io.*;
 import com.google.common.collect.Maps;
 import org.kohsuke.MetaInfServices;
@@ -21,6 +19,11 @@ import java.util.Map;
 public class HessianSerializer extends AbstractSerializerAdapter {
 
     private Map<String, SerializerFactory> cached = Maps.newConcurrentMap();
+
+    private static boolean isJava8() {
+        String javaVersion = System.getProperty("java.specification.version");
+        return Double.valueOf(javaVersion) >= 1.8D;
+    }
 
     @Override
     public Type type() {
@@ -83,14 +86,14 @@ public class HessianSerializer extends AbstractSerializerAdapter {
         if (classLoader == null) {
             final SerializerFactory factory = new SerializerFactory();
             factory.setAllowNonSerializable(true);
-            registerLocalDateTime(factory);
+            registerCustomFactory(factory);
             return factory;
         }
         SerializerFactory factory = cached.get(token);
         if (factory == null) {
             factory = new SerializerFactory(classLoader);
             factory.setAllowNonSerializable(true);
-            registerLocalDateTime(factory);
+            registerCustomFactory(factory);
             cached.put(token, factory);
         }
         return factory;
@@ -104,16 +107,12 @@ public class HessianSerializer extends AbstractSerializerAdapter {
         return instance.encode(classLoader);
     }
 
-    private void registerLocalDateTime(SerializerFactory factory) {
-        // try to register hessian localDateTime
-        try {
-            Class<?> aClass = factory.getClassLoader().loadClass("java.time.LocalDateTime");
-            ExtSerializerFactory extFactory = new ExtSerializerFactory();
-            extFactory.addDeserializer(aClass, new LocalDateTimeDeserializer());
-            extFactory.addSerializer(aClass, new LocalDateTimeSerializer());
-            factory.addFactory(extFactory);
-        } catch (Throwable throwable) {
-            // ignore
+    private void registerCustomFactory(SerializerFactory factory) {
+        // try to register jdk8time
+        if (isJava8()) {
+            factory.addFactory(new Java8TimeSerializerFactory());
         }
+        // add big decimal factory
+        factory.addFactory(new BigDecimalSerializerFactory());
     }
 }
