@@ -182,7 +182,7 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
 | [ibatis-plugin](/repeater-plugins/ibatis-plugin)   |   √   |   ×   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
 | [mybatis-plugin](/repeater-plugins/mybatis-plugin) |   √   |   ×   |   √   | 201906  |[ztbsuper](https://github.com/ztbsuper)    |
 | [java-plugin](/repeater-plugins/java-plugin)       |   √   |   √   |   √   | 201906  |[zhaoyb1990](https://github.com/zhaoyb1990)|
-| [redis-plugin](/repeater-plugins/redis-plugin)     |   ×   |   ×   |   ×   | 预期7月底|                      NA/NA                |
+| [redis-plugin](/repeater-plugins/redis-plugin)     |   √   |   ×   |   √   | 201910  |[ElesG](https://github.com/ElesG)          |
 
 ## 相关文档
 
