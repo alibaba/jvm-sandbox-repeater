@@ -134,7 +134,7 @@ tail -200f ~/logs/sandbox/repeater/repeater.log
 
 #### step4 关于回放
 
-#### 方式一：利用模块暴露的http接口发起回放
+#### 方式一：利用模块暴露的http接口(Hessian)发起回放
 
 模块暴露了回放接口，用于服务端发起远程回放，具体如下：
 
@@ -146,7 +146,19 @@ params		: _data
 > 其中 port 是jvm-sandbox启动时候绑定的port，可以在attach sandbox时增加`-P 12580`指定，或者执行`~/sandbox/bin/sandbox.sh -p {pid} -v` 查看`SERVER_PORT`
 > _data 是由[RepeatMeta](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/RepeatMeta.java)经过hessian序列化之后的值，具体调用方式参见[AbstractRecordService](/repeater-console/repeater-console-service/src/main/java/com/alibaba/repeater/console/service/impl/AbstractRecordService.java) 和[RecordFacadeApi](/repeater-console/repeater-console-start/src/main/java/com/alibaba/repeater/console/start/controller/RecordFacadeApi.java)
 
-#### 方式二：针对HTTP接口，可以像`Slogan Demo`一样进行参数或者Header透传方式进行MOCK回放
+#### 方式二：利用模块暴露的http接口(JSON)发起回放
+
+模块暴露了回放接口，用于服务端发起远程回放，具体如下：
+
+```shell
+url			: http://ip:port/sandbox/default/module/http/repeater/repeatWithJson
+params		: _data
+```
+
+> 其中 port 是jvm-sandbox启动时候绑定的port，可以在attach sandbox时增加`-P 12580`指定，或者执行`~/sandbox/bin/sandbox.sh -p {pid} -v` 查看`SERVER_PORT`
+> _data 是由[RepeatMeta](/repeater-plugin-api/src/main/java/com/alibaba/jvm/sandbox/repeater/plugin/domain/RepeatMeta.java)经过JSON序列化之后的值
+
+#### 方式三：针对HTTP接口，可以像`Slogan Demo`一样进行参数或者Header透传方式进行MOCK回放
 
 > 针对http接口，插件中特意针对透传`Repeat-TraceId-X`的参数或者Header进行识别，如果有录制数据，则会拉取对应录制记录进行MOCK回放；因此针对http接口如果录制成功，则可以在请求参数或者Header中透传`Repeat-TraceId-X`即可实现MOCK回放
 

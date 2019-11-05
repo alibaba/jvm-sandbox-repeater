@@ -100,7 +100,7 @@ public class DefaultEventListener implements EventListener {
             /*
              * processor filter
              */
-            if (processor != null && processor.ignoreEvent((InvokeEvent)event)){
+            if (processor != null && processor.ignoreEvent((InvokeEvent) event)) {
                 if (log.isDebugEnabled()) {
                     log.debug("event is ignore by processor,type={},event={},processor={}", invokeType, event, processor);
                 }
@@ -152,7 +152,7 @@ public class DefaultEventListener implements EventListener {
             processor.doMock(event, entrance, invokeType);
             return;
         }
-        Invocation invocation = new Invocation();
+        Invocation invocation = initInvocation(event);
         invocation.setStart(System.currentTimeMillis());
         invocation.setTraceId(Tracer.getTraceId());
         invocation.setIndex(entrance ? 0 : SequenceGenerator.generate(Tracer.getTraceId()));
@@ -174,6 +174,17 @@ public class DefaultEventListener implements EventListener {
             log.error("Error occurred serialize", e);
         }
         RecordCache.cacheInvocation(event.invokeId, invocation);
+    }
+
+    /**
+     * 初始化invocation
+     * 放开给插件重写，可以初始化自定义的调用描述类型，模块不感知插件的类型
+     *
+     * @param beforeEvent before事件
+     * @return 一次调用
+     */
+    protected Invocation initInvocation(BeforeEvent beforeEvent) {
+        return new Invocation();
     }
 
     /**

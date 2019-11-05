@@ -1,8 +1,6 @@
-package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
+package com.alibaba.jvm.sandbox.repeater.plugin.jpa;
 
 import com.alibaba.jvm.sandbox.api.event.Event;
-import com.alibaba.jvm.sandbox.api.listener.EventListener;
-import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractInvokePluginAdapter;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.EnhanceModel;
@@ -14,47 +12,56 @@ import org.kohsuke.MetaInfServices;
 import java.util.List;
 
 /**
- * {@link DubboProviderPlugin} Apache dubbo provider
+ * {@link SpringDataJpaPlugin} Hibernate插件
  * <p>
- * 拦截ContextFilter$ContextListener#onResponse进行录制
- * </p>
  *
  * @author zhaoyb1990
  */
 @MetaInfServices(InvokePlugin.class)
-public class DubboProviderPlugin extends AbstractInvokePluginAdapter {
+public class SpringDataJpaPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected List<EnhanceModel> getEnhanceModels() {
-        EnhanceModel onResponse = EnhanceModel.builder().classPattern("org.apache.dubbo.rpc.filter.ContextFilter$ContextListener")
-                .methodPatterns(EnhanceModel.MethodPattern.transform("onResponse"))
+        EnhanceModel.MethodPattern[] methodPatterns = EnhanceModel.MethodPattern.transform(
+                // create
+                "save",
+                // update
+                "saveAndFlush",
+                // retrieve
+                "get",
+                "getOne",
+                "findOne",
+                "findAll",
+                "count",
+                "exists",
+                // delete
+                "delete"
+        );
+        EnhanceModel enhanceModel = EnhanceModel.builder()
+                .classPattern("org.springframework.data.jpa.repository.support.SimpleJpaRepository")
+                .methodPatterns(methodPatterns)
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        return Lists.newArrayList(onResponse);
+        return Lists.newArrayList(enhanceModel);
     }
 
     @Override
     protected InvocationProcessor getInvocationProcessor() {
-        return new DubboProviderInvocationProcessor(getType());
+        return new SpringDataJpaProcessor(getType());
     }
 
     @Override
     public InvokeType getType() {
-        return InvokeType.DUBBO;
+        return InvokeType.JPA;
     }
 
     @Override
     public String identity() {
-        return "dubbo-provider";
+        return "spring-data-jpa-plugin";
     }
 
     @Override
     public boolean isEntrance() {
-        return true;
-    }
-
-    @Override
-    protected EventListener getEventListener(InvocationListener listener) {
-        return new DubboEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
+        return false;
     }
 }

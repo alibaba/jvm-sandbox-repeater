@@ -188,5 +188,12 @@ public class PluginClassLoader extends URLClassLoader {
             return false;
         }
 
+        @Override
+        public String toString() {
+            return "Routing{" +
+                    "regexExpresses=" + regexExpresses +
+                    ", classLoader=" + classLoader +
+                    '}';
+        }
     }
 }

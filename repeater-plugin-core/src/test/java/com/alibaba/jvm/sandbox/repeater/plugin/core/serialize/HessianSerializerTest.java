@@ -1,7 +1,7 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.serialize;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * {@link }

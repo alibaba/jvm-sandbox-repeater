@@ -73,7 +73,7 @@ public class ApplicationModel {
     /**
      * 异常阈值检测
      *
-     * @param throwable 异常累心
+     * @param throwable 异常类型
      */
     public void exceptionOverflow(Throwable throwable) {
         if (ea.exceptionOverflow(throwable, config == null ? 1000 : config.getExceptionThreshold())) {

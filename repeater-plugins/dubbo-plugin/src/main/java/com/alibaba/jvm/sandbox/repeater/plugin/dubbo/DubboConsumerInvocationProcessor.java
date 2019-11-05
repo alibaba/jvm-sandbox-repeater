@@ -15,14 +15,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * {@link DubboProcessor}
+ * {@link DubboConsumerInvocationProcessor}
  * <p>
  * dubbo consumer调用处理器，需要重写组装identity 和 组装request
  * </p>
  *
  * @author zhaoyb1990
  */
-class DubboProcessor extends DefaultInvocationProcessor {
+class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
 
     private static final String ON_RESPONSE = "onResponse";
 
@@ -30,21 +30,33 @@ class DubboProcessor extends DefaultInvocationProcessor {
 
     private Set<Integer> ignoreInvokeSet = new HashSet<Integer>(128);
 
-    DubboProcessor(InvokeType type) {
+    DubboConsumerInvocationProcessor(InvokeType type) {
         super(type);
     }
 
     @Override
     public Identity assembleIdentity(BeforeEvent event) {
-        // interfaceName
-        Object invocation = event.argumentArray[2];
+        Object invoker;
+        Object invocation;
+        if (ON_RESPONSE.equals(event.javaMethodName)) {
+            // for record identity assemble
+            // onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {}
+            invoker = event.argumentArray[1];
+            invocation = event.argumentArray[2];
+        } else {
+            // for repeater identity assemble
+            // invoke(Invoker<?> invoker, Invocation invocation)
+            invoker = event.argumentArray[0];
+            invocation = event.argumentArray[1];
+        }
 
         try {
             // methodName
             String methodName = (String) MethodUtils.invokeMethod(invocation, "getMethodName");
             Class<?>[] parameterTypes = (Class<?>[]) MethodUtils.invokeMethod(invocation, "getParameterTypes");
-            String interfaceName = (String) MethodUtils.invokeMethod(invocation, "getAttachment", "interface");
-            return new Identity(InvokeType.DUBBO.name(), interfaceName, getMethodDesc(methodName, parameterTypes), null);
+            // interfaceName
+            String  interfaceName = ((Class)MethodUtils.invokeMethod(invoker, "getInterface")).getCanonicalName();
+            return new Identity(InvokeType.DUBBO.name(), interfaceName, getMethodDesc(methodName, parameterTypes), getExtra());
         } catch (Exception e) {
             // ignore
             LogUtil.error("error occurred when assemble dubbo request", e);
