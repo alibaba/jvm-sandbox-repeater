@@ -151,7 +151,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
      *
      * @return extra map
      */
-    protected Map<String, String> getExtra() {
+    protected Map<String, String>  getExtra() {
         return null;
     }
 

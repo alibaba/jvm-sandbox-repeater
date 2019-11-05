@@ -47,7 +47,8 @@
   ],
   "repeatIdentities": [
     "java",
-    "http"
+    "http",
+    "dubbo"
   ],
   "sampleRate": 10000,
   "useTtl": true

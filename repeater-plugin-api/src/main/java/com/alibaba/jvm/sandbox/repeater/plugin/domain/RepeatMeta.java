@@ -42,6 +42,11 @@ public class RepeatMeta implements java.io.Serializable {
      */
     private String datasource;
 
+    /**
+     * 调用超时时间
+     */
+    private Integer timeout = 30000;
+
     private Map<String,String> extension = new HashMap<String, String>();
 
     public String getAppName() {
@@ -106,5 +111,13 @@ public class RepeatMeta implements java.io.Serializable {
 
     public void setExtension(Map<String, String> extension) {
         this.extension = extension;
+    }
+
+    public Integer getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(Integer timeout) {
+        this.timeout = timeout;
     }
 }

@@ -56,7 +56,6 @@ public class RecordWrapper {
     public RecordModel reTransform() {
         RecordModel recordModel = new RecordModel();
         recordModel.setTimestamp(this.timestamp);
-        recordModel.setTimestamp(this.timestamp);
         recordModel.setTraceId(this.traceId);
         recordModel.setAppName(this.appName);
         recordModel.setEnvironment(this.environment);
