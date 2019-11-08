@@ -9,7 +9,7 @@ import com.google.common.cache.LoadingCache;
 
 /**
  * <p>
- * 序列化生成器，利用atomic原子性保证子调用序列在{@link TraceContext#traceId}下唯一
+ * 序列化生成器，利用atomic原子性保证子调用序列在{@link TraceContext#getTraceId()}下唯一
  *
  * @author zhaoyb1990
  */
