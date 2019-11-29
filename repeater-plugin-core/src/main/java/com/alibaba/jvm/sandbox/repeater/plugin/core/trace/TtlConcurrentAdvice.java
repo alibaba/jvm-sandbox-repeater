@@ -75,7 +75,8 @@ public class TtlConcurrentAdvice {
                             parameterArray[0] = TtlCallable.get((Callable) parameterArray[0]);
                         }
                     }
-                }), Type.BEFORE);
+                    // fix issue #41
+                }), Type.BEFORE, Type.RETURN, Type.THROWS);
         }
     }
 }

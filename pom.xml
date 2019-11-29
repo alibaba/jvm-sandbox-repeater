@@ -35,6 +35,7 @@
         <module>repeater-client</module>
         <module>repeater-console</module>
         <module>hessian-lite</module>
+        <module>repeater-aide</module>
     </modules>
 
     <developers>
@@ -62,6 +63,11 @@
             <dependency>
                 <groupId>com.alibaba.jvm.sandbox</groupId>
                 <artifactId>repeater-plugin-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.jvm.sandbox</groupId>
+                <artifactId>repeater-aide</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

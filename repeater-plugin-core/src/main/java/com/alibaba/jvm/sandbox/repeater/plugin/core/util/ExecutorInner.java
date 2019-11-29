@@ -18,7 +18,7 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
  */
 public class ExecutorInner {
 
-    private static ExecutorService executor = new ThreadPoolExecutor(8,
+    private static ExecutorService executor = new ThreadPoolExecutor( Runtime.getRuntime().availableProcessors() - 1,
         4 * Runtime.getRuntime().availableProcessors(),
         30L, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(4096),
         new BasicThreadFactory.Builder().namingPattern("repeater-common-pool-%d").build(),
