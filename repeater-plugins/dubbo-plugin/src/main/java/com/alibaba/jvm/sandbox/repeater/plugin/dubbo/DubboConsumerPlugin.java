@@ -1,6 +1,8 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 
 import com.alibaba.jvm.sandbox.api.event.Event;
+import com.alibaba.jvm.sandbox.api.listener.EventListener;
+import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractInvokePluginAdapter;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.EnhanceModel;
@@ -14,7 +16,7 @@ import java.util.List;
 /**
  * {@link DubboConsumerPlugin} Apache dubbo consumer 插件
  * <p>
- * 拦截ConsumerContextFilte$ConsumerContextListenerr#onResponse行录制
+ * 拦截ConsumerContextFilter$ConsumerContextListenerr#onResponse行录制
  * 拦截ConsumerContextFilter#invoke进行MOCK
  * </p>
  *
@@ -38,7 +40,7 @@ public class DubboConsumerPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected InvocationProcessor getInvocationProcessor() {
-        return new DubboProcessor(getType());
+        return new DubboConsumerInvocationProcessor(getType());
     }
 
     @Override
@@ -54,5 +56,10 @@ public class DubboConsumerPlugin extends AbstractInvokePluginAdapter {
     @Override
     public boolean isEntrance() {
         return false;
+    }
+
+    @Override
+    protected EventListener getEventListener(InvocationListener listener) {
+        return new DubboEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
     }
 }

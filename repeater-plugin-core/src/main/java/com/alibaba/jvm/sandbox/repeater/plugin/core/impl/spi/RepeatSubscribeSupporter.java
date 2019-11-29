@@ -11,6 +11,8 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.SubscribeSupporter;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
@@ -43,6 +45,8 @@ public class RepeatSubscribeSupporter implements SubscribeSupporter<RepeatEvent>
         return "repeat-register";
     }
 
+    @AllowConcurrentEvents
+    @Subscribe
     @Override
     public void onSubscribe(RepeatEvent repeatEvent) {
         Map<String, String> req = repeatEvent.getRequestParams();

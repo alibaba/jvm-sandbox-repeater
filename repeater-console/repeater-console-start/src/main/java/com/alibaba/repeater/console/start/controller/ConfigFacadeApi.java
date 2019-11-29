@@ -26,9 +26,9 @@ public class ConfigFacadeApi {
         // 自己存配置；目前直接Mock了一份
         RepeaterConfig config = new RepeaterConfig();
         List<Behavior> behaviors = Lists.newArrayList();
-        config.setPluginIdentities(Lists.newArrayList("http", "java-entrance", "java-subInvoke", "mybatis", "ibatis"));
+        config.setPluginIdentities(Lists.newArrayList( "java-entrance", "java-subInvoke", "mybatis", "ibatis", "dubbo-consumer", "dubbo-provider"));
         // 回放器
-        config.setRepeatIdentities(Lists.newArrayList("java", "http"));
+        config.setRepeatIdentities(Lists.newArrayList("java", "http", "dubbo"));
         // 白名单列表
         config.setHttpEntrancePatterns(Lists.newArrayList("^/regress/.*$"));
         // java入口方法

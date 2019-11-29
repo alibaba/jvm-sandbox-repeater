@@ -15,11 +15,15 @@ import org.kohsuke.MetaInfServices;
 import java.lang.reflect.Method;
 
 /**
- * Java类型入口回放器；在sandbox两种挂载模式下工作条件不同
+ * Java类型入口回放器；在sandbox两种挂载模式下工作条件不同（因为无法获取到运行实例）
  * <p>
  * agent启动 ：能够回放spring容器中的任何bean实例
  * <p>
  * attach启动：需要引入repeater-client并在spring中注入{@code SpringContextAware}
+ *
+ * or
+ *
+ * 兜底逻辑会使用{@link JavaInstanceCache} 进行实例获取
  * <p>
  *
  * @author zhaoyb1990
@@ -30,13 +34,16 @@ public class JavaRepeater extends AbstractRepeater {
     @Override
     protected Object executeRepeat(RepeatContext context) throws Exception {
         Invocation invocation = context.getRecordModel().getEntranceInvocation();
+        if (!getType().equals(invocation.getType())) {
+            throw new RepeatException("invoke type miss match, required invoke type is: " + invocation.getType());
+        }
         Identity identity = invocation.getIdentity();
         Object bean = SpringContextAdapter.getBeanByType(identity.getLocation());
         if (bean == null) {
-            throw new RepeatException("no bean found in context, className=" + identity.getLocation());
+            bean = JavaInstanceCache.getInstance(identity.getLocation());
         }
-        if (!getType().equals(invocation.getType())) {
-            throw new RepeatException("invoke type miss match, required invoke type is: " + invocation.getType());
+        if (bean == null) {
+            throw new RepeatException("no bean found in context, className=" + identity.getLocation());
         }
         String[] array = identity.getEndpoint().split("~");
         // array[0]=/methodName

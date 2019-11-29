@@ -30,8 +30,8 @@ public interface SubscribeSupporter<E extends SubscribeEvent> {
 
     /**
      * 接收订阅事件处理
+     * <p>
+     * 实现类需要加上{@link Subscribe}注解 和{@link AllowConcurrentEvents}(如果要支持并行)
      */
-    @AllowConcurrentEvents
-    @Subscribe
     void onSubscribe(E event);
 }
