@@ -5,6 +5,9 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.Regress;
 import com.alibaba.repeater.console.service.RegressService;
 import com.google.common.collect.Lists;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +29,12 @@ public class RegressServiceImpl implements RegressService {
     private String[] partners = new String[]{"韩梅梅", "李莉", "吉姆", "小红", "张三", "李四", "王麻子"};
     private String[] slogans = new String[]{"JAVA", "Python", "PHP", "C#", "C++", "Javascript", "GO"};
 
+    private CacheManager cacheManager;
+
+    {
+        cacheManager = CacheManager.create(RegressServiceImpl.class.getClassLoader().getResourceAsStream("ehcache.xml"));
+    }
+
     @Override
     public RepeaterResult<Regress> getRegress(String name) {
         return RepeaterResult.builder()
@@ -40,12 +49,7 @@ public class RegressServiceImpl implements RegressService {
         List<Regress> regresses = Lists.newArrayList();
         for (int i = 0; i < count; i++) {
             final int index = i;
-            Future<Regress> future = ExecutorInner.submit(new Callable<Regress>() {
-                @Override
-                public Regress call() throws Exception {
-                    return getRegressInner(name, index);
-                }
-            });
+            Future<Regress> future = ExecutorInner.submit(() -> getRegressInner(name, index));
             try {
                 regresses.add(future.get());
             } catch (Exception e) {
@@ -72,7 +76,30 @@ public class RegressServiceImpl implements RegressService {
         return slogans[sequence.getAndIncrement() % slogans.length] + "是世界上最好的语言!";
     }
 
+    @Override
+    public RepeaterResult<Regress> getRegressWithCache(String name) {
+        Cache cache = cacheManager.getCache("regressCache");
+        // priority use of the cache data
+        Element element = cache.get(name);
+        Regress regress;
+        if (element == null) {
+            regress = getRegressInternal(name, 1);
+            cache.put(new Element(name, regress));
+        } else {
+            regress = (Regress) element.getObjectValue();
+        }
+        return RepeaterResult.builder()
+                .data(regress)
+                .success(true)
+                .message("operate success")
+                .build();
+    }
+
     private Regress getRegressInner(String name, Integer index) {
+        return getRegressInternal(name, index);
+    }
+
+    private Regress getRegressInternal(String name, Integer index) {
         Regress regress = new Regress();
         regress.setIndex(index + sequence.incrementAndGet());
         regress.setName(name);

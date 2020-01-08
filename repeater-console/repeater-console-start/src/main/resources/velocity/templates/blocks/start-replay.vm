@@ -1,0 +1,47 @@
+<div class="modal fade show" id="start-replay-modal" data-easein="shrinkIn" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="width: 600px">
+        <div class="modal-content bg-primary">
+            <div class="modal-header">
+                <h4 class="modal-title">开始回放 </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12 col-xs-12">
+                        <form class="form-inline" id="startReplayForm" method="post">
+                            <div class="form-group" id="machine-select-group" style="display: none">
+                                <label for="scenario-name" class="col-md-3 control-label">机器</label>
+                                <div class="col-md-8">
+                                    <select type="text" class="form-control" name="ip" id="machine-select" autocomplete="off" style="width: 300px">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" id="machine-help" style="display: none">
+                                <label for="scenario-name" class="col-md-3 control-label" style="width: 100px">机器</label>
+                                <div class="col-md-8">
+                                    <label class="control-label" style="width: 300px">没有可回放的机器</label>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:10px">
+                                <label for="scenario-name" class="col-md-3 control-label" style="width: 100px">MOCK</label>
+                                <div class="col-md-8">
+                                    <div style="width: 280px">
+                                        <input class="form-control" type="radio" name="mock" value="true" checked> 开
+                                        <input class="form-control" type="radio" name="mock" value="false" > 关
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="traceId" id="replay-traceId" />
+                            <input type="hidden" name="appName" id="replay-appName" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light pull-left" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-outline-light" id="start-replay-btn">执行</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

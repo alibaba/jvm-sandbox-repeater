@@ -34,7 +34,10 @@ public class PropertyUtil {
             InputStream is = new FileInputStream(new File(PathUtils.getConfigPath() + "/repeater.properties"));
             properties.load(is);
         } catch (Exception e) {
-            throw new RuntimeException("load repeater-core.properties failed", e);
+            // cause this class will be load in repeater console, use this hard code mode to solve compatibility problem.
+            if (PropertyUtil.class.getClassLoader().getClass().getCanonicalName().contains("sandbox")) {
+                throw new RuntimeException("load repeater-core.properties failed", e);
+            }
         }
     }
 

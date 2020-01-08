@@ -1,0 +1,35 @@
+<div class="modal fade show" id="start-install-modal" data-easein="shrinkIn" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="width: 600px">
+        <div class="modal-content bg-primary">
+            <div class="modal-header">
+                <h4 class="modal-title">安装模块 </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-12">
+                        <form class="form-inline" id="startInstallForm" method="post">
+                            <div class="form-group" id="machine-select-group" >
+                                <label for="scenario-name" class="col-3 control-label">应用</label>
+                                <div class="col-8">
+                                    <input type="text" class="form-control form-control-sm" name="appName" autocomplete="off" placeholder="appName" style="width: 300px">
+                                </div>
+                            </div>
+                            <div class="form-group" id="machine-select-group" style="margin-top: 10px">
+                                <label for="scenario-name" class="col-3 control-label">机器</label>
+                                <div class="col-8">
+                                    <input type="text" class="form-control form-control-sm" name="ip" autocomplete="off" placeholder="ip" style="width: 300px">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light pull-left" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-outline-light" id="start-install-btn">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
