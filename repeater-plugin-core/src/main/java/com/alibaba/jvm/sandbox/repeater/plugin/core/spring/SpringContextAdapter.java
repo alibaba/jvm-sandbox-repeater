@@ -20,9 +20,7 @@ public class SpringContextAdapter {
 
     private final static String SPRING_CONTAINER_CLASS = "com.alibaba.repeater.client.SpringContextContainer";
 
-    private static Class<?> springContainerClass;
-
-    private final static Object mutex = new Object();
+    private volatile static Class<?> springContainerClass;
 
     /**
      * 根据beanName获取bean
@@ -94,9 +92,9 @@ public class SpringContextAdapter {
      *
      * @return SpringContextContainer类
      */
-    private synchronized static Class<?> getSpringContainerClass() {
+    private static Class<?> getSpringContainerClass() {
         if (springContainerClass == null) {
-            synchronized (mutex) {
+            synchronized (SpringContextAdapter.class) {
                 if (springContainerClass == null) {
                     springContainerClass = ClassloaderBridge.instance().findClassInstance(SPRING_CONTAINER_CLASS);
                 }
