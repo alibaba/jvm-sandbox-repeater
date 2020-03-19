@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * {@link SocketIOPlugin} netty-socketio的java插件
+ * https://github.com/mrniko/netty-socketio
  * <p>
  * 拦截{@code com.corundumstudio.socketio.namespace.Namespace}包下面的event事件
  * 拦截{@code com.corundumstudio.socketio.transport.NamespaceClient}包下面的调用方法
@@ -33,7 +34,7 @@ public class SocketIOPlugin extends AbstractInvokePluginAdapter {
                         "onConnect",
                         "onDisconnect"
                 ))
-                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
+                .watchTypes(Event.Type.BEFORE, Event.Type.THROWS)
                 .build();
 
         EnhanceModel namespaceClient = EnhanceModel.builder()
@@ -43,7 +44,7 @@ public class SocketIOPlugin extends AbstractInvokePluginAdapter {
                         "leaveRoom",
                         "sendEvent"
                 ))
-                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
+                .watchTypes(Event.Type.BEFORE, Event.Type.THROWS)
                 .build();
         return Lists.newArrayList(namespace, namespaceClient);
     }
