@@ -57,7 +57,7 @@ public class SocketIOPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     public InvokeType getType() {
-        return InvokeType.REDIS;
+        return InvokeType.SOCKETIO;
     }
 
     @Override
