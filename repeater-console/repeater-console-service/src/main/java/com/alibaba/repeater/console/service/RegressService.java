@@ -44,4 +44,11 @@ public interface RegressService {
      * @return
      */
     String slogan();
+
+    /**
+     * 从缓存中获取regress对象
+     * @param name 名字
+     * @return regress对象
+     */
+    RepeaterResult<Regress> getRegressWithCache(String name);
 }

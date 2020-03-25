@@ -11,6 +11,9 @@ public class Behavior {
     private String[] methodPatterns;
     private boolean includeSubClasses;
 
+    public Behavior() {
+    }
+
     public Behavior(String classPattern, String... methodPatterns) {
         this.classPattern = classPattern;
         this.methodPatterns = methodPatterns;

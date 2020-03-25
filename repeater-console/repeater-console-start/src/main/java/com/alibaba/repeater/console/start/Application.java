@@ -1,9 +1,10 @@
 package com.alibaba.repeater.console.start;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * <p>
@@ -11,8 +12,9 @@ import org.springframework.context.annotation.ComponentScan;
  * @author zhaoyb1990
  */
 @SpringBootApplication
-@MapperScan("com.alibaba.repeater.console.dal.mapper")
-@ComponentScan("com.alibaba.repeater.console")
+@EnableJpaRepositories(basePackages = "com.alibaba.repeater.console.dal.repository")
+@EntityScan("com.alibaba.repeater.console.dal.model")
+@ComponentScan("com.alibaba.repeater.console.*")
 public class Application {
 
     public static void main(String[] args) {

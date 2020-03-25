@@ -2,6 +2,8 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper;
 
 import java.util.List;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.core.util.MethodSignatureParser;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.HttpInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 
@@ -43,7 +45,11 @@ public class RecordWrapper {
         this.environment = recordModel.getEnvironment();
         this.host = recordModel.getHost();
         this.traceId = recordModel.getTraceId();
-        this.entranceDesc = recordModel.getEntranceInvocation().getIdentity().getUri();
+        if (recordModel.getEntranceInvocation() instanceof HttpInvocation) {
+            this.entranceDesc = ((HttpInvocation)recordModel.getEntranceInvocation()).getRequestURL();
+        } else {
+            this.entranceDesc = recordModel.getEntranceInvocation().getIdentity().getUri();
+        }
         this.entranceInvocation = recordModel.getEntranceInvocation();
         this.subInvocations = recordModel.getSubInvocations();
     }

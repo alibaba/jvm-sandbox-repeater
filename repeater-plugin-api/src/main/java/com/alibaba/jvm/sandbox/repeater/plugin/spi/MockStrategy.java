@@ -37,7 +37,12 @@ public interface MockStrategy {
         /**
          * 默认回放策略，阻断所有子调用
          */
-        DEFAULT("default")
+        DEFAULT("default"),
+
+        /**
+         * 对象对比
+         */
+        OBJECT_DFF("object_dff")
         ;
 
         private String type;

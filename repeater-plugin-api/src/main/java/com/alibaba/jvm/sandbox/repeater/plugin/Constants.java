@@ -39,6 +39,16 @@ public class Constants {
     public static final String REPEAT_STANDALONE_MODE = "repeat.standalone.mode";
 
     /**
+     * 是否开启spring advice的拦截
+     */
+    public static final String REPEAT_SPRING_ADVICE_SWITCH = "repeat.spring.advice.switch";
+
+    /**
+     * 模块心跳地址
+     */
+    public static final String REPEAT_HEARTBEAT_URL= "repeat.heartbeat.url";
+
+    /**
      * 插件自有类正则
      */
     public static final String[] PLUGIN_CLASS_PATTERN = new String[]{

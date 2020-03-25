@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="/favorite.ico" type="image/x-icon"/>
+    <link rel=”icon” href="/favorite.ico" type="image/x-icon"/>
+    <link rel="bookmark" href="/favorite.ico" type="image/x-icon"/>
+    <title>在线模块 - Repeater</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition sidebar-mini ">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-dark">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+
+        <!-- Right navbar links -->
+        <ul class="navbar-nav ml-auto">
+        </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!-- Brand Logo -->
+        <a href="#" class="brand-link">
+            <img src="/dist/img/RepeaterLogo.ico"
+                 alt="AdminLTE Logo"
+                 class="brand-image img-circle elevation-3"
+                 style="opacity: .8">
+            <span class="brand-text font-weight-light">Phoenix</span>
+        </a>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <!-- Add icons to the links using the .nav-icon class
+                         with font-awesome or any other icon font library -->
+                    <li class="nav-item">
+                        <a href="/online/search.htm"  class="nav-link">
+                            <i class="nav-icon fa fa-database"></i>
+                            <p>
+                                在线流量
+                                <span class="right badge badge-success">New</span>
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/config/list.htm"  class="nav-link">
+                            <i class="nav-icon fa fa-cogs"></i>
+                            <p>
+                                配置管理
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"  class="nav-link active">
+                            <i class="nav-icon fa fa-heartbeat"></i>
+                            <p>
+                                在线模块
+                            </p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>在线模块</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">首页</a></li>
+                            <li class="breadcrumb-item active">在线模块</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-blue card-outline">
+                        <div class="card-header border-0">
+                            <h5 class="card-title text-blue">
+                                在线模块 <i class="fa fa-heartbeat"></i>
+                            </h5>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-primary btn-sm float-right"
+                                        data-loading-text="searching" id="btn-install">
+                                    安装模块
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form class="form-inline" method="get" action="list.htm">
+                                        <div class="form-group" style="margin-left:10px">
+                                            <label for="appName">应用名:</label>
+                                            <input type="text" class="form-control" placeholder="appName" name="appName"
+                                                   value="$!requestParams.appName" autocomplete="off"
+                                                   data-toggle="tooltip"
+                                                   title="appName" style="width: 210px;margin-left:10px">
+                                        </div>
+                                        <div class="form-group" style="margin-left: 10px">
+                                            <label for="TraceId">机器IP:</label>
+                                            <input type="text" class="form-control" placeholder="ip" name="ip"
+                                                   value="$!requestParams.ip" autocomplete="off"
+                                                   data-toggle="tooltip"
+                                                   title="ip" style="width: 210px;margin-left:10px">
+                                        </div>
+                                        <div class="form-group" style="margin-left: 20px">
+                                            <button type="submit" class="btn btn-primary"
+                                                    data-loading-text="searching" id="search-online-btn">
+                                                查询 <i class="fa fa-search icon-on-right bigger"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <table class="table table-hover table-striped" style="word-break: break-all;">
+                                #if($pagerWrapper.content && $pagerWrapper.content.size() > 0)
+                                    <thead>
+                                    <tr>
+                                        <th>应用名</th>
+                                        <th>环境</th>
+                                        <th>机器IP</th>
+                                        <th>端口号</th>
+                                        <th>版本号</th>
+                                        <th>状态</th>
+                                        <th>心跳时间</th>
+                                        <th width="100px">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        #foreach($data in $pagerWrapper.content)
+                                        <tr>
+                                            <td style="vertical-align: middle">$!data.appName</td>
+                                            <td style="vertical-align: middle">$!{data.environment}</td>
+                                            <td style="vertical-align: middle">$!data.ip</td>
+                                            <td style="vertical-align: middle">$!{data.port}</td>
+                                            <td style="vertical-align: middle">$!{data.version}</td>
+                                            <td style="vertical-align: middle">
+                                                #if($!{data.status.desc}=='已激活')
+                                                    <span class="badge badge-success">$!{data.status.desc}</span>
+                                                #else
+                                                    <span class="badge badge-warning">$!{data.status.desc}</span>
+                                                #end
+                                            </td>
+                                            <td style="vertical-align: middle">$!{data.gmtModified}</td>
+                                            <td style="vertical-align: middle">
+                                                #if($!{data.status.desc}=='已激活')
+                                                    <button class="btn btn-warning btn-xs btn-frozen" data-toggle="tooltip"
+                                                            title="冻结" data-ip="$!{data.ip}"
+                                                            data-app="$!{data.appName}">冻结
+                                                    </button>
+                                                #else
+                                                    <button class="btn btn-success btn-xs btn-active" data-toggle="tooltip"
+                                                            title="激活模块" data-ip="$!{data.ip}"
+                                                            data-app="$!{data.appName}">激活
+                                                    </button>
+                                                #end
+                                                <button class="btn btn-primary btn-xs btn-reload" data-toggle="tooltip"
+                                                        title="刷新插件" data-ip="$!{data.ip}"
+                                                        data-app="$!{data.appName}">刷新
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        #end
+                                    </tbody>
+                                #else
+                                    <h5 style="padding-left: 10px;margin-top: 20px"> 没有心跳信息</h5>
+                                #end
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            #parse("/blocks/pager.vm")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer class="main-footer">
+        <div class="float-right d-none d-sm-block">
+            <b>Version</b> 3.0.1
+        </div>
+        <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights
+        reserved.
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="/dist/js/demo.js"></script>
+    #parse("/blocks/fakeloader.vm")
+    #parse("/blocks/install-module.vm")
+<script src="/app/js/app.js" charset="UTF-8"></script>
+<script type="application/javascript">
+    jQuery(function($){
+        $(".btn-active").on('click',function () {
+            var appName = $(this).attr('data-app');
+            var ip = $(this).attr('data-ip');
+            innerPost("/module/active.json", {'appName': appName,'ip':ip}, function (response) {
+                if (response.success) {
+                    notice(response.message, response.success)
+                    setTimeout('window.location.reload()', 1000)
+                } else {
+                    notice(response.message, response.success)
+                }
+            });
+        })
+        $(".btn-frozen").on('click',function () {
+            var appName = $(this).attr('data-app');
+            var ip = $(this).attr('data-ip');
+            innerPost("/module/frozen.json", {'appName': appName,'ip':ip}, function (response) {
+                if (response.success) {
+                    notice(response.message, response.success)
+                    setTimeout('window.location.reload()', 1000)
+                } else {
+                    notice(response.message, response.success)
+                }
+            });
+        })
+        $(".btn-reload").on('click',function () {
+            var appName = $(this).attr('data-app');
+            var ip = $(this).attr('data-ip');
+            innerPost("/module/reload.json", {'appName': appName,'ip':ip}, function (response) {
+                if (response.success) {
+                    notice(response.message, response.success)
+                    setTimeout('window.location.reload()', 1000)
+                } else {
+                    notice(response.message, response.success)
+                }
+            });
+        })
+        
+        $("#btn-install").on("click", function () {
+            var modal = $('#start-install-modal');
+            modal.on('shown.bs.modal', function () {
+                $(this).css('display', 'block');
+                var modalHeight = $(window).height() / 2 - $('#start-install-modal .modal-dialog').height() / 2;
+                $(this).find('.modal-dialog').css({
+                    'margin-top': modalHeight
+                });
+            });
+            modal.modal('show')
+        })
+
+        $("#start-install-btn").on('click', function () {
+            showLoading(10);
+            $("#startInstallForm").ajaxSubmit({
+                type: "post",
+                url: "//" + host + "/module/install.json",
+                success: function (data) {
+                    $("#start-install-modal").modal('hide')
+                    hideLoading(10)
+                    if (data.success) {
+                        notice(data.message, data.success)
+                        setTimeout('window.location.reload()', 1000)
+                    } else {
+                        notice(data.message, data.success)
+                    }
+                },
+                error: function (XMLHttpRequest) {
+                    hideLoading(10);
+                    notice("服务抽风了，网络异常 " + XMLHttpRequest.responseText, false);
+                }
+            })
+        });
+    });
+</script>
+</body>
+</html>

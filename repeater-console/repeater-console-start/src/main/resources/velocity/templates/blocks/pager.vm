@@ -1,0 +1,61 @@
+#if($pagerWrapper && $pagerWrapper.total > 1)
+<ul class="pagination pagination-sm m-0 float-right">
+    #if($pagerWrapper.hasPrevious)
+        <li class="page-item">
+            <a class="page-link" href="$pagerWrapper.url&page=1" title="首页">
+                <i class="fa fa-fw fa-angle-double-left"></i>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="$pagerWrapper.url&page=$pagerWrapper.previous" title="上一页">
+                <i class="fa fa-fw fa-angle-left"></i>
+            </a>
+        </li>
+    #else
+        <li class="page-item disabled">
+            <a class="page-link" href="javascript:viod(0)" title="首页">
+                <i class="fa fa-fw fa-angle-double-left"></i>
+            </a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" href="javascript:viod(0)" title="上一页">
+                <i class="fa fa-fw fa-angle-left"></i>
+            </a>
+        </li>
+    #end
+    #foreach($index in $pagerWrapper.pages)
+        #if($pagerWrapper.currentPage == $index)
+            <li class="active page-item">
+                <a class="page-link" href="javascript:viod(0)">$index</a>
+            </li>
+        #else
+            <li class="page-item">
+                <a class="page-link" href="$pagerWrapper.url&page=$index">$index</a>
+            </li>
+        #end
+    #end
+    #if($pagerWrapper.hasNext)
+        <li class="page-item">
+            <a class="page-link" href="$pagerWrapper.url&page=$pagerWrapper.next" title="下一页">
+                <i class="fa fa-fw fa-angle-right"></i>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="$pagerWrapper.url&page=$pagerWrapper.total" title="尾页">
+                <i class="fa fa-fw fa-angle-double-right"></i>
+            </a>
+        </li>
+    #else
+        <li class="page-item disabled">
+            <a class="page-link" href="javascript:void(0)" title="下一页">
+                <i class="fa fa-fw fa-angle-right"></i>
+            </a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" href="javascript:void(0)" title="尾页">
+                <i class="fa fa-fw fa-angle-double-right"></i>
+            </a>
+        </li>
+    #end
+</ul>
+#end

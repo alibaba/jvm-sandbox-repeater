@@ -38,7 +38,7 @@ public abstract class AbstractInvokePluginAdapter implements InvokePlugin {
 
     private ModuleEventWatcher watcher;
 
-    private volatile List<Integer> watchIds = Lists.newArrayList();
+    private List<Integer> watchIds = Lists.newCopyOnWriteArrayList();
 
     private InvocationListener listener;
 
@@ -69,8 +69,8 @@ public abstract class AbstractInvokePluginAdapter implements InvokePlugin {
                 watcher.delete(watchId);
             }
             watchIds.clear();
-            watched.set(false);
         }
+        watched.compareAndSet(true, false);
     }
 
     @Override
