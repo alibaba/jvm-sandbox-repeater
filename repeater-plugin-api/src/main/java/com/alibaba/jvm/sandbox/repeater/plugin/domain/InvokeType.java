@@ -25,6 +25,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType JPA = new InvokeType("jpa");
 
+    public static InvokeType SOCKETIO = new InvokeType("socketio");
+
     private String name;
 
     public InvokeType(String name) {
