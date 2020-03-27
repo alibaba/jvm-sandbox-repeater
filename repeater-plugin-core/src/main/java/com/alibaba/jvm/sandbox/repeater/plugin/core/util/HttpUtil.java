@@ -283,8 +283,9 @@ public class HttpUtil {
      * @return body字符串
      */
     private static Resp executeRequest(Request request, int retryTime) {
+        Response response = null;
         try {
-            Response response = client.newCall(request).execute();
+            response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 return Resp.builder().code(response.code())
                         .body(bodyToString(response.body())).build();
@@ -309,6 +310,8 @@ public class HttpUtil {
             return Resp.builder().code(500)
                     .message("Invoke occurred exception, request=" + request.toString() + ";message=" + e.getMessage())
                     .build();
+        } finally {
+            response.close();
         }
     }
 
