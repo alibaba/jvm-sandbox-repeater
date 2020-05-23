@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class ReflectCompareStrategy extends AbstractMockStrategy {
 
     @Override
-    protected SelectResult select(MockRequest request) {
+    public SelectResult select(MockRequest request, Boolean removeFromSubInvocationIfFound) {
         final List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
         Stopwatch stopwatch = Stopwatch.createStarted();
         if (CollectionUtils.isEmpty(subInvocations)) {
@@ -63,7 +63,7 @@ public class ReflectCompareStrategy extends AbstractMockStrategy {
                 log.info("find target invocation by {},index={},identity={}", type().name(), request.getIndex(), request.getIdentity().getUri());
                 Iterator<Invocation> ite = subInvocations.iterator();
                 while (ite.hasNext()) {
-                    if (invocation.equals(ite.next())) {
+                    if (invocation.equals(ite.next()) && removeFromSubInvocationIfFound) {
                         ite.remove();
                         break;
                     }
