@@ -155,4 +155,12 @@ public class RepeaterConfig implements java.io.Serializable{
     public void setRepeatIdentities(List<String> repeatIdentities) {
         this.repeatIdentities = repeatIdentities;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "sampleRate=" + sampleRate +
+                ", plugin=" + pluginIdentities +
+                '}';
+    }
 }

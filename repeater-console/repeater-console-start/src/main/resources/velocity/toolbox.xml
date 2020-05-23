@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tools>
+    <data type="number" key="TOOLS_VERSION" value="2.0"/>
+    <data type="boolean" key="GENERIC_TOOLS_AVAILABLE" value="true"/>
+    <toolbox scope="application">
+        <tool class="org.apache.velocity.tools.generic.AlternatorTool"/>
+        <tool class="org.apache.velocity.tools.generic.ClassTool"/>
+        <tool class="org.apache.velocity.tools.generic.ComparisonDateTool"/>
+        <tool class="org.apache.velocity.tools.generic.ConversionTool"/>
+        <tool class="org.apache.velocity.tools.generic.DisplayTool"/>
+        <tool class="org.apache.velocity.tools.generic.EscapeTool"/>
+        <tool class="org.apache.velocity.tools.generic.FieldTool"/>
+        <tool class="org.apache.velocity.tools.generic.MathTool"/>
+        <tool class="org.apache.velocity.tools.generic.NumberTool"/>
+        <tool class="org.apache.velocity.tools.generic.ResourceTool"/>
+        <tool class="org.apache.velocity.tools.generic.SortTool"/>
+        <tool class="org.apache.velocity.tools.generic.XmlTool"/>
+    </toolbox>
+    <toolbox scope="request">
+        <tool class="org.apache.velocity.tools.generic.ContextTool"/>
+        <tool class="org.apache.velocity.tools.generic.LinkTool"/>
+        <tool class="org.apache.velocity.tools.generic.LoopTool"/>
+        <tool class="org.apache.velocity.tools.generic.RenderTool"/>
+        <tool class="org.apache.velocity.tools.view.CookieTool"/>
+        <tool class="org.apache.velocity.tools.view.ImportTool"/>
+        <tool class="org.apache.velocity.tools.view.IncludeTool"/>
+        <tool class="org.apache.velocity.tools.view.PagerTool"/>
+        <tool class="org.apache.velocity.tools.view.ParameterTool"/>
+        <tool class="org.apache.velocity.tools.view.ViewContextTool"/>
+        <tool class="org.apache.velocity.tools.generic.ResourceTool"/>
+    </toolbox>
+</tools>

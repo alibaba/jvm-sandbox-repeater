@@ -12,12 +12,11 @@
     <properties>
         <sandbox.api.version>1.2.0</sandbox.api.version>
         <metainf-services.version>1.8</metainf-services.version>
-        <fastjson.version>1.2.44</fastjson.version>
         <org.slf4j.version>1.7.24</org.slf4j.version>
         <logback.version>1.2.1</logback.version>
         <ttl.version>2.10.2</ttl.version>
         <guava.version>19.0</guava.version>
-        <fastjson.version>1.2.48</fastjson.version>
+        <fastjson.version>1.2.67</fastjson.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.6</commons-lang3.version>
         <commons-io.version>2.5</commons-io.version>
