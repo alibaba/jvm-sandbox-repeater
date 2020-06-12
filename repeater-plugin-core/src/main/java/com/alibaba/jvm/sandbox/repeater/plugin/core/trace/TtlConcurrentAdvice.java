@@ -52,6 +52,7 @@ public class TtlConcurrentAdvice {
             new EventWatchBuilder(watcher)
                 .onClass("java.util.concurrent.ThreadPoolExecutor").includeBootstrap()
                 .onBehavior("execute")
+                .onClass("java.util.concurrent.AbstractExecutorService").includeBootstrap()                
                 .onBehavior("submit")
                 .onClass("java.util.concurrent.ScheduledThreadPoolExecutor").includeBootstrap()
                 .onBehavior("execute")
