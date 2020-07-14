@@ -33,7 +33,7 @@ public class ReplayController {
         }
         model.addAttribute("replay", result.getData());
         model.addAttribute("record", result.getData().getRecord());
-        return "/replay/detail";
+        return "replay/detail";
     }
 
     @RequestMapping("execute.json")
