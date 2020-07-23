@@ -25,6 +25,14 @@ public class HttpUtil {
     private static final String KV_SEPARATE = "=";
 
     private static final OkHttpClient client = new OkHttpClient().newBuilder()
+            .addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request.Builder requestBuilder = chain.request().newBuilder();
+                    requestBuilder.removeHeader("Accept-Encoding");
+                    return chain.proceed(requestBuilder.build());
+                }
+            })
             .connectTimeout(3, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
