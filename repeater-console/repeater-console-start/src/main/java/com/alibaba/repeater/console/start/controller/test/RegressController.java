@@ -60,6 +60,7 @@ public class RegressController {
      */
     @RequestMapping(value = "/slogan", method = RequestMethod.GET)
     public String slogan() {
+        System.out.println("###invoke slogan");
         return "<h1 align=\"center\" style=\"color:red;margin-top:300px\">" + regressService.slogan() + "</h1>";
     }
 

@@ -40,7 +40,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
     @Value("${repeat.reload.url}")
     private String reloadURI;
 
-    private static String installBash = "sh %s/sandbox/bin/sandbox.sh -p %s -P 8820";
+    private static String installBash = "bash %s/sandbox/bin/sandbox.sh -p %s -P 8820";
 
     @Resource
     private ModuleInfoDao moduleInfoDao;
@@ -102,6 +102,11 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         return execute(frozenURI, params, ModuleStatus.FROZEN);
     }
 
+    /**
+     * FIXME get process id from node server by app.name
+     * @param params
+     * @return
+     */
     @Override
     public RepeaterResult<String> install(ModuleInfoParams params) {
         // this is a fake local implement; must be overwrite in product usage;
@@ -114,7 +119,9 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
             // /Users/tom/sandbox/bin/sandbox.sh
             String[] path = StringUtils.split(System.getProperty("user.dir"), File.separator);
             String userDir = File.separator + path[0] + File.separator + path[1];
-            Process process = Runtime.getRuntime().exec(String.format(installBash, userDir, pid));
+            String runCmd = String.format(installBash, userDir, pid);
+            System.out.println("###runCmd:" + runCmd);
+            Process process = Runtime.getRuntime().exec(runCmd);
             input = new BufferedReader(new InputStreamReader(process.getInputStream()));
             error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             output = new PrintWriter(new OutputStreamWriter(process.getOutputStream()));

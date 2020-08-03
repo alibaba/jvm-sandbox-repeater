@@ -37,9 +37,11 @@ public class ApplicationModel {
     private static ApplicationModel instance = new ApplicationModel();
 
     private ApplicationModel() {
+        System.out.println("ApplicationModel Constructor");
         // for example, you can define it your self
         this.appName = getSystemPropertyOrDefault("app.name", "unknown");
         this.environment = getSystemPropertyOrDefault("app.env", "unknown");
+        System.out.println("this.appName:" + this.appName + " this.environment:" + this.environment);
         try {
             this.host = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {

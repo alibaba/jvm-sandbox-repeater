@@ -1,6 +1,9 @@
 CREATE DATABASE IF NOT EXISTS repeater
     DEFAULT CHARSET utf8
     COLLATE utf8_general_ci;
+
+use repeater;
+
 DROP TABLE IF EXISTS record;
 CREATE TABLE record
 (

@@ -73,7 +73,10 @@ public class RegressServiceImpl implements RegressService {
 
     @Override
     public String slogan() {
-        return slogans[sequence.getAndIncrement() % slogans.length] + "是世界上最好的语言!";
+        System.out.println("###invoke slogan service");
+        String data = slogans[sequence.getAndIncrement() % slogans.length] + "是2世界上最好的语言!";
+        System.out.println("###slogan service data:" + data);
+        return data;
     }
 
     @Override

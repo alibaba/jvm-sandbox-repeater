@@ -1,3 +1,14 @@
+/home/zgq/sandbox/bin/sandbox.sh: 10: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 11: [[: not found/home/zgq/sandbox/bin/sandbox.sh: 15: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 18: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 21: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 24: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 27: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 30: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 31: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 34: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 37: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 38: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 51: Syntax error: "(" unexpected
+
+
+
+CREATE USER 'zxh'@'localhost' IDENTIFIED BY 'zxh';
+
+GRANT ALL PRIVILEGES ON repeater.* TO 'zxh'@'localhost';
+
+ALTER USER zxh@localhost IDENTIFIED WITH mysql_native_password BY 'zxh';
+
+
 ![logo](https://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/repeater-logo.png)
 
 [![Build Status](https://travis-ci.org/alibaba/jvm-sandbox-repeater.svg?branch=master)](https://travis-ci.org/alibaba/jvm-sandbox-repeater)

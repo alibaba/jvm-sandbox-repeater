@@ -3,6 +3,7 @@ package com.alibaba.repeater.console.start;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.alibaba.repeater.console.dal.repository")
 @EntityScan("com.alibaba.repeater.console.dal.model")
 @ComponentScan("com.alibaba.repeater.console.*")
+@ServletComponentScan(basePackages = {"com.alibaba.repeater.console.start.controller.conf"}) //这一句完成了配置，Springboot的”懒理念“真的厉害。
 public class Application {
 
     public static void main(String[] args) {

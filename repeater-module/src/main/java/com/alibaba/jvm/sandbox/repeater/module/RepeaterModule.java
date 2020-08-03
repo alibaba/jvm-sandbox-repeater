@@ -136,7 +136,7 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                 broadcaster = StandaloneSwitch.instance().getBroadcaster();
                 invocationListener = new DefaultInvocationListener(broadcaster);
                 RepeaterResult<RepeaterConfig> pr = configManager.pullConfig();
-                if (pr.isSuccess()) {
+                if (pr != null && pr.isSuccess()) {
                     log.info("pull repeater config success,config={}", pr.getData());
                     ClassloaderBridge.init(loadedClassDataSource);
                     initialize(pr.getData());
