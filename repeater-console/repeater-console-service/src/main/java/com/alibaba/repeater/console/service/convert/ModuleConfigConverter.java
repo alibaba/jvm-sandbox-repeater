@@ -23,6 +23,7 @@ public class ModuleConfigConverter implements ModelConverter<ModuleConfig, Modul
     public ModuleConfigBO convert(ModuleConfig source) {
         ModuleConfigBO bo = new ModuleConfigBO();
         BeanUtils.copyProperties(source, bo);
+        bo.setAppName(source.getApp().getName());
         try {
             bo.setConfigModel(JacksonUtil.deserialize(source.getConfig(), RepeaterConfig.class));
         } catch (SerializeException e) {

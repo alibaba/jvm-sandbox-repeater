@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,18 +29,24 @@ import java.util.List;
  * @author zhaoyb1990
  */
 @RequestMapping("/config")
-@Controller
+@RestController
 public class ModuleConfigController {
 
     @Resource
     private ModuleConfigService moduleConfigService;
 
-    @RequestMapping("list.htm")
-    public String list(@ModelAttribute("requestParams") ModuleConfigParams params, Model model) {
-        PageResult<ModuleConfigBO> result = moduleConfigService.list(params);
-        PagerAdapter.transform0(result, model);
-        return "config/list";
+    @RequestMapping("/list")
+    public Object list(Long appId) {
+        List<ModuleConfigBO> result = moduleConfigService.list(appId);
+        return result;
     }
+
+
+
+    //////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
 
     @RequestMapping("detail.htm")
     public String detail(@ModelAttribute("requestParams") ModuleConfigParams params, Model model) {

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * {@link ModuleConfigRepository}
  * <p>
@@ -17,5 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = {RuntimeException.class, Error.class, BizException.class})
 public interface ModuleConfigRepository extends JpaRepository<ModuleConfig, Long>, JpaSpecificationExecutor<ModuleConfig> {
 
-    ModuleConfig findByAppNameAndEnvironment(String appName, String environment);
+//    ModuleConfig findByAppNameAndEnvironment(String appName, String environment);
+    List<ModuleConfig> findByAppId(Long appId);
 }

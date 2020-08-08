@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * {@link App}
@@ -25,6 +27,10 @@ public class App implements java.io.Serializable {
     private String name;
 
     private String memo;
+
+    @OneToMany(mappedBy = "app", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    private List<ModuleConfig> moduleConfigList = new ArrayList<>();
+
 
     @Column(name = "gmt_create")
     private Date gmtCreate;

@@ -13,6 +13,7 @@ import com.alibaba.repeater.console.common.params.ModuleConfigParams;
 import com.alibaba.repeater.console.common.params.ModuleInfoParams;
 import com.alibaba.repeater.console.dal.dao.ModuleConfigDao;
 import com.alibaba.repeater.console.dal.model.ModuleConfig;
+import com.alibaba.repeater.console.dal.repository.ModuleConfigRepository;
 import com.alibaba.repeater.console.service.ModuleConfigService;
 import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.service.convert.ModuleConfigConverter;
@@ -28,6 +29,7 @@ import javax.annotation.Resource;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -43,25 +45,17 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
     @Resource
     private ModuleConfigDao moduleConfigDao;
     @Resource
+    private ModuleConfigRepository moduleConfigRepository;
+    @Resource
     private ModuleConfigConverter moduleConfigConverter;
     @Resource
     private ModuleInfoService moduleInfoService;
     @Value("${repeat.config.url}")
     private String configURL;
 
-    @Override
-    public PageResult<ModuleConfigBO> list(ModuleConfigParams params) {
-        PageResult<ModuleConfigBO> result = new PageResult<>();
-        Page<ModuleConfig> page = moduleConfigDao.selectByParams(params);
-        if (page.hasContent()) {
-            result.setSuccess(true);
-            result.setPageIndex(params.getPage());
-            result.setCount(page.getTotalElements());
-            result.setTotalPage(page.getTotalPages());
-            result.setPageSize(params.getSize());
-            result.setData(page.getContent().stream().map(moduleConfigConverter::convert).collect(Collectors.toList()));
-        }
-        return result;
+    public List<ModuleConfigBO> list(Long appId) {
+        List<ModuleConfig> moduleConfigList = moduleConfigRepository.findByAppId(appId);
+        return moduleConfigList.stream().map(moduleConfigConverter::convert).collect(Collectors.toList());
     }
 
     @Override
@@ -81,7 +75,7 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
             moduleConfig.setGmtModified(new Date());
         } else {
             moduleConfig = new ModuleConfig();
-            moduleConfig.setAppName(params.getAppName());
+//            moduleConfig.setAppName(params.getAppName());
             moduleConfig.setEnvironment(params.getEnvironment());
             moduleConfig.setConfig(params.getConfig());
             moduleConfig.setGmtCreate(new Date());

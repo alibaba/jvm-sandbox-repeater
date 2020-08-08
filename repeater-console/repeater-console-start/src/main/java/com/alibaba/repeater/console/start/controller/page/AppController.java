@@ -26,7 +26,8 @@ public class AppController {
     @RequestMapping("/list")
     public Object list(String keyword, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
         PageResult<AppBO> pageResult = appService.list(keyword, page, size);
-        return RepeaterResult.builder().success(true).message("operate success").data(pageResult).build();
+//        return RepeaterResult.builder().success(true).message("operate success").data(pageResult).build();
+        return pageResult;
     }
 
 }

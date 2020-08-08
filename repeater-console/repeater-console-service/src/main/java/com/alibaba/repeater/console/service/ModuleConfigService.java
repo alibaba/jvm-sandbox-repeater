@@ -5,6 +5,8 @@ import com.alibaba.repeater.console.common.domain.ModuleConfigBO;
 import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.params.ModuleConfigParams;
 
+import java.util.List;
+
 /**
  * {@link ModuleConfigService}
  * <p>
@@ -13,7 +15,7 @@ import com.alibaba.repeater.console.common.params.ModuleConfigParams;
  */
 public interface ModuleConfigService {
 
-    PageResult<ModuleConfigBO> list(ModuleConfigParams params);
+    List<ModuleConfigBO> list(Long appId);
 
     RepeaterResult<ModuleConfigBO> query(ModuleConfigParams params);
 
