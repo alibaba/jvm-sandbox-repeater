@@ -8,11 +8,13 @@ import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.params.ModuleInfoParams;
 import com.alibaba.repeater.console.dal.dao.ModuleInfoDao;
 import com.alibaba.repeater.console.dal.model.ModuleInfo;
+import com.alibaba.repeater.console.dal.repository.ModuleInfoRepository;
 import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.service.convert.ModuleInfoConverter;
 import com.alibaba.repeater.console.service.util.ResultHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,9 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     private static String installBash = "bash %s/sandbox/bin/sandbox.sh -p %s -P 8820";
 
+    @Autowired
+    private ModuleInfoRepository moduleInfoRepository;
+
     @Resource
     private ModuleInfoDao moduleInfoDao;
 
@@ -49,39 +54,30 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
     private ModuleInfoConverter moduleInfoConverter;
 
     @Override
-    public PageResult<ModuleInfoBO> query(ModuleInfoParams params) {
-        Page<ModuleInfo> page = moduleInfoDao.selectByParams(params);
-        PageResult<ModuleInfoBO> result = new PageResult<>();
-        if (page.hasContent()) {
-            result.setSuccess(true);
-            result.setPageIndex(params.getPage());
-            result.setCount(page.getTotalElements());
-            result.setPageSize(params.getSize());
-            result.setTotalPage(page.getTotalPages());
-            result.setData(page.getContent().stream().map(moduleInfoConverter::convert).collect(Collectors.toList()));
-        }
-        return result;
+    public List<ModuleInfoBO> query(Long configId) {
+        List<ModuleInfo> moduleInfoList = moduleInfoRepository.findByModuleConfigId(configId);
+        return moduleInfoList.stream().map(moduleInfoConverter::convert).collect(Collectors.toList());
     }
 
-    @Override
-    public RepeaterResult<List<ModuleInfoBO>> query(String appName) {
-        List<ModuleInfo> byAppName = moduleInfoDao.findByAppName(appName);
-        if (CollectionUtils.isEmpty(byAppName)) {
-            return ResultHelper.fail("data not exist");
-        }
-        return ResultHelper.success(
-                byAppName.stream().map(moduleInfoConverter::convert).collect(Collectors.toList())
-        );
-    }
+//    @Override
+//    public RepeaterResult<List<ModuleInfoBO>> query(String appName) {
+//        List<ModuleInfo> byAppName = moduleInfoDao.findByAppName(appName);
+//        if (CollectionUtils.isEmpty(byAppName)) {
+//            return ResultHelper.fail("data not exist");
+//        }
+//        return ResultHelper.success(
+//                byAppName.stream().map(moduleInfoConverter::convert).collect(Collectors.toList())
+//        );
+//    }
 
-    @Override
-    public RepeaterResult<ModuleInfoBO> query(String appName, String ip) {
-        ModuleInfo moduleInfo = moduleInfoDao.findByAppNameAndIp(appName, ip);
-        if (moduleInfo == null) {
-            return RepeaterResult.builder().message("data not exist").build();
-        }
-        return ResultHelper.success(moduleInfoConverter.convert(moduleInfo));
-    }
+//    @Override
+//    public RepeaterResult<ModuleInfoBO> query(String appName, String ip) {
+//        ModuleInfo moduleInfo = moduleInfoDao.findByAppNameAndIp(appName, ip);
+//        if (moduleInfo == null) {
+//            return RepeaterResult.builder().message("data not exist").build();
+//        }
+//        return ResultHelper.success(moduleInfoConverter.convert(moduleInfo));
+//    }
 
     @Override
     public RepeaterResult<ModuleInfoBO> report(ModuleInfoBO params) {

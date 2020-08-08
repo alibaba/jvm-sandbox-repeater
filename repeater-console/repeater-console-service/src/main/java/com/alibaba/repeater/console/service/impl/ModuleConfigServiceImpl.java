@@ -96,7 +96,7 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
         moduleInfoParams.setEnvironment(params.getEnvironment());
         // a temporary size set
         moduleInfoParams.setSize(1000);
-        PageResult<ModuleInfoBO> result = moduleInfoService.query(moduleInfoParams);
+        PageResult<ModuleInfoBO> result = null; //FIXME moduleInfoService.query(moduleInfoParams);
         if (result.getCount() == 0) {
             return ResultHelper.fail("no alive module, don't need to push config.");
         }

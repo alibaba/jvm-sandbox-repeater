@@ -15,11 +15,11 @@ import java.util.List;
  */
 public interface ModuleInfoService {
 
-    PageResult<ModuleInfoBO> query(ModuleInfoParams params);
+    List<ModuleInfoBO> query(Long configId);
 
-    RepeaterResult<List<ModuleInfoBO>> query(String appName);
+//    RepeaterResult<List<ModuleInfoBO>> query(String appName);
 
-    RepeaterResult<ModuleInfoBO> query(String appName, String ip);
+//    RepeaterResult<ModuleInfoBO> query(String appName, String ip);
 
     RepeaterResult<ModuleInfoBO> report(ModuleInfoBO params);
 

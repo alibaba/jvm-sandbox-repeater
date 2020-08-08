@@ -24,22 +24,24 @@ public class ModuleInfo implements java.io.Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
-
-    @Column(name = "gmt_modified")
-    private Date gmtModified;
-
-    @Column(name = "app_name")
-    private String appName;
-
-    private String environment;
+    @ManyToOne
+    private ModuleConfig moduleConfig;
 
     private String ip;
 
     private String port;
 
-    private String version;
+    private String username;
+
+    private String password;
+
+    private String privateRsaFile;
 
     private String status;
+
+    @Column(name = "gmt_create")
+    private Date gmtCreate;
+
+    @Column(name = "gmt_modified")
+    private Date gmtModified;
 }

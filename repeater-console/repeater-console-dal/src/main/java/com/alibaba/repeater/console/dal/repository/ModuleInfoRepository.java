@@ -22,14 +22,8 @@ import java.util.List;
 @Transactional(rollbackFor = {RuntimeException.class, Error.class, BizException.class})
 public interface ModuleInfoRepository extends JpaRepository<ModuleInfo, Long>, JpaSpecificationExecutor<ModuleInfo> {
 
-    /**
-     * 根据appName查找在线模块
-     *
-     * @param appName 应用名
-     * @return
-     */
-    List<ModuleInfo> findByAppName(String appName);
 
+    List<ModuleInfo> findByModuleConfigId(Long configId);
 
     @Modifying
     @Query(
@@ -39,5 +33,5 @@ public interface ModuleInfoRepository extends JpaRepository<ModuleInfo, Long>, J
     )
     int updateByAppNameAndIp(@Param("moduleInfo") ModuleInfo moduleInfo);
 
-    ModuleInfo findByAppNameAndIp(String appName, String ip);
+
 }

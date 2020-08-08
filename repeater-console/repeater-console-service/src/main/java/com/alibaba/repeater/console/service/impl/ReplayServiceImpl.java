@@ -68,12 +68,12 @@ public class ReplayServiceImpl implements ReplayService {
         Optional.ofNullable(params.getIp()).orElseThrow(() -> new RuntimeException("ip can not be null"));
         Optional.ofNullable(params.getAppName()).orElseThrow(() -> new RuntimeException("appName can not be null"));
         Optional.ofNullable(params.getTraceId()).orElseThrow(() -> new RuntimeException("traceId can not be null"));
-        RepeaterResult<ModuleInfoBO> result = moduleInfoService.query(params.getAppName(), params.getIp());
+        RepeaterResult<ModuleInfoBO> result = null; //FIXME moduleInfoService.query(params.getAppName(), params.getIp());
         if (!result.isSuccess() || result.getData() == null) {
             return ResultHelper.copy(result);
         }
         params.setPort(result.getData().getPort());
-        params.setEnvironment(result.getData().getEnvironment());
+//        params.setEnvironment(result.getData().getEnvironment());
         final Record record = recordDao.selectByAppNameAndTraceId(params.getAppName(), params.getTraceId());
         if (record == null) {
             return RepeaterResult.builder().success(false).message("data does not exist").build();

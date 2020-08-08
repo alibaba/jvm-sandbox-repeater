@@ -28,9 +28,9 @@ public class ModuleInfoDao {
     @Resource
     private ModuleInfoRepository moduleInfoRepository;
 
-    public List<ModuleInfo> findByAppName(String appName) {
-        return moduleInfoRepository.findByAppName(appName);
-    }
+//    public List<ModuleInfo> findByAppName(String appName) {
+//        return moduleInfoRepository.findByAppName(appName);
+//    }
 
     public Page<ModuleInfo> selectByParams(@NotNull final ModuleInfoParams params) {
         Pageable pageable = new PageRequest(params.getPage() - 1, params.getSize(), new Sort(Sort.Direction.DESC, "id"));
@@ -64,6 +64,8 @@ public class ModuleInfoDao {
     }
 
     public ModuleInfo findByAppNameAndIp(String appName, String ip) {
-        return moduleInfoRepository.findByAppNameAndIp(appName, ip);
+//        return moduleInfoRepository.findByAppNameAndIp(appName, ip);
+        return null;
     }
+
 }

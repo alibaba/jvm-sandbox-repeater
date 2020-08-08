@@ -18,21 +18,21 @@ public class ModuleInfoBO extends BaseBO {
 
     private Long id;
 
-    private Date gmtCreate;
-
-    private Date gmtModified;
-
-    private String appName;
-
-    private String environment;
-
     private String ip;
 
     private String port;
 
-    private String version;
+    private String username;
+
+    private String password;
+
+    private String privateRsaFile;
 
     private ModuleStatus status;
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
 
     @Override
     public String toString() {

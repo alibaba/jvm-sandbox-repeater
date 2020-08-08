@@ -42,6 +42,27 @@ CREATE TABLE `module_config` (
 
 
 
+DROP TABLE IF EXISTS module_info;
+CREATE TABLE `module_info` (
+   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `ip` varchar(36) NOT NULL COMMENT '机器IP',
+   `port` varchar(12) NOT NULL COMMENT '链路追踪ID',
+   `username` varchar(12) NOT NULL COMMENT '用户名',
+   `password` varchar(30) NULL COMMENT '密码',
+   `private_rsa_file` varchar(80) NOT NULL COMMENT '密钥文件',
+   `status` varchar(36) NOT NULL COMMENT '模块状态',
+   `module_config_id` bigint(20) NOT NULL COMMENT '环境配置',
+   `gmt_create` datetime NOT NULL COMMENT '创建时间',
+   `gmt_modified` datetime NOT NULL COMMENT '修改时间',
+   PRIMARY KEY (`id`),
+   KEY `fk_mi_config_id_idx` (`module_config_id`),
+   CONSTRAINT `fk_mi_config_id` FOREIGN KEY (`module_config_id`) REFERENCES `module_config` (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='在线模块信息';
+
+
+
+
+
 
 ---------------------------------
 ---------------------------------
@@ -133,30 +154,4 @@ CREATE TABLE replay
     AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS module_info;
-CREATE TABLE module_info
-(
-    id           BIGINT(20)   NOT NULL AUTO_INCREMENT PRIMARY KEY
-        COMMENT '主键',
-    gmt_create   DATETIME     NOT NULL
-        COMMENT '创建时间',
-    gmt_modified DATETIME     NOT NULL
-        comment '修改时间',
-    app_name     VARCHAR(255) NOT NULL
-        COMMENT '应用名',
-    environment  VARCHAR(255) NOT NULL
-        COMMENT '环境信息',
-    ip           VARCHAR(36)  NOT NULL
-        COMMENT '机器IP',
-    port         VARCHAR(12)  NOT NULL
-        COMMENT '链路追踪ID',
-    version      VARCHAR(128) NOT NULL
-        COMMENT '模块版本号',
-    status       VARCHAR(36)  NOT NULL
-        COMMENT '模块状态'
-)
-    ENGINE = InnoDB
-    COMMENT = '在线模块信息'
-    DEFAULT CHARSET = utf8
-    AUTO_INCREMENT = 1;
 

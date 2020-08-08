@@ -8,10 +8,7 @@ import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.start.controller.vo.PagerAdapter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,24 +21,23 @@ import java.util.List;
  * @author zhaoyb1990
  */
 @RequestMapping("/module")
-@Controller
+@RestController
 public class ModuleInfoController {
 
     @Resource
     private ModuleInfoService moduleInfoService;
 
-    @RequestMapping("list.htm")
-    public String list(@ModelAttribute("requestParams") ModuleInfoParams params, Model model) {
-        PageResult<ModuleInfoBO> result = moduleInfoService.query(params);
-        PagerAdapter.transform0(result, model);
-        return "module/list";
+    @RequestMapping("/list")
+    public List<ModuleInfoBO> list(Long configId) {
+        List<ModuleInfoBO> result = moduleInfoService.query(configId);
+        return result;
     }
 
-    @ResponseBody
-    @RequestMapping("/byName.json")
-    public RepeaterResult<List<ModuleInfoBO>> list(@RequestParam("appName") String appName) {
-        return moduleInfoService.query(appName);
-    }
+//    @ResponseBody
+//    @RequestMapping("/byName.json")
+//    public RepeaterResult<List<ModuleInfoBO>> list(@RequestParam("appName") String appName) {
+//        return moduleInfoService.query(appName);
+//    }
 
     @ResponseBody
     @RequestMapping("/report.json")
