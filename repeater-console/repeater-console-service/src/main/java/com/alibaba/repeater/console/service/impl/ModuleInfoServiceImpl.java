@@ -37,6 +37,11 @@ import java.util.stream.Collectors;
 @Service("heartbeatService")
 @Slf4j
 public class ModuleInfoServiceImpl implements ModuleInfoService {
+    @Value("${server.ip}")
+    private String serverIp;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     private static String activeURI = "http://%s:%s/sandbox/default/module/http/sandbox-module-mgr/active?ids=repeater";
 
@@ -229,7 +234,9 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
         cmd = "ls -lrta ~| grep sandbox | wc -l";
         sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
-        boolean isSandboxInstalled = sshResult.getErrorCode() == 0 && sshResult.getStdOutput().trim().equals("2");
+
+        Integer sandBoxFileCount = Integer.parseInt(sshResult.getStdOutput().trim());
+        boolean isSandboxInstalled = sshResult.getErrorCode() == 0 && sandBoxFileCount >= 2;
         if(!isSandboxInstalled) {
             return ModuleStatus.SCRATCH;
         }
@@ -251,5 +258,54 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         }
 
         return ModuleStatus.ACTIVE;
+    }
+
+    public boolean install(Long id) {
+        ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
+        String serverIpPort = serverIp + ":" + serverPort;
+        String[] cmdArr = new String[] {
+            "curl -s http://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/install-repeater.sh | bash",
+            "sed -i 's/127.0.0.1:8001/" + serverIpPort + "/g' ~/.sandbox-module/cfg/repeater.properties",
+            "sed -i 's/repeat.standalone.mode=true/repeat.standalone.mode=false/g' ~/.sandbox-module/cfg/repeater.properties",
+        };
+        for(String cmd: cmdArr) {
+            SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+            boolean isSuccess = sshResult.getErrorCode() == 0;
+            if(!isSuccess) {
+                log.error("###run failed: {}", cmd);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean attach(Long id) {
+        ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
+        String cmd = "bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -P 12580"; //FIXME JAVA_HOME 多处
+        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        boolean isSuccess = sshResult.getErrorCode() == 0;
+        if(!isSuccess) {
+            log.error("###run failed: {}", cmd);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean detach(Long id) {
+        ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
+        String cmd = "bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -S";
+        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        boolean isSuccess = sshResult.getErrorCode() == 0;
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(!isSuccess) {
+            log.error("###run failed: {}", cmd);
+            return false;
+        }
+        return true;
     }
 }

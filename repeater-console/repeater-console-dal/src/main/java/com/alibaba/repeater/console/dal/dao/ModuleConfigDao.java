@@ -45,8 +45,7 @@ public class ModuleConfigDao {
     }
 
     public ModuleConfig query(ModuleConfigParams params) {
-//        return moduleConfigRepository.findByAppNameAndEnvironment(params.getAppName(), params.getEnvironment());
-        return null;
+        return moduleConfigRepository.findByAppNameAndEnvironment(params.getAppName(), params.getEnvironment());
     }
 
     public ModuleConfig saveOrUpdate(ModuleConfig moduleConfig) {

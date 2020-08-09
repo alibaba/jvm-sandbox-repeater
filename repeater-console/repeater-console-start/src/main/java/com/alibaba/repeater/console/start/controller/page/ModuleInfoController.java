@@ -4,13 +4,16 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ModuleInfoBO;
 import com.alibaba.repeater.console.common.params.ModuleInfoParams;
 import com.alibaba.repeater.console.service.impl.ModuleInfoServiceImpl;
+import org.aspectj.weaver.patterns.HasMemberTypePattern;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link ModuleInfoController}
@@ -36,6 +39,38 @@ public class ModuleInfoController {
     public Object update(Long id, String ip, String port, String username, String password, String privateRsaFile, Long moduleConfigId) {
         moduleInfoService.update(id, ip, port, username, password, privateRsaFile, moduleConfigId);
         return RepeaterResult.builder().success(true).build();
+    }
+
+    @RequestMapping("/getStatus")
+    public Object getStatus(Long id) {
+        return moduleInfoService.refreshStatus(id).getStatus();
+    }
+
+    @RequestMapping("/install")
+    public Object install(Long id) {
+        boolean success = moduleInfoService.install(id);
+        Map result = new HashMap<>();
+        result.put("success", success);
+        result.put("status", moduleInfoService.refreshStatus(id).getStatus());
+        return result;
+    }
+
+    @RequestMapping("/attach")
+    public Object attach(Long id) {
+        boolean success = moduleInfoService.attach(id);
+        Map result = new HashMap<>();
+        result.put("success", success);
+        result.put("status", moduleInfoService.refreshStatus(id).getStatus());
+        return result;
+    }
+
+    @RequestMapping("/detach")
+    public Object detach(Long id) {
+        boolean success = moduleInfoService.detach(id);
+        Map result = new HashMap<>();
+        result.put("success", success);
+        result.put("status", moduleInfoService.refreshStatus(id).getStatus());
+        return result;
     }
 
 //    @ResponseBody

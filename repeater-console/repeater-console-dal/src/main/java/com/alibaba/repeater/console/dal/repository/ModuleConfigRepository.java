@@ -18,7 +18,6 @@ import java.util.List;
 @Repository
 @Transactional(rollbackFor = {RuntimeException.class, Error.class, BizException.class})
 public interface ModuleConfigRepository extends JpaRepository<ModuleConfig, Long>, JpaSpecificationExecutor<ModuleConfig> {
-
-//    ModuleConfig findByAppNameAndEnvironment(String appName, String environment);
+    ModuleConfig findByAppNameAndEnvironment(String appName, String environment);
     List<ModuleConfig> findByAppId(Long appId);
 }
