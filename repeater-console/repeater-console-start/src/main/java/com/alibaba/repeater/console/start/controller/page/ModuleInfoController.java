@@ -2,13 +2,12 @@ package com.alibaba.repeater.console.start.controller.page;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ModuleInfoBO;
-import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.params.ModuleInfoParams;
-import com.alibaba.repeater.console.service.ModuleInfoService;
-import com.alibaba.repeater.console.start.controller.vo.PagerAdapter;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import com.alibaba.repeater.console.service.impl.ModuleInfoServiceImpl;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -25,12 +24,18 @@ import java.util.List;
 public class ModuleInfoController {
 
     @Resource
-    private ModuleInfoService moduleInfoService;
+    private ModuleInfoServiceImpl moduleInfoService;
 
     @RequestMapping("/list")
     public List<ModuleInfoBO> list(Long configId) {
         List<ModuleInfoBO> result = moduleInfoService.query(configId);
         return result;
+    }
+
+    @RequestMapping("/update")
+    public Object update(Long id, String ip, String port, String username, String password, String privateRsaFile, Long moduleConfigId) {
+        moduleInfoService.update(id, ip, port, username, password, privateRsaFile, moduleConfigId);
+        return RepeaterResult.builder().success(true).build();
     }
 
 //    @ResponseBody

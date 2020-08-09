@@ -16,6 +16,9 @@ public enum ModuleStatus {
     /**
      * 已激活
      */
+    SCRATCH("未安装"),
+    APP_DOWN("应用未启动"),
+    DETACH("未绑定"),
     ACTIVE("已激活"),
     FROZEN("已冻结"),
     ;

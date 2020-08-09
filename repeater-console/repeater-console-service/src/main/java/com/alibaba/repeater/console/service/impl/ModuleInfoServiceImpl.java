@@ -4,19 +4,18 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ModuleInfoBO;
 import com.alibaba.repeater.console.common.domain.ModuleStatus;
-import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.params.ModuleInfoParams;
 import com.alibaba.repeater.console.dal.dao.ModuleInfoDao;
+import com.alibaba.repeater.console.dal.model.ModuleConfig;
 import com.alibaba.repeater.console.dal.model.ModuleInfo;
+import com.alibaba.repeater.console.dal.repository.ModuleConfigRepository;
 import com.alibaba.repeater.console.dal.repository.ModuleInfoRepository;
 import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.service.convert.ModuleInfoConverter;
 import com.alibaba.repeater.console.service.util.ResultHelper;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -43,6 +42,9 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
     private String reloadURI;
 
     private static String installBash = "bash %s/sandbox/bin/sandbox.sh -p %s -P 8820";
+
+    @Autowired
+    private ModuleConfigRepository moduleConfigRepository;
 
     @Autowired
     private ModuleInfoRepository moduleInfoRepository;
@@ -177,5 +179,28 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         moduleInfo.setGmtModified(new Date());
         moduleInfoDao.saveAndFlush(moduleInfo);
         return ResultHelper.success(moduleInfoConverter.convert(moduleInfo));
+    }
+
+    public void update(Long id, String ip, String port, String username, String password, String privateRsaFile, Long moduleConfigId) {
+        ModuleInfo moduleInfo = null;
+        if(id != null) {
+            moduleInfo = moduleInfoRepository.getOne(id);
+        } else {
+            moduleInfo = new ModuleInfo();
+            ModuleConfig moduleConfig = moduleConfigRepository.getOne(moduleConfigId);
+            moduleInfo.setModuleConfig(moduleConfig);
+            moduleInfo.setStatus(ModuleStatus.SCRATCH.name());
+            moduleInfo.setGmtCreate(new Date());
+        }
+        moduleInfo.setIp(ip);
+        moduleInfo.setPort(port);
+        moduleInfo.setUsername(username);
+        moduleInfo.setPassword(password);
+        moduleInfo.setPrivateRsaFile(privateRsaFile);
+        moduleInfo.setGmtModified(new Date());
+
+
+
+        moduleInfoRepository.save(moduleInfo);
     }
 }
