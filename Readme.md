@@ -1,4 +1,4 @@
-/home/zgq/sandbox/bin/sandbox.sh: 10: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 11: [[: not found/home/zgq/sandbox/bin/sandbox.sh: 15: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 18: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 21: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 24: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 27: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 30: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 31: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 34: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 37: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 38: typeset: not found/home/zgq/sandbox/bin/sandbox.sh: 51: Syntax error: "(" unexpected
+获取当前repeater应用的ip和port
 
 
 

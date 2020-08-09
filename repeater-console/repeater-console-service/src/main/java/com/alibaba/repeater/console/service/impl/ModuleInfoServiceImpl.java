@@ -13,6 +13,9 @@ import com.alibaba.repeater.console.dal.repository.ModuleInfoRepository;
 import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.service.convert.ModuleInfoConverter;
 import com.alibaba.repeater.console.service.util.ResultHelper;
+import com.alibaba.repeater.console.service.util.SSHResult;
+import com.alibaba.repeater.console.service.util.SSHUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +35,7 @@ import java.util.stream.Collectors;
  * @author zhaoyb1990
  */
 @Service("heartbeatService")
+@Slf4j
 public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     private static String activeURI = "http://%s:%s/sandbox/default/module/http/sandbox-module-mgr/active?ids=repeater";
@@ -97,7 +101,8 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     @Override
     public RepeaterResult<ModuleInfoBO> frozen(ModuleInfoParams params) {
-        return execute(frozenURI, params, ModuleStatus.FROZEN);
+//        return execute(frozenURI, params, ModuleStatus.FROZEN);
+        return null;
     }
 
     /**
@@ -199,8 +204,52 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         moduleInfo.setPrivateRsaFile(privateRsaFile);
         moduleInfo.setGmtModified(new Date());
 
+        moduleInfo = moduleInfoRepository.save(moduleInfo);
+        this.refreshStatus(moduleInfo.getId());
+    }
+
+    public ModuleInfo refreshStatus(long moduleId) {
+        ModuleInfo moduleInfo = moduleInfoRepository.getOne(moduleId);
+        ModuleStatus moduleStatus = getStatus(moduleId);
+        log.info("###latest moduleStatus:{}", moduleStatus);
+        moduleInfo.setStatus(moduleStatus.name());
+        moduleInfo = moduleInfoRepository.save(moduleInfo);
+        return moduleInfo;
+    }
+
+    public ModuleStatus getStatus(long moduleId) {
+        ModuleInfo moduleInfo = moduleInfoRepository.getOne(moduleId);
+        String cmd = "pwd";
+        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        boolean isAvailable = sshResult.getErrorCode() == 0;
+
+        if(!isAvailable) {
+            return ModuleStatus.OFFLINE;
+        }
+
+        cmd = "ls -lrta ~| grep sandbox | wc -l";
+        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        boolean isSandboxInstalled = sshResult.getErrorCode() == 0 && sshResult.getStdOutput().trim().equals("2");
+        if(!isSandboxInstalled) {
+            return ModuleStatus.SCRATCH;
+        }
+
+        String appName = moduleInfo.getModuleConfig().getApp().getName();
+        cmd = "ps -ef | grep java | grep " + appName + " | grep -v grep | wc -l";
+        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        boolean isAppStarted = sshResult.getErrorCode() == 0 && sshResult.getStdOutput().trim().equals("1");
+        if(!isAppStarted) {
+            return ModuleStatus.APP_DOWN;
+        }
 
 
-        moduleInfoRepository.save(moduleInfo);
+        cmd = "netstat -anp | grep 12580 | grep LISTEN | wc -l";
+        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        boolean isSandBoxAttached = sshResult.getErrorCode() == 0 && sshResult.getStdOutput().trim().equals("1");
+        if(!isSandBoxAttached) {
+            return ModuleStatus.DETACH;
+        }
+
+        return ModuleStatus.ACTIVE;
     }
 }
