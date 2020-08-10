@@ -1,9 +1,5 @@
 package com.alibaba.repeater.console.service.impl;
 
-import com.alibaba.jvm.sandbox.repeater.aide.compare.Comparable;
-import com.alibaba.jvm.sandbox.repeater.aide.compare.ComparableFactory;
-import com.alibaba.jvm.sandbox.repeater.aide.compare.CompareResult;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.RecordWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
@@ -11,21 +7,25 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.domain.RecordBO;
 import com.alibaba.repeater.console.common.domain.RecordDetailBO;
-import com.alibaba.repeater.console.common.domain.ReplayStatus;
 import com.alibaba.repeater.console.common.params.RecordParams;
 import com.alibaba.repeater.console.dal.dao.RecordDao;
 import com.alibaba.repeater.console.dal.model.Record;
-import com.alibaba.repeater.console.dal.model.Replay;
+import com.alibaba.repeater.console.dal.repository.RecordRepository;
 import com.alibaba.repeater.console.service.RecordService;
 import com.alibaba.repeater.console.service.convert.ModelConverter;
 import com.alibaba.repeater.console.service.util.ConvertUtil;
-import com.alibaba.repeater.console.service.util.JacksonUtil;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Predicate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -37,13 +37,38 @@ import java.util.stream.Collectors;
 @Service("recordService")
 @Slf4j
 public class RecordServiceImpl implements RecordService {
-
     @Resource
     private RecordDao recordDao;
     @Resource
     private ModelConverter<Record, RecordBO> recordConverter;
     @Resource
     private ModelConverter<Record, RecordDetailBO> recordDetailConverter;
+
+    @Resource
+    private RecordRepository recordRepository;
+
+    public PageResult<RecordBO> list(Integer page, Integer size) {
+        Pageable pageable = new PageRequest(page, size, new Sort(Sort.Direction.DESC, "id"));
+        Page<Record> pageData = recordRepository.findAll(
+                (root, query, cb) -> {
+                    List<Predicate> predicates = Lists.newArrayList();
+                    return cb.and(predicates.toArray(new Predicate[0]));
+                },
+                pageable
+        );
+
+        PageResult<RecordBO> result = new PageResult<>();
+        if (pageData.hasContent()) {
+            result.setSuccess(true);
+            result.setPageIndex(page);
+            result.setCount(pageData.getTotalElements());
+            result.setTotalPage(pageData.getTotalPages());
+            result.setPageSize(size);
+            result.setData(pageData.getContent().stream().map(recordConverter::convert).collect(Collectors.toList()));
+
+        }
+        return result;
+    }
 
     @Override
     public RepeaterResult<String> saveRecord(String body) {
@@ -96,5 +121,9 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public RepeaterResult<RepeatModel> callback(String repeatId) {
         return null;
+    }
+
+    public RecordDetailBO detail(Long id) {
+        return recordDetailConverter.convert(recordRepository.getOne(id));
     }
 }

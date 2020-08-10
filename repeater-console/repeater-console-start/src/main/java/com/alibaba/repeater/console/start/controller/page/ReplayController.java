@@ -4,6 +4,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ReplayBO;
 import com.alibaba.repeater.console.common.params.ReplayParams;
 import com.alibaba.repeater.console.service.ReplayService;
+import com.alibaba.repeater.console.service.impl.ReplayServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,7 +24,19 @@ import javax.annotation.Resource;
 public class ReplayController {
 
     @Resource
-    private ReplayService replayService;
+    private ReplayServiceImpl replayService;
+
+    @RequestMapping("/execute")
+    @ResponseBody
+    public RepeaterResult<String> replay(@ModelAttribute("requestParams") ReplayParams params) {
+        return replayService.replay(params);
+    }
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
     @RequestMapping("detail.htm")
     public String detail(@ModelAttribute("requestParams") ReplayParams params, Model model) {
@@ -36,9 +49,5 @@ public class ReplayController {
         return "/replay/detail";
     }
 
-    @RequestMapping("execute.json")
-    @ResponseBody
-    public RepeaterResult<String> replay(@ModelAttribute("requestParams") ReplayParams params) {
-        return replayService.replay(params);
-    }
+
 }
