@@ -44,7 +44,9 @@ public class SSHUtil {
             String stdOutput = getOutput(process.getInputStream());
             String errorOutput = getOutput(process.getErrorStream());
 //            System.out.println("Std Output:\n" + stdOutput);
-//            System.out.println("Error Output:\n" + errorOutput);
+            if(StringUtils.isNotBlank(errorOutput)) {
+                System.out.println("Error Output:\n" + errorOutput);
+            }
 
             sshResult.setErrorCode(errCode);
             sshResult.setStdOutput(stdOutput);
