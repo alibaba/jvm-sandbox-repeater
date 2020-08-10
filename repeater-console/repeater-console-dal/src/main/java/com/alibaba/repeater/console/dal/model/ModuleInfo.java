@@ -37,6 +37,8 @@ public class ModuleInfo implements java.io.Serializable {
 
     private String privateRsaFile;
 
+    private String preCommand;
+
     private String status;
 
     @Column(name = "gmt_create")

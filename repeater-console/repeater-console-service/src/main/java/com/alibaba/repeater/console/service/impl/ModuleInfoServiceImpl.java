@@ -194,7 +194,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         return ResultHelper.success(moduleInfoConverter.convert(moduleInfo));
     }
 
-    public void update(Long id, String ip, String port, String username, String password, String privateRsaFile, Long moduleConfigId) {
+    public void update(Long id, String ip, String port, String username, String password, String privateRsaFile, String preCommand, Long moduleConfigId) {
         ModuleInfo moduleInfo = null;
         if(id != null) {
             moduleInfo = moduleInfoRepository.getOne(id);
@@ -210,6 +210,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         moduleInfo.setUsername(username);
         moduleInfo.setPassword(password);
         moduleInfo.setPrivateRsaFile(privateRsaFile);
+        moduleInfo.setPreCommand(preCommand);
         moduleInfo.setGmtModified(new Date());
 
         moduleInfo = moduleInfoRepository.save(moduleInfo);
@@ -228,7 +229,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
     public ModuleStatus getStatus(long moduleId) {
         ModuleInfo moduleInfo = moduleInfoRepository.getOne(moduleId);
         String cmd = "pwd";
-        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
         boolean isAvailable = sshResult.getErrorCode() == 0;
 
         if(!isAvailable) {
@@ -236,7 +237,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
         }
 
         cmd = "ls -lrta ~| grep sandbox | wc -l";
-        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
 
         Integer sandBoxFileCount = Integer.parseInt(sshResult.getStdOutput().trim());
         boolean isSandboxInstalled = sshResult.getErrorCode() == 0 && sandBoxFileCount >= 2;
@@ -246,7 +247,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
         String appName = moduleInfo.getModuleConfig().getApp().getName();
         cmd = "ps -ef | grep java | grep " + appName + " | grep -v grep | wc -l";
-        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
         boolean isAppStarted = sshResult.getErrorCode() == 0 && sshResult.getStdOutput().trim().equals("1");
         if(!isAppStarted) {
             return ModuleStatus.APP_DOWN;
@@ -254,7 +255,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
 
         cmd = "netstat -anp | grep 12580 | grep LISTEN | wc -l";
-        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
         boolean isSandBoxAttached = sshResult.getErrorCode() == 0 && sshResult.getStdOutput().trim().equals("1");
         if(!isSandBoxAttached) {
             return ModuleStatus.DETACH;
@@ -272,7 +273,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
             "sed -i 's/repeat.standalone.mode=true/repeat.standalone.mode=false/g' ~/.sandbox-module/cfg/repeater.properties",
         };
         for(String cmd: cmdArr) {
-            SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+            SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
             boolean isSuccess = sshResult.getErrorCode() == 0;
             if(!isSuccess) {
                 log.error("###run failed: {}", cmd);
@@ -284,8 +285,8 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     public boolean attach(Long id) {
         ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
-        String cmd = "export JAVA_HOME=/usr/lib/jvm/java-8-oracle;bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -P 12580"; //FIXME JAVA_HOME 多处
-        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        String cmd = "bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -P 12580"; //FIXME JAVA_HOME 多处
+        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
         boolean isSuccess = sshResult.getErrorCode() == 0;
         if(!isSuccess) {
             log.error("###run failed: {}", cmd);
@@ -296,8 +297,8 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     public boolean detach(Long id) {
         ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
-        String cmd = "export JAVA_HOME=/usr/lib/jvm/java-8-oracle;bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -S";
-        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
+        String cmd = "bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -S";
+        SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), moduleInfo.getPreCommand(), cmd);
         boolean isSuccess = sshResult.getErrorCode() == 0;
 
         try {

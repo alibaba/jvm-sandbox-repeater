@@ -36,8 +36,8 @@ public class ModuleInfoController {
     }
 
     @RequestMapping("/update")
-    public Object update(Long id, String ip, String port, String username, String password, String privateRsaFile, Long moduleConfigId) {
-        moduleInfoService.update(id, ip, port, username, password, privateRsaFile, moduleConfigId);
+    public Object update(Long id, String ip, String port, String username, String password, String privateRsaFile, String preCommand, Long moduleConfigId) {
+        moduleInfoService.update(id, ip, port, username, password, privateRsaFile, preCommand, moduleConfigId);
         return RepeaterResult.builder().success(true).build();
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Slf4j
 public class SSHUtil {
-    public static SSHResult runCommand(String ip, String port, String userName, String password, String keyFile, String command) {
+    public static SSHResult runCommand(String ip, String port, String userName, String password, String keyFile, String preCommand, String command) {
         SSHResult sshResult = new SSHResult();
         List<String> cmdList = new ArrayList<>();
         cmdList.add("ssh");
@@ -32,7 +32,13 @@ public class SSHUtil {
         }
 
         cmdList.add(userName + "@" + ip);
-        cmdList.add(command);
+        String finalCmd;
+        if(StringUtils.isNotBlank(preCommand)) {
+            finalCmd = preCommand + ";" + command;
+        } else {
+            finalCmd = command;
+        }
+        cmdList.add(finalCmd);
 
         ProcessBuilder pb = new ProcessBuilder(cmdList);
         System.out.println("Run echo command:"  + cmdList);
@@ -75,7 +81,7 @@ public class SSHUtil {
     public static void main(String[] args) {
 //        String cmd = "curl -s http://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/install-repeater.sh | bash";
         String cmd = "sed -i 's/127.0.0.1:8001/192.168.2.4:8001/g' ~/.sandbox-module/cfg/repeater.properties";
-        SSHResult sshResult = runCommand("192.168.43.28", "10122", "root", "", "C:\\Users\\zgq\\code\\research\\zxh\\gs-rest-service\\complete\\docker\\id_rsa", cmd);
+        SSHResult sshResult = runCommand("192.168.43.28", "10122", "root", "", "C:\\Users\\zgq\\code\\research\\zxh\\gs-rest-service\\complete\\docker\\id_rsa", "", cmd);
         System.out.println("sshResult:" + sshResult);
     }
 }

@@ -92,6 +92,11 @@ CREATE TABLE record
     AUTO_INCREMENT = 1;
 
 
+ALTER TABLE `module_info`
+ADD COLUMN `pre_command` VARCHAR(500) NULL AFTER `private_rsa_file`;
+
+
+
 
 
 ---------------------------------

@@ -28,6 +28,8 @@ public class ModuleInfoBO extends BaseBO {
 
     private String privateRsaFile;
 
+    private String preCommand;
+
     private ModuleStatus status;
 
     private Date gmtCreate;
