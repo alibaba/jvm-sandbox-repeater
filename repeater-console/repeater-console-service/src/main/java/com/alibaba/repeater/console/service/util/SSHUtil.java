@@ -43,8 +43,8 @@ public class SSHUtil {
             System.out.println("Echo command executed, any errors? " + (errCode == 0 ? "No" : "Yes"));
             String stdOutput = getOutput(process.getInputStream());
             String errorOutput = getOutput(process.getErrorStream());
-            System.out.println("Std Output:\n" + stdOutput);
-            System.out.println("Error Output:\n" + errorOutput);
+//            System.out.println("Std Output:\n" + stdOutput);
+//            System.out.println("Error Output:\n" + errorOutput);
 
             sshResult.setErrorCode(errCode);
             sshResult.setStdOutput(stdOutput);

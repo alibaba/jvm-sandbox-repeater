@@ -67,6 +67,9 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
     @Override
     public List<ModuleInfoBO> query(Long configId) {
         List<ModuleInfo> moduleInfoList = moduleInfoRepository.findByModuleConfigId(configId);
+        for(ModuleInfo moduleInfo: moduleInfoList) {
+            this.refreshStatus(moduleInfo.getId());
+        }
         return moduleInfoList.stream().map(moduleInfoConverter::convert).collect(Collectors.toList());
     }
 
@@ -281,7 +284,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     public boolean attach(Long id) {
         ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
-        String cmd = "bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -P 12580"; //FIXME JAVA_HOME 多处
+        String cmd = "export JAVA_HOME=/usr/lib/jvm/java-8-oracle;bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -P 12580"; //FIXME JAVA_HOME 多处
         SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
         boolean isSuccess = sshResult.getErrorCode() == 0;
         if(!isSuccess) {
@@ -293,7 +296,7 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     public boolean detach(Long id) {
         ModuleInfo moduleInfo = moduleInfoRepository.getOne(id);
-        String cmd = "bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -S";
+        String cmd = "export JAVA_HOME=/usr/lib/jvm/java-8-oracle;bash ~/sandbox/bin/sandbox.sh -p `ps -ef | grep " + moduleInfo.getModuleConfig().getApp().getName() + " | grep -v grep | awk '{print $2}'` -S";
         SSHResult sshResult = SSHUtil.runCommand(moduleInfo.getIp(), moduleInfo.getPort(), moduleInfo.getUsername(), moduleInfo.getPassword(), moduleInfo.getPrivateRsaFile(), cmd);
         boolean isSuccess = sshResult.getErrorCode() == 0;
 
