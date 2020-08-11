@@ -12,31 +12,36 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.MockStrategy;
-import com.alibaba.repeater.console.common.domain.ModuleInfoBO;
+import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.domain.ReplayBO;
 import com.alibaba.repeater.console.common.domain.ReplayStatus;
 import com.alibaba.repeater.console.common.params.ReplayParams;
 import com.alibaba.repeater.console.dal.dao.RecordDao;
 import com.alibaba.repeater.console.dal.dao.ReplayDao;
-import com.alibaba.repeater.console.dal.model.Record;
-import com.alibaba.repeater.console.dal.model.Replay;
+import com.alibaba.repeater.console.dal.model.*;
+import com.alibaba.repeater.console.dal.repository.AppRepository;
+import com.alibaba.repeater.console.dal.repository.ModuleConfigRepository;
+import com.alibaba.repeater.console.dal.repository.ModuleInfoRepository;
+import com.alibaba.repeater.console.dal.repository.ReplayRepository;
 import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.service.ReplayService;
 import com.alibaba.repeater.console.service.convert.DifferenceConvert;
 import com.alibaba.repeater.console.service.convert.ReplayConverter;
 import com.alibaba.repeater.console.service.util.ConvertUtil;
 import com.alibaba.repeater.console.service.util.JacksonUtil;
-import com.alibaba.repeater.console.service.util.ResultHelper;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import javax.persistence.criteria.Predicate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +56,12 @@ public class ReplayServiceImpl implements ReplayService {
 
     @Value("${repeat.repeat.url}")
     private String repeatURL;
+    @Resource
+    private AppRepository appRepository;
+    @Resource
+    private ModuleConfigRepository moduleConfigRepository;
+    @Resource
+    private ModuleInfoRepository moduleInfoRepository;
 
     @Resource
     private ModuleInfoService moduleInfoService;
@@ -62,18 +73,50 @@ public class ReplayServiceImpl implements ReplayService {
     private ReplayConverter replayConverter;
     @Resource
     private DifferenceConvert differenceConvert;
+    @Resource
+    private ReplayRepository replayRepository;
 
-    @Override
-    public RepeaterResult<String> replay(ReplayParams params) {
-        Optional.ofNullable(params.getIp()).orElseThrow(() -> new RuntimeException("ip can not be null"));
-        Optional.ofNullable(params.getAppName()).orElseThrow(() -> new RuntimeException("appName can not be null"));
-        Optional.ofNullable(params.getTraceId()).orElseThrow(() -> new RuntimeException("traceId can not be null"));
-        RepeaterResult<ModuleInfoBO> result = null; //FIXME moduleInfoService.query(params.getAppName(), params.getIp());
-        if (!result.isSuccess() || result.getData() == null) {
-            return ResultHelper.copy(result);
+    public PageResult<ReplayBO> list(Integer recordId, String repeatId, int page, int size) {
+        Pageable pageable = new PageRequest(page, size, new Sort(Sort.Direction.DESC, "id"));
+        Page<Replay> pageData = replayRepository.findAll(
+                (root, query, cb) -> {
+                    List<Predicate> predicates = Lists.newArrayList();
+                    if (recordId != null) {
+                        predicates.add(cb.equal(root.<Long>get("record").get("id"), recordId));
+                    }
+                    if (StringUtils.isNotBlank(repeatId)) {
+                        predicates.add(cb.equal(root.<String>get("repeatId"), repeatId));
+                    }
+                    return cb.and(predicates.toArray(new Predicate[0]));
+                },
+                pageable
+        );
+
+        PageResult<ReplayBO> result = new PageResult<>();
+        if (pageData.hasContent()) {
+            result.setSuccess(true);
+            result.setPageIndex(page);
+            result.setCount(pageData.getTotalElements());
+            result.setTotalPage(pageData.getTotalPages());
+            result.setPageSize(size);
+            result.setData(pageData.getContent().stream().map(replayConverter::convert).collect(Collectors.toList()));
         }
-        params.setPort(result.getData().getPort());
-//        params.setEnvironment(result.getData().getEnvironment());
+        return result;
+    }
+
+    public RepeaterResult<String> replay(String traceId, Long moduleId, boolean isMock) {
+        ModuleInfo moduleInfo = moduleInfoRepository.getOne(moduleId);
+        ModuleConfig moduleConfig = moduleInfo.getModuleConfig();
+        App app = moduleConfig.getApp();
+
+        ReplayParams params = new ReplayParams();
+        params.setAppName(app.getName());
+        params.setTraceId(traceId);
+        params.setIp(moduleInfo.getIp());
+        params.setPort(moduleInfo.getPort());
+        params.setEnvironment(moduleConfig.getEnvironment());
+        params.setMock(isMock);
+
         final Record record = recordDao.selectByAppNameAndTraceId(params.getAppName(), params.getTraceId());
         if (record == null) {
             return RepeaterResult.builder().success(false).message("data does not exist").build();
@@ -89,7 +132,6 @@ public class ReplayServiceImpl implements ReplayService {
         return doRepeat(record, params);
     }
 
-    @Override
     public RepeaterResult<String> saveRepeat(String body) {
         RepeatModel rm;
         try {
@@ -144,7 +186,6 @@ public class ReplayServiceImpl implements ReplayService {
         return RepeaterResult.builder().success(true).message("operate success").data("-/-").build();
     }
 
-    @Override
     public RepeaterResult<ReplayBO> query(ReplayParams params) {
         Replay replay = replayDao.findByRepeatId(params.getRepeatId());
         if (replay == null) {
@@ -166,7 +207,7 @@ public class ReplayServiceImpl implements ReplayService {
         } catch (SerializeException e) {
             return RepeaterResult.builder().success(false).message(e.getMessage()).build();
         }
-        HttpUtil.Resp resp = HttpUtil.doPost(String.format(repeatURL,params.getIp(),params.getPort()), requestParams);
+        HttpUtil.Resp resp = HttpUtil.doPost(String.format(repeatURL,params.getIp(), 12580), requestParams);
         if (resp.isSuccess()) {
             return RepeaterResult.builder().success(true).message("operate success").data(meta.getRepeatId()).build();
         }
@@ -185,5 +226,25 @@ public class ReplayServiceImpl implements ReplayService {
         replay.setStatus(ReplayStatus.PROCESSING.getStatus());
         // 冗余了一个repeatID，实际可以直接使用replay#id
         return replayDao.save(replay);
+    }
+
+    public List<String> fetchEnvByAppName(String appName) {
+        App app = appRepository.findByName(appName);
+        List<ModuleConfig> moduleConfigList = moduleConfigRepository.findByAppId(app.getId());
+        List<String> envList = new ArrayList<>();
+        for(ModuleConfig moduleConfig: moduleConfigList) {
+            envList.add(moduleConfig.getEnvironment());
+        }
+        return envList;
+    }
+
+    public Map<Long, String> fetchHost(String appName, String env) {
+        ModuleConfig moduleConfig = moduleConfigRepository.findByAppNameAndEnvironment(appName, env);
+        List<ModuleInfo> moduleInfoList = moduleInfoRepository.findByModuleConfigId(moduleConfig.getId());
+        Map<Long, String> moduleMap = new HashMap<>();
+        for(ModuleInfo moduleInfo: moduleInfoList) {
+            moduleMap.put(moduleInfo.getId(), moduleInfo.getIp());
+        }
+        return moduleMap;
     }
 }

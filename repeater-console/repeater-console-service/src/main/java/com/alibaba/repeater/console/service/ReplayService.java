@@ -12,9 +12,9 @@ import com.alibaba.repeater.console.common.params.ReplayParams;
  */
 public interface ReplayService {
 
-    RepeaterResult<String> replay(ReplayParams params);
+//    RepeaterResult<String> replay(ReplayParams params);
+//
+//    RepeaterResult<String> saveRepeat(String body);
 
-    RepeaterResult<String> saveRepeat(String body);
-
-    RepeaterResult<ReplayBO> query(ReplayParams params);
+//    RepeaterResult<ReplayBO> query(ReplayParams params);
 }

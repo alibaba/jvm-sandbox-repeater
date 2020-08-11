@@ -4,7 +4,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.params.ReplayParams;
 import com.alibaba.repeater.console.service.RecordService;
-import com.alibaba.repeater.console.service.ReplayService;
+import com.alibaba.repeater.console.service.impl.ReplayServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,7 +23,7 @@ public class PersistenceFacadeApi {
     @Resource
     private RecordService recordService;
     @Resource
-    private ReplayService replayService;
+    private ReplayServiceImpl replayService;
 
     @RequestMapping(value = "record/{appName}/{traceId}", method = RequestMethod.GET)
     public RepeaterResult<String> getWrapperRecord(@PathVariable("appName") String appName,
@@ -38,7 +38,12 @@ public class PersistenceFacadeApi {
         ReplayParams params = ReplayParams.builder().repeatId(request.getHeader("RepeatId")).build();
         params.setAppName(appName);
         params.setTraceId(traceId);
-        return replayService.replay(params);
+
+        if(true) {
+            throw new RuntimeException("FIXME");
+        }
+//        return replayService.replay(params);
+        return null; //FIXME
     }
 
     @RequestMapping(value = "record/save", method = RequestMethod.POST)

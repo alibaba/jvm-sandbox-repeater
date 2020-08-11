@@ -16,5 +16,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional(rollbackFor = {RuntimeException.class, Error.class, BizException.class})
 public interface AppRepository extends JpaRepository<App, Long>, JpaSpecificationExecutor<App> {
-
+    App findByName(String name);
 }

@@ -3,15 +3,17 @@ package com.alibaba.repeater.console.start.controller.page;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ReplayBO;
 import com.alibaba.repeater.console.common.params.ReplayParams;
-import com.alibaba.repeater.console.service.ReplayService;
 import com.alibaba.repeater.console.service.impl.ReplayServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link ReplayController}
@@ -26,11 +28,31 @@ public class ReplayController {
     @Resource
     private ReplayServiceImpl replayService;
 
+    @RequestMapping("/fetchEnv")
+    @ResponseBody
+    public List<String> fetchEnv(String appName) {
+        return replayService.fetchEnvByAppName(appName);
+    }
+
+    @RequestMapping("/fetchHost")
+    @ResponseBody
+    public Map<Long, String> fetchHost(String appName, String env) {
+        return replayService.fetchHost(appName, env);
+    }
+
     @RequestMapping("/execute")
     @ResponseBody
-    public RepeaterResult<String> replay(@ModelAttribute("requestParams") ReplayParams params) {
-        return replayService.replay(params);
+    public RepeaterResult<String> replay(String traceId, Long moduleId, boolean isMock) {
+        return replayService.replay(traceId, moduleId, isMock);
     }
+
+    @RequestMapping("/list")
+    @ResponseBody
+    public Object list(Integer recordId, String repeatId, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "9999") Integer size) {
+        return replayService.list(recordId, repeatId, page, size);
+    }
+
+
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
