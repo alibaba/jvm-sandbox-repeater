@@ -8,11 +8,15 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ModuleConfigBO;
 import com.alibaba.repeater.console.common.domain.ModuleInfoBO;
+import com.alibaba.repeater.console.common.domain.ModuleStatus;
 import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.params.ModuleConfigParams;
 import com.alibaba.repeater.console.common.params.ModuleInfoParams;
 import com.alibaba.repeater.console.dal.dao.ModuleConfigDao;
+import com.alibaba.repeater.console.dal.model.App;
 import com.alibaba.repeater.console.dal.model.ModuleConfig;
+import com.alibaba.repeater.console.dal.model.ModuleInfo;
+import com.alibaba.repeater.console.dal.repository.AppRepository;
 import com.alibaba.repeater.console.dal.repository.ModuleConfigRepository;
 import com.alibaba.repeater.console.service.ModuleConfigService;
 import com.alibaba.repeater.console.service.ModuleInfoService;
@@ -50,12 +54,33 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
     private ModuleConfigConverter moduleConfigConverter;
     @Resource
     private ModuleInfoService moduleInfoService;
+
+    @Resource
+    private AppRepository appRepository;
+
     @Value("${repeat.config.url}")
     private String configURL;
 
     public List<ModuleConfigBO> list(Long appId) {
         List<ModuleConfig> moduleConfigList = moduleConfigRepository.findByAppId(appId);
         return moduleConfigList.stream().map(moduleConfigConverter::convert).collect(Collectors.toList());
+    }
+
+    public void update(Long id, String environment, String config, Long appId) {
+        ModuleConfig moduleConfig = null;
+        if(id != null) {
+            moduleConfig = moduleConfigRepository.getOne(id);
+        } else {
+            moduleConfig = new ModuleConfig();
+            App app = appRepository.getOne(appId);
+            moduleConfig.setApp(app);
+            moduleConfig.setGmtCreate(new Date());
+        }
+        moduleConfig.setEnvironment(environment);
+        moduleConfig.setConfig(config);
+        moduleConfig.setGmtModified(new Date());
+
+        moduleConfigRepository.save(moduleConfig);
     }
 
     @Override

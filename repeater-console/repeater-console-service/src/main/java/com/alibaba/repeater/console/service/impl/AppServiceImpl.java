@@ -1,8 +1,11 @@
 package com.alibaba.repeater.console.service.impl;
 
 import com.alibaba.repeater.console.common.domain.AppBO;
+import com.alibaba.repeater.console.common.domain.ModuleStatus;
 import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.dal.model.App;
+import com.alibaba.repeater.console.dal.model.ModuleConfig;
+import com.alibaba.repeater.console.dal.model.ModuleInfo;
 import com.alibaba.repeater.console.dal.repository.AppRepository;
 import com.alibaba.repeater.console.service.convert.AppConverter;
 import com.google.common.collect.Lists;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +32,24 @@ import java.util.stream.Collectors;
 public class AppServiceImpl {
     @Resource
     private AppConverter appConverter;
+
     @Resource
     private AppRepository appRepository;
+
+    public void update(Long id, String name, String memo) {
+        App app = null;
+        if(id != null) {
+            app = appRepository.getOne(id);
+        } else {
+            app = new App();
+            app.setGmtCreate(new Date());
+        }
+        app.setName(name);
+        app.setMemo(memo);
+        app.setGmtModified(new Date());
+
+        app = appRepository.save(app);
+    }
 
     public PageResult<AppBO> list(String keyword, int page, int size) {
         Pageable pageable = new PageRequest(page, size, new Sort(Sort.Direction.DESC, "id"));

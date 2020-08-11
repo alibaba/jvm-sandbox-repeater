@@ -8,6 +8,7 @@ import com.alibaba.repeater.console.common.domain.ModuleConfigBO;
 import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.params.ModuleConfigParams;
 import com.alibaba.repeater.console.service.ModuleConfigService;
+import com.alibaba.repeater.console.service.impl.ModuleConfigServiceImpl;
 import com.alibaba.repeater.console.service.util.JacksonUtil;
 import com.alibaba.repeater.console.start.controller.vo.PagerAdapter;
 import com.google.common.collect.Lists;
@@ -33,7 +34,7 @@ import java.util.List;
 public class ModuleConfigController {
 
     @Resource
-    private ModuleConfigService moduleConfigService;
+    private ModuleConfigServiceImpl moduleConfigService;
 
     @RequestMapping("/list")
     public Object list(Long appId) {
@@ -41,7 +42,11 @@ public class ModuleConfigController {
         return result;
     }
 
-
+    @RequestMapping("/update")
+    public Object update(Long id, String environment, String config, Long appId) {
+        moduleConfigService.update(id, environment, config, appId);
+        return RepeaterResult.builder().success(true).build();
+    }
 
     //////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////

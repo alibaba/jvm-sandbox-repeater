@@ -30,4 +30,10 @@ public class AppController {
         return pageResult;
     }
 
+    @RequestMapping("/update")
+    public Object update(Long id, String name, String memo) {
+        appService.update(id, name, memo);
+        return RepeaterResult.builder().success(true).build();
+    }
+
 }
