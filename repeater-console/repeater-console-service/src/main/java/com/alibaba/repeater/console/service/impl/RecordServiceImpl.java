@@ -4,6 +4,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.RecordWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
+import com.alibaba.repeater.console.common.domain.ModuleInfoBO;
 import com.alibaba.repeater.console.common.domain.PageResult;
 import com.alibaba.repeater.console.common.domain.RecordBO;
 import com.alibaba.repeater.console.common.domain.RecordDetailBO;
@@ -17,11 +18,9 @@ import com.alibaba.repeater.console.service.util.ConvertUtil;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
@@ -43,15 +42,31 @@ public class RecordServiceImpl implements RecordService {
     private ModelConverter<Record, RecordBO> recordConverter;
     @Resource
     private ModelConverter<Record, RecordDetailBO> recordDetailConverter;
-
     @Resource
     private RecordRepository recordRepository;
 
-    public PageResult<RecordBO> list(Integer page, Integer size) {
+    public PageResult<RecordBO> list(String appName, String keyWords, Integer page, Integer size) {
         Pageable pageable = new PageRequest(page, size, new Sort(Sort.Direction.DESC, "id"));
         Page<Record> pageData = recordRepository.findAll(
                 (root, query, cb) -> {
                     List<Predicate> predicates = Lists.newArrayList();
+                    if (StringUtils.isNotBlank(appName)) {
+                        predicates.add(cb.like(root.<String>get("appName"), appName));
+                    }
+
+//                    List<Predicate> predicatesOr = Lists.newArrayList();
+                    if (StringUtils.isNotBlank(keyWords)) {
+                        String keyWordsLike = "%" + keyWords + "%";
+                        predicates.add(cb.or(
+                                cb.like(root.<String>get("entranceDesc"), keyWordsLike),
+                                cb.like(root.<String>get("environment"), keyWordsLike),
+                                cb.like(root.<String>get("host"), keyWordsLike),
+                                cb.like(root.<String>get("traceId"), keyWordsLike)
+                        ));
+
+//                        predicatesOr.add(cb.like(root.<String>get("entranceDesc"), keyWords));
+                    }
+
                     return cb.and(predicates.toArray(new Predicate[0]));
                 },
                 pageable

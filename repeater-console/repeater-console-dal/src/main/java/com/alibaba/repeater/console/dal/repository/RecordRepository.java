@@ -1,11 +1,16 @@
 package com.alibaba.repeater.console.dal.repository;
 
-        import com.alibaba.repeater.console.common.exception.BizException;
-        import com.alibaba.repeater.console.dal.model.Record;
-        import org.springframework.data.jpa.repository.JpaRepository;
-        import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-        import org.springframework.stereotype.Repository;
-        import org.springframework.transaction.annotation.Transactional;
+import com.alibaba.repeater.console.common.exception.BizException;
+import com.alibaba.repeater.console.dal.model.Record;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 
 /**
  * {@link }
@@ -15,7 +20,7 @@ package com.alibaba.repeater.console.dal.repository;
  */
 @Repository
 @Transactional(rollbackFor = {RuntimeException.class, Error.class, BizException.class})
-public interface RecordRepository extends JpaRepository<Record, Long>, JpaSpecificationExecutor<Record> {
+public interface RecordRepository extends JpaRepository<Record, Long>, JpaSpecificationExecutor<Record>, QueryByExampleExecutor<Record> {
 
     /**
      * 根据应用名和traceId索引
@@ -25,4 +30,7 @@ public interface RecordRepository extends JpaRepository<Record, Long>, JpaSpecif
      * @return 录制记录
      */
     Record findByAppNameAndTraceId(String appName, String traceId);
+
+    @Query(nativeQuery = true, value = "select distinct(app_name) from record")
+    List<String> queryAppName();
 }
