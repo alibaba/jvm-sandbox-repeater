@@ -7,6 +7,8 @@ import com.alibaba.repeater.console.dal.model.App;
 import com.alibaba.repeater.console.dal.model.ModuleConfig;
 import com.alibaba.repeater.console.dal.model.ModuleInfo;
 import com.alibaba.repeater.console.dal.repository.AppRepository;
+import com.alibaba.repeater.console.dal.repository.ModuleConfigRepository;
+import com.alibaba.repeater.console.dal.repository.ModuleInfoRepository;
 import com.alibaba.repeater.console.service.convert.AppConverter;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,25 @@ public class AppServiceImpl {
 
     @Resource
     private AppRepository appRepository;
+
+    @Resource
+    private ModuleConfigRepository moduleConfigRepository;
+
+    @Resource
+    private ModuleInfoRepository moduleInfoRepository;
+
+    public void delete(Long id) {
+        App app = appRepository.getOne(id);
+        List<ModuleConfig> moduleConfigList = app.getModuleConfigList();
+        for (ModuleConfig moduleConfig : moduleConfigList){
+            moduleInfoRepository.deleteByModuleConfigId(moduleConfig.getId());
+//            List<ModuleInfo> moduleInfoList = moduleConfig.getModuleInfoList();
+//            moduleInfoRepository.delete(moduleInfoList);
+        }
+        moduleConfigRepository.deleteByAppId(id);
+        appRepository.delete(app);
+
+    }
 
     public void update(Long id, String name, String memo) {
         App app = null;

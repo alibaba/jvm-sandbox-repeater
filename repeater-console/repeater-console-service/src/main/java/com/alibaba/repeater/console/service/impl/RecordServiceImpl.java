@@ -72,6 +72,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public RepeaterResult<String> saveRecord(String body) {
+        log.info("body:" + body);
         try {
             RecordWrapper wrapper = SerializerWrapper.hessianDeserialize(body, RecordWrapper.class);
             if (wrapper == null || StringUtils.isEmpty(wrapper.getAppName())) {

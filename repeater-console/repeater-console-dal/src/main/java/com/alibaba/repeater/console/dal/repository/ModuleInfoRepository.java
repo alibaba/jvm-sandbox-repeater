@@ -25,13 +25,15 @@ public interface ModuleInfoRepository extends JpaRepository<ModuleInfo, Long>, J
 
     List<ModuleInfo> findByModuleConfigId(Long configId);
 
-    @Modifying
-    @Query(
-            "update ModuleInfo set gmtModified =  :#{#moduleInfo.gmtModified}" +
-                    " where appName =  :#{#moduleInfo.appName}" +
-                    " and ip = :#{#moduleInfo.ip}"
-    )
-    int updateByAppNameAndIp(@Param("moduleInfo") ModuleInfo moduleInfo);
+//    @Modifying
+//    @Query(
+//            "update ModuleInfo set gmtModified =  :#{#moduleInfo.gmtModified}" +
+//                    " where appName =  :#{#moduleInfo.appName}" +
+//                    " and ip = :#{#moduleInfo.ip}"
+//    )
+//    int updateByAppNameAndIp(@Param("moduleInfo") ModuleInfo moduleInfo);
+
+    void deleteByModuleConfigId(Long moduleConfigId);
 
 
 }

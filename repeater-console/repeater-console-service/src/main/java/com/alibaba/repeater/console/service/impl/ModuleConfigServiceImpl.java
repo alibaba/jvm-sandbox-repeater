@@ -18,6 +18,7 @@ import com.alibaba.repeater.console.dal.model.ModuleConfig;
 import com.alibaba.repeater.console.dal.model.ModuleInfo;
 import com.alibaba.repeater.console.dal.repository.AppRepository;
 import com.alibaba.repeater.console.dal.repository.ModuleConfigRepository;
+import com.alibaba.repeater.console.dal.repository.ModuleInfoRepository;
 import com.alibaba.repeater.console.service.ModuleConfigService;
 import com.alibaba.repeater.console.service.ModuleInfoService;
 import com.alibaba.repeater.console.service.convert.ModuleConfigConverter;
@@ -54,9 +55,11 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
     private ModuleConfigConverter moduleConfigConverter;
     @Resource
     private ModuleInfoService moduleInfoService;
-
     @Resource
     private AppRepository appRepository;
+
+    @Resource
+    private ModuleInfoRepository moduleInfoRepository;
 
     @Value("${repeat.config.url}")
     private String configURL;
@@ -64,6 +67,12 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
     public List<ModuleConfigBO> list(Long appId) {
         List<ModuleConfig> moduleConfigList = moduleConfigRepository.findByAppId(appId);
         return moduleConfigList.stream().map(moduleConfigConverter::convert).collect(Collectors.toList());
+    }
+
+    public void delete(Long id) {
+        ModuleConfig moduleConfig = moduleConfigRepository.getOne(id);
+        moduleInfoRepository.deleteByModuleConfigId(moduleConfig.getId());
+        moduleConfigRepository.delete(id);
     }
 
     public void update(Long id, String environment, String config, Long appId) {

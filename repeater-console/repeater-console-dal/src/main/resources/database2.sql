@@ -25,8 +25,6 @@ CREATE TABLE app
     DEFAULT CHARSET = utf8
     AUTO_INCREMENT = 1;
 
-
-
 DROP TABLE IF EXISTS module_config;
 CREATE TABLE `module_config` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',

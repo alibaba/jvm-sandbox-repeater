@@ -36,4 +36,10 @@ public class AppController {
         return RepeaterResult.builder().success(true).build();
     }
 
+    @RequestMapping("/delete")
+    public Object delete(Long id) {
+        appService.delete(id);
+        return RepeaterResult.builder().success(true).build();
+    }
+
 }

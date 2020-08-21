@@ -53,9 +53,9 @@ public class ModuleInfoDao {
     }
 
     public ModuleInfo save(ModuleInfo params) {
-        if (moduleInfoRepository.updateByAppNameAndIp(params) > 0) {
-            return params;
-        }
+//        if (moduleInfoRepository.updateByAppNameAndIp(params) > 0) {
+//            return params;
+//        }
         return moduleInfoRepository.saveAndFlush(params);
     }
 

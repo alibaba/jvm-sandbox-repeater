@@ -48,6 +48,12 @@ public class ModuleConfigController {
         return RepeaterResult.builder().success(true).build();
     }
 
+    @RequestMapping("/delete")
+    public Object delete(Long id) {
+        moduleConfigService.delete(id);
+        return RepeaterResult.builder().success(true).build();
+    }
+
     //////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////

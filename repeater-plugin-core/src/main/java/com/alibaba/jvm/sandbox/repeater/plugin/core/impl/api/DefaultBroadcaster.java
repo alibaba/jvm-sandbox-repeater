@@ -91,11 +91,12 @@ public class DefaultBroadcaster extends AbstractBroadcaster {
     private void broadcast(String url, String body, String traceId) {
         HashMap<String, String> headers = Maps.newHashMap();
         headers.put("content-type", "application/json");
+        log.info("###url:{}, headers:{}, body:{}", url, headers, body);
         Resp resp = HttpUtil.invokePostBody(url, headers, body);
         if (resp.isSuccess()) {
-            log.info("broadcast success,traceId={},resp={}", traceId, resp);
+            log.info("broadcast1 success,traceId={},resp={}", traceId, resp);
         } else {
-            log.info("broadcast failed ,traceId={},resp={}", traceId, resp);
+            log.info("broadcast1 failed ,traceId={},resp={}", traceId, resp);
         }
     }
 

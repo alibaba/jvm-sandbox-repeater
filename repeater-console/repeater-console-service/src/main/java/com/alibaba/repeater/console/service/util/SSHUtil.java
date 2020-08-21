@@ -75,7 +75,16 @@ public class SSHUtil {
         } finally {
             br.close();
         }
-        return sb.toString();
+
+//        String strReturn = null;
+        String str = sb.toString();
+//        System.out.println("str: " + str);
+        if (str.contains("\n")){
+            String[] strArr = str.split("\n");
+            str = strArr[strArr.length - 1];
+        }
+//        System.out.println("str after: " + str);
+        return str;
     }
 
     public static void main(String[] args) {

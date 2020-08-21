@@ -20,4 +20,5 @@ import java.util.List;
 public interface ModuleConfigRepository extends JpaRepository<ModuleConfig, Long>, JpaSpecificationExecutor<ModuleConfig> {
     ModuleConfig findByAppNameAndEnvironment(String appName, String environment);
     List<ModuleConfig> findByAppId(Long appId);
+    void deleteByAppId(Long appId);
 }

@@ -1,3 +1,9 @@
+java -jar repeater-console.jar --spring.profiles.active=zgq --spring.datasource.username=root --spring.datasource.password=Servy0u_123
+java -jar repeater-console.jar --spring.profiles.active=zxh
+nohup java -jar repeater-console.jar --spring.profiles.active=zxh --server.ip=10.199.140.164 &
+
+java -Dapp.name=gs-rest-service -Dapp.env=test -jar gs-rest-service-0.1.0.jar
+
 获取当前repeater应用的ip和port
 
 

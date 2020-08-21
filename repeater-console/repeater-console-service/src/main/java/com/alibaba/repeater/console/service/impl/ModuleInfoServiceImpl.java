@@ -95,11 +95,12 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
     @Override
     public RepeaterResult<ModuleInfoBO> report(ModuleInfoBO params) {
-        ModuleInfo moduleInfo = moduleInfoConverter.reconvert(params);
-        moduleInfo.setGmtModified(new Date());
-        moduleInfo.setGmtCreate(new Date());
-        moduleInfoDao.save(moduleInfo);
-        return ResultHelper.success(moduleInfoConverter.convert(moduleInfo));
+//        ModuleInfo moduleInfo = moduleInfoConverter.reconvert(params);
+//        moduleInfo.setGmtModified(new Date());
+//        moduleInfo.setGmtCreate(new Date());
+//        moduleInfoDao.save(moduleInfo);
+//        return ResultHelper.success(moduleInfoConverter.convert(moduleInfo));
+        return null;
     }
 
     @Override
@@ -215,6 +216,10 @@ public class ModuleInfoServiceImpl implements ModuleInfoService {
 
         moduleInfo = moduleInfoRepository.save(moduleInfo);
         this.refreshStatus(moduleInfo.getId());
+    }
+
+    public void delete(Long id) {
+        moduleInfoRepository.delete(id);
     }
 
     public ModuleInfo refreshStatus(long moduleId) {

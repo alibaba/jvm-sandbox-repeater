@@ -31,7 +31,6 @@ public class App implements java.io.Serializable {
     @OneToMany(mappedBy = "app", cascade = { CascadeType.ALL }, orphanRemoval = true)
     private List<ModuleConfig> moduleConfigList = new ArrayList<>();
 
-
     @Column(name = "gmt_create")
     private Date gmtCreate;
 

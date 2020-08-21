@@ -41,6 +41,12 @@ public class ModuleInfoController {
         return RepeaterResult.builder().success(true).build();
     }
 
+    @RequestMapping("/delete")
+    public Object delete(Long id) {
+        moduleInfoService.delete(id);
+        return RepeaterResult.builder().success(true).build();
+    }
+
     @RequestMapping("/getStatus")
     public Object getStatus(Long id) {
         return moduleInfoService.refreshStatus(id).getStatus();
