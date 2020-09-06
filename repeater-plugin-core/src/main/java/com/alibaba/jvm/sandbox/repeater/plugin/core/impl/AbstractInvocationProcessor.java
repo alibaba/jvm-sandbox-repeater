@@ -131,9 +131,22 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         if (parameterTypes != null && parameterTypes.length > 0) {
             builder.append("~");
             for (Class<?> parameterType : parameterTypes) {
-                String className = parameterType.getSimpleName();
-                builder.append(className.subSequence(0, 1));
+                String className = parameterType.getName();
+                builder.append(className).append("-");
             }
+            return builder.substring(0, builder.length()-1);
+        }
+        return builder.toString();
+    }
+
+    protected String getMethodDesc(String methodName, String[] parameterTypes) {
+        StringBuilder builder = new StringBuilder(methodName);
+        if (parameterTypes != null && parameterTypes.length > 0) {
+            builder.append("~");
+            for (String parameterType : parameterTypes) {
+                builder.append(parameterType).append("-");
+            }
+            return builder.substring(0, builder.length()-1);
         }
         return builder.toString();
     }

@@ -72,7 +72,8 @@ public class PluginClassRouting {
                 .build();
         // dubbo回放器中对dubbo框架路由
         PluginClassRouting dubboRepeaterRouting = PluginClassRouting.builder()
-                .targetClass("org.apache.dubbo.rpc.model.ApplicationModel")
+//                .targetClass("org.apache.dubbo.rpc.model.ApplicationModel")
+                .targetClass("org.apache.dubbo.config.ReferenceConfig")
                 .classPattern("^org.apache.dubbo..*")
                 .identity("dubbo")
                 .matcher(Matcher.REPEATER)

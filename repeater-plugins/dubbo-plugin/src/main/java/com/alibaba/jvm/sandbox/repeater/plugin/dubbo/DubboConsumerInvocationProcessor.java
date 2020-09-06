@@ -2,17 +2,13 @@ package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 
 import com.alibaba.jvm.sandbox.api.event.BeforeEvent;
 import com.alibaba.jvm.sandbox.api.event.Event;
-import com.alibaba.jvm.sandbox.api.event.InvokeEvent;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
+import com.alibaba.jvm.sandbox.api.event.ReturnEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultInvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
 import org.apache.commons.lang3.reflect.MethodUtils;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * {@link DubboConsumerInvocationProcessor}
@@ -24,12 +20,6 @@ import java.util.Set;
  */
 class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
 
-    private static final String ON_RESPONSE = "onResponse";
-
-    private static final String INVOKE = "invoke";
-
-    private Set<Integer> ignoreInvokeSet = new HashSet<Integer>(128);
-
     DubboConsumerInvocationProcessor(InvokeType type) {
         super(type);
     }
@@ -38,25 +28,37 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
     public Identity assembleIdentity(BeforeEvent event) {
         Object invoker;
         Object invocation;
-        if (ON_RESPONSE.equals(event.javaMethodName)) {
-            // for record identity assemble
-            // onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {}
-            invoker = event.argumentArray[1];
-            invocation = event.argumentArray[2];
-        } else {
-            // for repeater identity assemble
-            // invoke(Invoker<?> invoker, Invocation invocation)
-            invoker = event.argumentArray[0];
-            invocation = event.argumentArray[1];
-        }
+        // for repeater identity assemble
+        // invoke(Invoker<?> invoker, Invocation invocation)
+        invoker = event.argumentArray[0];
+        invocation = event.argumentArray[1];
 
         try {
             // methodName
             String methodName = (String) MethodUtils.invokeMethod(invocation, "getMethodName");
             Class<?>[] parameterTypes = (Class<?>[]) MethodUtils.invokeMethod(invocation, "getParameterTypes");
+
+            //  兼容泛化调用
+            String[] genericParameterTypes = null;
+            if (methodName.equals("$invoke")) {
+                Object[] arguments = (Object[]) MethodUtils.invokeMethod(invocation, "getArguments");
+                methodName = (String) arguments[0];
+                genericParameterTypes = (String[]) arguments[1];
+                LogUtil.info("dubbo event listener, parameterTypes:{}", genericParameterTypes);
+            }
+
+
             // interfaceName
-            String  interfaceName = ((Class)MethodUtils.invokeMethod(invoker, "getInterface")).getCanonicalName();
-            return new Identity(InvokeType.DUBBO.name(), interfaceName, getMethodDesc(methodName, parameterTypes), getExtra());
+            String interfaceName = ((Class) MethodUtils.invokeMethod(invoker, "getInterface")).getCanonicalName();
+
+            String methodDesc = null;
+            if (genericParameterTypes != null) {
+                methodDesc = getMethodDesc(methodName, genericParameterTypes);
+            } else {
+                methodDesc = getMethodDesc(methodName, parameterTypes);
+            }
+            LogUtil.info("dubbo event listener, methodDesc: {}", methodDesc);
+            return new Identity(InvokeType.DUBBO.name(), interfaceName, methodDesc, getExtra());
         } catch (Exception e) {
             // ignore
             LogUtil.error("error occurred when assemble dubbo request", e);
@@ -67,16 +69,17 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
     @Override
     public Object[] assembleRequest(BeforeEvent event) {
         Object invocation;
-        if (ON_RESPONSE.equals(event.javaMethodName)) {
-            // for record parameter assemble
-            // onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {}
-            invocation = event.argumentArray[2];
-        } else {
-            // for repeater parameter assemble
-            // invoke(Invoker<?> invoker, Invocation invocation)
-            invocation = event.argumentArray[1];
-        }
+        // for repeater parameter assemble
+        // invoke(Invoker<?> invoker, Invocation invocation)
+        invocation = event.argumentArray[1];
         try {
+            String methodName = (String) MethodUtils.invokeMethod(invocation, "getMethodName");
+
+            // 兼容泛化调用
+            if (methodName.equals("$invoke")) {
+                Object[] arguments = (Object[]) MethodUtils.invokeMethod(invocation, "getArguments");
+                return (Object[]) arguments[2];
+            }
             return (Object[]) MethodUtils.invokeMethod(invocation, "getArguments");
         } catch (Exception e) {
             // ignore
@@ -106,34 +109,16 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
 
     @Override
     public Object assembleResponse(Event event) {
-        // 在onResponse的before事件中组装response
-        if (event.type == Event.Type.BEFORE) {
-            Object appResponse = ((BeforeEvent) event).argumentArray[0];
+        // create by huqiang 2020-09-06 统一使用invoke方法 Result invoke(Invoker<?> invoker, Invocation invocation)
+        if (event.type == Event.Type.RETURN) {
+            Object result = ((ReturnEvent) event).object;
             try {
-                return MethodUtils.invokeMethod(appResponse, "getValue");
+                return MethodUtils.invokeMethod(result, "getValue");
             } catch (Exception e) {
                 // ignore
                 LogUtil.error("error occurred when assemble dubbo response", e);
             }
         }
         return null;
-    }
-
-    @Override
-    public boolean ignoreEvent(InvokeEvent event) {
-        if (event.type == Event.Type.BEFORE) {
-            BeforeEvent be = (BeforeEvent) event;
-            String methodName = be.javaMethodName;
-            // 回放流量忽略onResponse，非回放流量忽略invoke方法
-            boolean ignore = RepeatCache.isRepeatFlow()
-                    ? ON_RESPONSE.equals(methodName)
-                    : INVOKE.equals(methodName);
-            if (ignore) {
-                ignoreInvokeSet.add(be.invokeId);
-            }
-            return ignore;
-        } else {
-            return ignoreInvokeSet.remove(event.invokeId);
-        }
     }
 }
