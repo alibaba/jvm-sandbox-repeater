@@ -7,21 +7,14 @@ import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.StandaloneSwitch;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListener;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
-import com.alibaba.jvm.sandbox.repeater.plugin.spi.MockStrategy;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -42,37 +35,19 @@ public class DubboEventListener extends DefaultEventListener {
     public DubboEventListener(InvokeType invokeType, boolean entrance, InvocationListener listener, InvocationProcessor processor) {
         super(invokeType, entrance, listener, processor);
     }
-
     @Override
     protected void initContext(Event event) {
-        if (event.type == Event.Type.BEFORE && isEntranceBegin(event)) {
+        if (event.type == Event.Type.BEFORE && !RepeatCache.isRepeatFlow()) {
             BeforeEvent beforeEvent = (BeforeEvent) event;
-            log.info("[ dubbo event listener ] initContext, argument {} ", JSON.toJSONString(beforeEvent.argumentArray, SerializerFeature.WriteClassName));
-            Object invocation = null;
-            if (((BeforeEvent) event).javaMethodName.equals("invoke")){
-                invocation = beforeEvent.argumentArray[1];
-            } else {
-                invocation = beforeEvent.argumentArray[2];
+            if (log.isDebugEnabled()) {
+                log.debug("[ dubbo event listener ] initContext, argument {} ", JSON.toJSONString(beforeEvent.argumentArray, SerializerFeature.WriteClassName));
             }
+            Object invocation = beforeEvent.argumentArray[1];
             try {
+                // 回放流量时会跨线程，所以需要将traceId传递过来
                 Map<String, String> attachments = (Map<String, String>) MethodUtils.invokeMethod(invocation, "getAttachments");
                 String traceIdX = attachments.get(Constants.HEADER_TRACE_ID_X);
                 if (TraceGenerator.isValid(traceIdX)) {
-                    RepeatMeta meta = new RepeatMeta();
-                    meta.setAppName(ApplicationModel.instance().getAppName());
-                    meta.setMock(true);
-                    meta.setTraceId(traceIdX);
-                    meta.setMatchPercentage(100);
-                    meta.setStrategyType(MockStrategy.StrategyType.PARAMETER_MATCH);
-                    meta.setRepeatId(traceIdX);
-                    RepeaterResult<RecordModel> pr = StandaloneSwitch.instance().getBroadcaster().pullRecord(meta);
-                    log.info("[ dubbo event listener] initContext, pr.isSuccess:{}, msg:{}", pr.isSuccess(), pr.getMessage());
-                    if (pr.isSuccess()) {
-                        Tracer.start();
-                        RepeatContext context = new RepeatContext(meta, pr.getData(), Tracer.getTraceId());
-                        RepeatCache.putRepeatContext(context);
-                        return;
-                    }
                     Tracer.start(traceIdX);
                 }
             } catch (Exception e) {

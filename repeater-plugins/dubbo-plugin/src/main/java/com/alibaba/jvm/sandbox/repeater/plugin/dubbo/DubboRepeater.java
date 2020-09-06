@@ -81,9 +81,8 @@ public class DubboRepeater extends AbstractRepeater {
             reference.setRetries(0);
 
             RpcContext rpcContext = RpcContext.getContext();
-            rpcContext.setAttachment(Constants.HEADER_TRACE_ID_X, context.getMeta().getTraceId());
+            rpcContext.setAttachment(Constants.HEADER_TRACE_ID_X, context.getTraceId());
 
-            log.info("[ dubbo repeater ] {} ", JSON.toJSONString(reference));
             GenericService genericService = reference.get();
             return genericService.$invoke(dubboInvocation.getMethodName(), dubboInvocation.getParameterTypes(), invocation.getRequest());
         }catch (Exception e){
