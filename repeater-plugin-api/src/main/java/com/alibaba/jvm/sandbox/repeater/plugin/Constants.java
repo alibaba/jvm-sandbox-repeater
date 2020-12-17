@@ -76,4 +76,13 @@ public class Constants {
      * 透传给下游的traceId；跟{@code HEADER_TRACE_ID}的差异在于，{@code HEADER_TRACE_ID_X}表示一次回放请求；需要进行Mock
      */
     public static final String HEADER_TRACE_ID_X = "Repeat-TraceId-X";
+
+    /**
+     * HTTP录制时拦截body的content-type类型
+     */
+    public static final String[] REPEAT_RECORD_HTTP_INTERCEPT_BODY_CONTENT_TYPES = new String[]{
+            "application/json",
+            "application/xml",
+            "text/xml"
+    };
 }
