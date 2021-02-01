@@ -189,7 +189,7 @@
                             </table>
                         </div>
                         <div class="card-footer clearfix" >
-                            #parse("/blocks/pager.vm")
+                            #parse("blocks/pager.vm")
                         </div>
                     </div>
                 </div>
@@ -244,7 +244,7 @@
     });
 </script>
 </script>
-    #parse("/blocks/start-replay.vm")
+    #parse("blocks/start-replay.vm")
 </body>
 </body>
 </html>
