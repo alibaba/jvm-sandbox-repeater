@@ -5,7 +5,7 @@
 > 在阿里集团淘系技术质量内部，已有一套完整的体系在持续运行，从17年开始支持了淘系技术质量部的CI、建站、系统重构等多方面质量保障任务，后续如有需要也会考虑把更多的东西开源回馈社区
 
 > 注意：目前项目代码默认启动standalone模式，不需要依赖任何服务端和存储，能够简单快速的实现单机的录制回放，
-> 控制单机模式的开关在~/.sandbox-module/cfg/repeater.propertiesrepeat.standalone.mode=true，开启或关闭单机工作模式，关闭单机模式后，配置拉取/消息投递等都依赖repeater.properties中配置的具体url；如不想通过http拉取和消息投递的也可以自己实现`Broadcaster`和`ConfigManager`。稍后我们会公布一份录制回放所需的完整架构图以及jvm-sandbox-repeater在整个体系中的位置供大家工程使用做参考。
+> 控制单机模式的开关在`~/.sandbox-module/cfg/repeater.properties` 配置文件的 `repeat.standalone.mode=true`，开启或关闭单机工作模式，关闭单机模式后，配置拉取/消息投递等都依赖repeater.properties中配置的具体url；如不想通过http拉取和消息投递的也可以自己实现`Broadcaster`和`ConfigManager`。稍后我们会公布一份录制回放所需的完整架构图以及jvm-sandbox-repeater在整个体系中的位置供大家工程使用做参考。
 
 ## 快速开始
 
