@@ -27,6 +27,16 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType SOCKETIO = new InvokeType("socketio");
 
+    public static InvokeType OKHTTP = new InvokeType("okhttp");
+
+    public static InvokeType APACHE_HTTP_CLIENT = new InvokeType("apache-http-client");
+
+    public static InvokeType GUAVA_CACHE = new InvokeType("guava-cache");
+
+    public static InvokeType EH_CACHE = new InvokeType("eh-cache");
+
+    public static InvokeType CAFFEINE_CACHE = new InvokeType("caffeine-cache");
+
     private String name;
 
     public InvokeType(String name) {

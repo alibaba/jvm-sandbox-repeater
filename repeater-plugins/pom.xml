@@ -20,6 +20,11 @@
         <module>hibernate-plugin</module>
         <module>spring-data-jpa-plugin</module>
         <module>socketio-plugin</module>
+        <module>apache-http-client-plugin</module>
+        <module>caffeine-cache-plugin</module>
+        <module>eh-cache-plugin</module>
+        <module>guava-cache-plugin</module>
+        <module>okhttp-plugin</module>
     </modules>
 
     <dependencies>
