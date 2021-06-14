@@ -193,7 +193,7 @@
 <script src="/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="/dist/js/demo.js"></script>
-    #parse("/blocks/fakeloader.vm")
+    #parse("blocks/fakeloader.vm")
 
 <script src="/app/js/app.js" charset="UTF-8"></script>
 <script type="application/javascript">

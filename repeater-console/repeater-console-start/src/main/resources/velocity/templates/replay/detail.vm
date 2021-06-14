@@ -368,7 +368,7 @@
 <!-- ace -->
 <script src="/plugins/ace-editor/ace.js" charset="UTF-8"></script>
 <script src="/plugins/ace-diff/ace-diff.min.js" charset="UTF-8"></script>
-    #parse("/blocks/fakeloader.vm")
+    #parse("blocks/fakeloader.vm")
 
 <script src="/app/js/app.js" charset="UTF-8"></script>
 <script src="/app/js/start-repaly.js" charset="UTF-8"></script>
@@ -421,6 +421,6 @@
         }
     });
 </script>
-    #parse("/blocks/start-replay.vm")
+    #parse("blocks/start-replay.vm")
 </body>
 </html>

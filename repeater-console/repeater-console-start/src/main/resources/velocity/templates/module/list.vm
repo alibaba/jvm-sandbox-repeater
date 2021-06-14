@@ -205,7 +205,7 @@
                             </table>
                         </div>
                         <div class="card-footer clearfix">
-                            #parse("/blocks/pager.vm")
+                            #parse("blocks/pager.vm")
                         </div>
                     </div>
                 </div>
@@ -239,8 +239,8 @@
 <script src="/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="/dist/js/demo.js"></script>
-    #parse("/blocks/fakeloader.vm")
-    #parse("/blocks/install-module.vm")
+    #parse("blocks/fakeloader.vm")
+    #parse("blocks/install-module.vm")
 <script src="/app/js/app.js" charset="UTF-8"></script>
 <script type="application/javascript">
     jQuery(function($){
