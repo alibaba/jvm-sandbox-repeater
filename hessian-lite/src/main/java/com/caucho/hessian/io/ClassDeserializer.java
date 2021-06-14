@@ -135,7 +135,9 @@ public class ClassDeserializer extends AbstractMapDeserializer {
       else
         return Class.forName(name);
     } catch (Exception e) {
-      throw new IOExceptionWrapper(e);
+      // ignore class not found exception,using hash map to receive
+      // fix issue #107
+      return null;
     }
   }
 
