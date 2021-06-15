@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.List;
 
 /**

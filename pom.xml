@@ -16,12 +16,12 @@
         <logback.version>1.2.1</logback.version>
         <ttl.version>2.10.2</ttl.version>
         <guava.version>19.0</guava.version>
-        <fastjson.version>1.2.67</fastjson.version>
+        <fastjson.version>1.2.67.sec10</fastjson.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.6</commons-lang3.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-collections4.version>4.1</commons-collections4.version>
-        <okhttp.version>3.9.0</okhttp.version>
+        <okhttp.version>3.12.1</okhttp.version>
         <testng.version>6.14.3</testng.version>
         <commons-csv.version>1.7</commons-csv.version>
     </properties>

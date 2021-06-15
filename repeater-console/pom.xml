@@ -18,7 +18,7 @@
 
     <properties>
         <spring.boot.version>1.4.7.RELEASE</spring.boot.version>
-        <jackson.version>2.10.1</jackson.version>
+        <jackson.version>2.12.3</jackson.version>
     </properties>
 
     <artifactId>repeater-console</artifactId>
@@ -57,6 +57,11 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>8.0.25</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
