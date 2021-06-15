@@ -322,7 +322,8 @@ public class HttpUtil {
                 rb.header(entry.getKey(), entry.getValue());
             }
         }
-        return executeRequest(rb.build());
+        // fix issue #70
+        return executeRequest(rb.build(), 0);
     }
 
     /**

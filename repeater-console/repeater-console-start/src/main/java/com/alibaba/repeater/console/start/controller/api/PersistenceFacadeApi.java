@@ -31,11 +31,16 @@ public class PersistenceFacadeApi {
         return recordService.get(appName, traceId);
     }
 
-    @RequestMapping(value = "repeat/{appName}/{traceId}", method = RequestMethod.GET)
+    @RequestMapping(value = "repeat/{appName}/{ip}/{traceId}", method = RequestMethod.GET)
     public RepeaterResult<String> repeat(@PathVariable("appName") String appName,
+                                         @PathVariable("ip") String ip,
                                          @PathVariable("traceId") String traceId,
                                          HttpServletRequest request) {
-        ReplayParams params = ReplayParams.builder().repeatId(request.getHeader("RepeatId")).build();
+        // fix issue #63
+        ReplayParams params = ReplayParams.builder()
+                .repeatId(request.getHeader("RepeatId"))
+                .ip(ip)
+                .build();
         params.setAppName(appName);
         params.setTraceId(traceId);
         return replayService.replay(params);
