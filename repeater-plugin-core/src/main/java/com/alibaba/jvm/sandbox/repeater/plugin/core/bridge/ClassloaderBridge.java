@@ -135,6 +135,9 @@ public class ClassloaderBridge {
         if (clazz == null) {
             return false;
         }
+        if(clazz.getClassLoader() == null){
+            return false;
+        }
         return clazz.getClassLoader().getClass().getName().contains("sandbox");
     }
 }
