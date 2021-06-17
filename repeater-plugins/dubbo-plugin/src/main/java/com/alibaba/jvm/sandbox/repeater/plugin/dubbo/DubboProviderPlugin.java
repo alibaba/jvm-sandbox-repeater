@@ -59,6 +59,6 @@ public class DubboProviderPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected EventListener getEventListener(InvocationListener listener) {
-        return new DubboEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
+        return new DubboProviderEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
     }
 }
