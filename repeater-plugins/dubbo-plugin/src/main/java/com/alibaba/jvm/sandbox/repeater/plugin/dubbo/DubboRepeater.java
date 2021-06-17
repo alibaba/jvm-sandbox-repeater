@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractRepeater;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
@@ -12,6 +13,7 @@ import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.context.ConfigManager;
+import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.service.GenericService;
 import org.kohsuke.MetaInfServices;
 
@@ -70,6 +72,7 @@ public class DubboRepeater extends AbstractRepeater {
         ClassLoader swap = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(GenericService.class.getClassLoader());
+            RpcContext.getContext().setAttachment(Constants.HEADER_TRACE_ID, context.getTraceId());
             GenericService genericService = reference.get();
             return genericService.$invoke(dubboInvocation.getMethodName(), dubboInvocation.getParameterTypes(), invocation.getRequest());
         } finally {

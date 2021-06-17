@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link DubboEventListener}
+ * {@link DubboConsumerEventListener}
  * <p>
  *
  * @author zhaoyb1990
  */
-public class DubboEventListener extends DefaultEventListener {
+public class DubboConsumerEventListener extends DefaultEventListener {
 
-    public DubboEventListener(InvokeType invokeType, boolean entrance, InvocationListener listener, InvocationProcessor processor) {
+    public DubboConsumerEventListener(InvokeType invokeType, boolean entrance, InvocationListener listener, InvocationProcessor processor) {
         super(invokeType, entrance, listener, processor);
     }
 
