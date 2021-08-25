@@ -77,6 +77,11 @@ public class RepeaterConfig implements java.io.Serializable{
      */
     private List<String> repeatIdentities = Lists.newArrayList();
 
+    /**
+     * rockMq的Topic，用于回放时替换掉原来mock的topic。key是
+     */
+    private List<ReplaceObject> rockMqTopic = Lists.newArrayList();
+
     public boolean isUseTtl() {
         return useTtl;
     }
@@ -155,6 +160,14 @@ public class RepeaterConfig implements java.io.Serializable{
 
     public void setRepeatIdentities(List<String> repeatIdentities) {
         this.repeatIdentities = repeatIdentities;
+    }
+
+    public List<ReplaceObject> getRockMqTopic() {
+        return rockMqTopic;
+    }
+
+    public void setRockMqTopic(List<ReplaceObject> rockMqTopic) {
+        this.rockMqTopic = rockMqTopic;
     }
 
     @Override
