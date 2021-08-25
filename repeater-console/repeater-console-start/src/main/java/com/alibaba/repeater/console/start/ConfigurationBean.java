@@ -1,7 +1,13 @@
 package com.alibaba.repeater.console.start;
 
-import com.alibaba.repeater.client.SpringContextAware;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import com.alibaba.repeater.client.SpringContextAware;
+import com.alibaba.repeater.console.service.serialize.CustomJavaTimeModule;
+
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,5 +27,15 @@ public class ConfigurationBean {
     @Bean
     public SpringContextAware getSpringContextAware() {
         return new SpringContextAware();
+    }
+
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer customizer() {
+        return builder -> {
+            builder.locale(Locale.getDefault());
+            builder.timeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
+            builder.simpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            builder.modules(new CustomJavaTimeModule());
+        };
     }
 }
