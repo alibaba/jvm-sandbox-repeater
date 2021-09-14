@@ -92,6 +92,6 @@ public class ReflectCompareStrategy extends AbstractMockStrategy {
 
     @Override
     public StrategyType type() {
-        return StrategyType.DEFAULT;
+        return StrategyType.OBJECT_DFF;
     }
 }

@@ -1,5 +1,7 @@
 package com.alibaba.repeater.console.start.controller.api;
 
+import java.util.Optional;
+
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 import com.alibaba.repeater.console.common.domain.ModuleConfigBO;
@@ -31,7 +33,12 @@ public class ConfigFacadeApi {
         params.setAppName(appName);
         params.setEnvironment(env);
         RepeaterResult<ModuleConfigBO> result = moduleConfigService.query(params);
-        return RepeaterResult.builder().success(result.isSuccess()).message(result.getMessage()).data(result.getData().getConfigModel()).build();
+        // fix issue #83 npe
+        return RepeaterResult.builder()
+                .success(result.isSuccess())
+                .message(result.getMessage())
+                .data(result.getData() == null ? null : result.getData().getConfigModel())
+                .build();
     }
 
 }

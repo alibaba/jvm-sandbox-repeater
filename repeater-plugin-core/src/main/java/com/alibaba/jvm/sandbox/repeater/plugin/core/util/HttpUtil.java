@@ -56,6 +56,34 @@ public class HttpUtil {
         return executeRequest(builder.build());
     }
 
+
+    public static String getPureUrL(Object scheme, Object host){
+        return String.valueOf(scheme) + "://" + String.valueOf(host);
+    }
+
+    public static Map<String, String> getParamMap(String paramStr){
+
+        Map<String, String> paramMap = new HashMap<String, String>();
+        if (StringUtils.isBlank(paramStr) || "null".equalsIgnoreCase(paramStr)){
+            return paramMap;
+        }
+
+        String[] split = paramStr.split(PARAM_SEPARATE);
+        if (split.length == 0){
+            return paramMap;
+        }
+
+        for (String s : split) {
+            String[] param = s.split(KV_SEPARATE);
+            if (param.length == 0) {
+                continue;
+            }
+            paramMap.put(param[0], param[1]);
+        }
+
+        return paramMap;
+    }
+
     /**
      * 执行GET请求，返回body的string
      *
@@ -294,7 +322,8 @@ public class HttpUtil {
                 rb.header(entry.getKey(), entry.getValue());
             }
         }
-        return executeRequest(rb.build());
+        // fix issue #70
+        return executeRequest(rb.build(), 0);
     }
 
     /**

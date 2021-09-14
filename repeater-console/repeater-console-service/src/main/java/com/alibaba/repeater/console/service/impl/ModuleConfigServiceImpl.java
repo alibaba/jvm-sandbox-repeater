@@ -103,7 +103,7 @@ public class ModuleConfigServiceImpl implements ModuleConfigService {
         // a temporary size set
         moduleInfoParams.setSize(1000);
         PageResult<ModuleInfoBO> result = moduleInfoService.query(moduleInfoParams);
-        if (result.getCount() == 0) {
+        if (result == null || !result.isSuccess()) {
             return ResultHelper.fail("no alive module, don't need to push config.");
         }
         String data;

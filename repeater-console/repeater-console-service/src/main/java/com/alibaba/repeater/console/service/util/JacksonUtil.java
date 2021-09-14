@@ -1,6 +1,8 @@
 package com.alibaba.repeater.console.service.util;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
+import com.alibaba.repeater.console.service.serialize.CustomJavaTimeModule;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -9,8 +11,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.lang.Exception;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * {@link JacksonUtil}
@@ -27,7 +32,10 @@ public class JacksonUtil {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setDateFormat(sdf);
+        mapper.setLocale(Locale.getDefault())
+                .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()))
+                .setDateFormat(sdf);
+        mapper.registerModule(new CustomJavaTimeModule());
     }
 
     public static String serialize(Object object) throws SerializeException {
