@@ -171,7 +171,7 @@ final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().ge
         }
 ```
 ## 合作共建的公司团队
-<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="zoom:10%;float:left" />
+<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="width:25%;height:25%;float:left" />
 <br/><br/>
 
 ## 已支持的插件列表
