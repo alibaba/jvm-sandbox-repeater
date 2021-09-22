@@ -174,7 +174,6 @@ final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().ge
 <img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="zoom:10%;float:left" />
 <br/><br/>
 
-
 ## 已支持的插件列表
 
 > Java生态中间件及各种框架众多，各公司技术选型差异较大没办法统一适配，目前适配了几款常用插件作为示例，如有需求可以通过issue方式提交，同时也欢迎大家来贡献开发插件
