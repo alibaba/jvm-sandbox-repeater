@@ -171,7 +171,9 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
 }
 ```
 ## 合作共建的公司团队
-![logo](https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png)
+<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="zoom:10%;float:left" />
+<br/><br/>
+
 
 ## 已支持的插件列表
 
