@@ -81,7 +81,7 @@
 
 ```java
 public void onEvent(Event event) throws Throwable {
-    try {
+        try {
         /*
          * event过滤；针对单个listener，只处理top的事件
          */
@@ -105,20 +105,20 @@ public void onEvent(Event event) throws Throwable {
         /*
          * 分发事件处理
          */
-    } catch (ProcessControlException pe) {
+        } catch (ProcessControlException pe) {
         /*
          * sandbox流程干预
          */
-    } catch (Throwable throwable) {
-    	 /*
-    	  * 统计异常
-    	  */
-    } finally {
+        } catch (Throwable throwable) {
+        /*
+         * 统计异常
+         */
+        } finally {
         /*
          * 清理上下文
          */
-    }
-}
+        }
+        }
 
 ```
 
@@ -137,39 +137,43 @@ public void onEvent(Event event) throws Throwable {
 
 ```java
 public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws ProcessControlException {
-    /*
-     * 获取回放上下文
-     */
-    RepeatContext context = RepeatCache.getRepeatContext(Tracer.getTraceId());
-    /*
-     * mock执行条件
-     */
-    if (!skipMock(event, entrance, context) && context != null && context.getMeta().isMock()) {
+        /*
+         * 获取回放上下文
+         */
+        RepeatContext context = RepeatCache.getRepeatContext(Tracer.getTraceId());
+        /*
+         * mock执行条件
+         */
+        if (!skipMock(event, entrance, context) && context != null && context.getMeta().isMock()) {
         try {
-            /*
-             * 构建mock请求
-             */
-            final MockRequest request = MockRequest.builder()
-                    ...
-                    .build();
-            /*
-             * 执行mock动作
-             */
-            final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().getStrategyType()).execute(request);
-            /*
-             * 处理策略推荐结果
-             */
-            switch (mr.action) {
-  					...
-            }
-        } catch (ProcessControlException pce) {
-            throw pce;
-        } catch (Throwable throwable) {
-            ProcessControlException.throwThrowsImmediately(new RepeatException("unexpected code snippet here.", throwable));
+/*
+ * 构建mock请求
+ */
+final MockRequest request = MockRequest.builder()
+        ...
+        .build();
+/*
+ * 执行mock动作
+ */
+final MockResponse mr = StrategyProvider.instance().provide(context.getMeta().getStrategyType()).execute(request);
+        /*
+         * 处理策略推荐结果
+         */
+        switch (mr.action) {
+        ...
         }
-    }
-}
+        } catch (ProcessControlException pce) {
+        throw pce;
+        } catch (Throwable throwable) {
+        ProcessControlException.throwThrowsImmediately(new RepeatException("unexpected code snippet here.", throwable));
+        }
+        }
+        }
 ```
+## 合作共建的公司团队
+<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="zoom:10%;float:left" />
+<br/><br/>
+
 
 ## 已支持的插件列表
 
