@@ -171,7 +171,7 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
 }
 ```
 ## 合作共建的公司团队
-<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="width:18%;height:18%;float:left" />
+<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="width:25%;height:25%;float:left" />
 <br/><br/>
 
 
