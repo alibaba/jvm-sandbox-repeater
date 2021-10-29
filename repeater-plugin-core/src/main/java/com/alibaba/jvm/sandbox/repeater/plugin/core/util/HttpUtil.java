@@ -160,11 +160,17 @@ public class HttpUtil {
             case POST:
                 return invokePost(url, headers, paramsMap, body, 0);
             case PUT:
+                return invokePut(url, headers, paramsMap, body, 0);
             case HEAD:
+                return invokeHead(url, headers, paramsMap, 0);
             case PATCH:
+                return invokePatch(url, headers, paramsMap, body, 0);
             case DELETE:
+                return invokeDelete(url, headers, paramsMap, body, 0);
             case OPTIONS:
+                return invokeOptions(url, headers, paramsMap, 0);
             case TRACE:
+                return invokeTrace(url, headers, paramsMap, 0);
             default:
                 return Resp.builder().code(500).message("Unsupported http method : " + method).build();
         }
@@ -324,6 +330,293 @@ public class HttpUtil {
         }
         // fix issue #70
         return executeRequest(rb.build(), 0);
+    }
+
+    /**
+     * Put方法请求
+     * @param url
+     * @param headers
+     * @param paramsMap
+     * @param retryTime
+     * @return
+     */
+    private static Resp invokePut(String url,
+                                  Map<String,String> headers,
+                                  Map<String,String[]> paramsMap,
+                                  String body,
+                                  int retryTime) {
+        if (StringUtils.isNotEmpty(body)) {
+            return invokePutBody(url, headers, body);
+        }
+        FormBody.Builder fb = new FormBody.Builder();
+        if (MapUtils.isNotEmpty(paramsMap)) {
+            for (Map.Entry<String, String[]> entry : paramsMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    fb.add(entry.getKey(), value);
+                }
+            }
+        }
+        Request.Builder rb = new Request.Builder().post(fb.build()).url(url);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build(), retryTime);
+    }
+
+    /**
+     * Put方法请求
+     *
+     * @param url     url地址
+     * @param headers 请求头
+     * @param body    请求body
+     * @return resp
+     */
+    public static Resp invokePutBody(String url,
+                                     Map<String, String> headers,
+                                     String body) {
+        String contentType = headers.get("Content-Type");
+        if (contentType == null) {
+            contentType = headers.get("content-type");
+        }
+        if (contentType == null) {
+            contentType = "application/x-www-form-urlencoded; charset=utf-8";
+        }
+        RequestBody b = RequestBody.create(MediaType.parse(contentType), body);
+        Request.Builder rb = new Request.Builder().post(b).url(url);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build());
+    }
+
+
+    /**
+     * Head方法请求
+     *
+     * @param url       url地址
+     * @param headers   请求头
+     * @param paramsMap 请求参数
+     * @return resp
+     */
+    private static Resp invokeHead(String url,
+                                   Map<String, String> headers,
+                                   Map<String, String[]> paramsMap,
+                                   int retryTime) {
+        HttpUrl hu = HttpUrl.parse(url);
+        if (hu == null) {
+            return Resp.builder().code(500).message("Parse http url failed,url=" + url).build();
+        }
+        if (MapUtils.isNotEmpty(paramsMap)) {
+            HttpUrl.Builder builder = hu.newBuilder();
+            for (Map.Entry<String, String[]> entry : paramsMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    builder.addQueryParameter(entry.getKey(), value);
+                }
+            }
+            hu = builder.build();
+        }
+        Request.Builder rb = new Request.Builder().get().url(hu);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build(), retryTime);
+    }
+
+
+    /**
+     * Patch方法请求
+     * @param url
+     * @param headers
+     * @param paramsMap
+     * @param retryTime
+     * @return
+     */
+    private static Resp invokePatch(String url,
+                                    Map<String, String> headers,
+                                    Map<String, String[]> paramsMap,
+                                    String body,
+                                    int retryTime) {
+        if (StringUtils.isNotEmpty(body)) {
+            return invokePatchBody(url, headers, body);
+        }
+        FormBody.Builder fb = new FormBody.Builder();
+        if (MapUtils.isNotEmpty(paramsMap)) {
+            for (Map.Entry<String, String[]> entry : paramsMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    fb.add(entry.getKey(), value);
+                }
+            }
+        }
+        Request.Builder rb = new Request.Builder().post(fb.build()).url(url);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build(), retryTime);
+    }
+
+    /**
+     * Patch方法请求
+     *
+     * @param url     url地址
+     * @param headers 请求头
+     * @param body    请求body
+     * @return resp
+     */
+    public static Resp invokePatchBody(String url,
+                                       Map<String, String> headers,
+                                       String body) {
+        String contentType = headers.get("Content-Type");
+        if (contentType == null) {
+            contentType = headers.get("content-type");
+        }
+        if (contentType == null) {
+            contentType = "application/x-www-form-urlencoded; charset=utf-8";
+        }
+        RequestBody b = RequestBody.create(MediaType.parse(contentType), body);
+        Request.Builder rb = new Request.Builder().post(b).url(url);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build());
+    }
+
+    /**
+     * Delete方法请求
+     * @param url
+     * @param headers
+     * @param paramsMap
+     * @param retryTime
+     * @return
+     */
+    private static Resp invokeDelete(String url,
+                                     Map<String, String> headers,
+                                     Map<String, String[]> paramsMap,
+                                     String body,
+                                     int retryTime) {
+        if (StringUtils.isNotEmpty(body)) {
+            return invokeDeleteBody(url, headers, body);
+        }
+        FormBody.Builder fb = new FormBody.Builder();
+        if (MapUtils.isNotEmpty(paramsMap)) {
+            for (Map.Entry<String, String[]> entry : paramsMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    fb.add(entry.getKey(), value);
+                }
+            }
+        }
+        Request.Builder rb = new Request.Builder().post(fb.build()).url(url);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build(), retryTime);
+    }
+
+    /**
+     * Delete方法请求
+     *
+     * @param url     url地址
+     * @param headers 请求头
+     * @param body    请求body
+     * @return resp
+     */
+    public static Resp invokeDeleteBody(String url,
+                                        Map<String, String> headers,
+                                        String body) {
+        String contentType = headers.get("Content-Type");
+        if (contentType == null) {
+            contentType = headers.get("content-type");
+        }
+        if (contentType == null) {
+            contentType = "application/x-www-form-urlencoded; charset=utf-8";
+        }
+        RequestBody b = RequestBody.create(MediaType.parse(contentType), body);
+        Request.Builder rb = new Request.Builder().post(b).url(url);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build());
+    }
+
+    /**
+     * Options方法请求
+     * @param url
+     * @param headers
+     * @param paramsMap
+     * @param retryTime
+     * @return resp
+     */
+    private static Resp invokeOptions(String url,
+                                      Map<String, String> headers,
+                                      Map<String, String[]> paramsMap,
+                                      int retryTime) {
+        HttpUrl hu = HttpUrl.parse(url);
+        if (hu == null) {
+            return Resp.builder().code(500).message("Parse http url failed,url=" + url).build();
+        }
+        if (MapUtils.isNotEmpty(paramsMap)) {
+            HttpUrl.Builder builder = hu.newBuilder();
+            for (Map.Entry<String, String[]> entry : paramsMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    builder.addQueryParameter(entry.getKey(), value);
+                }
+            }
+            hu = builder.build();
+        }
+        Request.Builder rb = new Request.Builder().get().url(hu);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build(), retryTime);
+    }
+
+    /**
+     * Trace方法请求
+     *
+     * @param url       url地址
+     * @param headers   请求头
+     * @param paramsMap 请求参数
+     * @return resp
+     */
+    private static Resp invokeTrace(String url,
+                                    Map<String, String> headers,
+                                    Map<String, String[]> paramsMap,
+                                    int retryTime) {
+        HttpUrl hu = HttpUrl.parse(url);
+        if (hu == null) {
+            return Resp.builder().code(500).message("Parse http url failed,url=" + url).build();
+        }
+        if (MapUtils.isNotEmpty(paramsMap)) {
+            HttpUrl.Builder builder = hu.newBuilder();
+            for (Map.Entry<String, String[]> entry : paramsMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    builder.addQueryParameter(entry.getKey(), value);
+                }
+            }
+            hu = builder.build();
+        }
+        Request.Builder rb = new Request.Builder().get().url(hu);
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                rb.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return executeRequest(rb.build(), retryTime);
     }
 
     /**
