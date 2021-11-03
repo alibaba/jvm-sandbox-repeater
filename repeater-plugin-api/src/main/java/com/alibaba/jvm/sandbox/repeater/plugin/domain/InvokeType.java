@@ -37,6 +37,10 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType CAFFEINE_CACHE = new InvokeType("caffeine-cache");
 
+    public static InvokeType ESRHL = new InvokeType("elasticsearch-rest-high-level");
+
+    public static InvokeType MYBATISPLUS = new InvokeType("mybatis-plus");
+
     private String name;
 
     public InvokeType(String name) {

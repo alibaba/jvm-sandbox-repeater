@@ -25,6 +25,8 @@
         <module>eh-cache-plugin</module>
         <module>guava-cache-plugin</module>
         <module>okhttp-plugin</module>
+        <module>elasticsearch-rest-high-level-plugin</module>
+        <module>mybatis-plus-plugin</module>
     </modules>
 
     <dependencies>
