@@ -12,7 +12,7 @@ import org.kohsuke.MetaInfServices;
 import java.util.List;
 
 /**
- * @Author: luwenrong@zhongan.com
+ * @Author: luwenrong
  * @Title:  elasticsearch RestHighLevelClient 插件
  * @Description: 拦截{@code org.elasticsearch.client}包下面的RestHighLevelClient实现类
  * @Date: 2021/10/19
