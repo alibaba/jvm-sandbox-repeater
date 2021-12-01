@@ -27,6 +27,7 @@
         <module>okhttp-plugin</module>
         <module>elasticsearch-rest-high-level-plugin</module>
         <module>mybatis-plus-plugin</module>
+        <module>openfeign-plugin</module>
     </modules>
 
     <dependencies>

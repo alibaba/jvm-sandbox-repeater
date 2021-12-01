@@ -41,6 +41,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType MYBATISPLUS = new InvokeType("mybatis-plus");
 
+    public static InvokeType OPENFEIGN = new InvokeType("openfeign");
+
     private String name;
 
     public InvokeType(String name) {
