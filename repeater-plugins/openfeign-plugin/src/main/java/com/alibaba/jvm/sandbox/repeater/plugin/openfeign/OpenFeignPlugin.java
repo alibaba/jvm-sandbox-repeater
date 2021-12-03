@@ -22,21 +22,11 @@ public class OpenFeignPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected List<EnhanceModel> getEnhanceModels() {
-        /**
-         * url不为空
-         */
         EnhanceModel enhanceModel = EnhanceModel.builder().classPattern("feign.Client$Default")
                 .methodPatterns(EnhanceModel.MethodPattern.transform("execute"))
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        /**
-         * url为空
-         */
-        EnhanceModel enhanceMode2 = EnhanceModel.builder().classPattern("org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient")
-                .methodPatterns(EnhanceModel.MethodPattern.transform("execute"))
-                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
-                .build();
-        return Lists.newArrayList(enhanceModel,enhanceMode2);
+        return Lists.newArrayList(enhanceModel);
     }
 
     @Override
