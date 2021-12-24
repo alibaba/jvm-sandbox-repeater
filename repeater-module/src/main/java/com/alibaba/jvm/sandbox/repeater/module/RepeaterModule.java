@@ -93,6 +93,8 @@ public class RepeaterModule implements Module, ModuleLifecycle {
     private HeartbeatHandler heartbeatHandler;
 
     private AtomicBoolean initialized = new AtomicBoolean(false);
+    
+    private static List <SubscribeSupporter> subscribes = new ArrayList <>();
 
     @Override
     public void onLoad() throws Throwable {
@@ -186,8 +188,11 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                     }
                 }
                 RepeaterBridge.instance().build(repeaters);
+                // 先卸载消息订阅器
+                subscribes.forEach(subscribe -> subscribe.unRegister());
+                subscribes.clear();
                 // 装载消息订阅器
-                List<SubscribeSupporter> subscribes = lifecycleManager.loadSubscribes();
+                subscribes = lifecycleManager.loadSubscribes();
                 for (SubscribeSupporter subscribe : subscribes) {
                     subscribe.register();
                 }
