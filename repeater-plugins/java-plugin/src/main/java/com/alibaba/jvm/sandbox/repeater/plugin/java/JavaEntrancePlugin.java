@@ -67,10 +67,10 @@ public class JavaEntrancePlugin extends AbstractInvokePluginAdapter {
         if (configTemporary == null) {
             super.onConfigChange(config);
         } else {
-            this.config = config;
-            super.onConfigChange(config);
             List<Behavior> current = config.getJavaEntranceBehaviors();
             List<Behavior> latest = configTemporary.getJavaEntranceBehaviors();
+            this.config = config;
+            super.onConfigChange(config);
             if (JavaPluginUtils.hasDifference(current, latest)) {
                 reWatch0();
             }
