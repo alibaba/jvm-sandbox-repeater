@@ -56,6 +56,7 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -142,7 +143,8 @@ public class UnsafeSerializer extends AbstractSerializer
     ArrayList<Field> fields = new ArrayList<Field>();
     fields.addAll(primitiveFields);
     fields.addAll(compoundFields);
-
+    // 属性倒序，先写入父类属性，再写入子类属性，保证子类属性不被覆盖
+    Collections.reverse(fields);
     _fields = new Field[fields.size()];
     fields.toArray(_fields);
 

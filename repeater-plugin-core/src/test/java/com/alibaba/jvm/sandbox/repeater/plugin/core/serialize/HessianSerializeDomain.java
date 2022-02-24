@@ -26,6 +26,8 @@ public class HessianSerializeDomain implements java.io.Serializable {
         return money;
     }
 
+    private String name = "parent";
+
     public void setMoney(BigDecimal money) {
         this.money = money;
     }
@@ -52,6 +54,14 @@ public class HessianSerializeDomain implements java.io.Serializable {
 
     public void setLocalDate(LocalDate localDate) {
         this.localDate = localDate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
