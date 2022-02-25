@@ -50,7 +50,7 @@ class CouchBaseProcessor extends DefaultInvocationProcessor {
                 Object iterator = methodIterator.invoke(arrayList);
                 event.argumentArray[0] = iterator;
                 return new Identity(InvokeType.COUCH_BASE.name(), list.toString(), "Unknown", new HashMap<String, String>(1));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | ClassNotFoundException e) {
+            } catch (Exception e) {
                 log.error("couchbase assembleIdentity error {}, object:{}, event arg:{}, func:{}",
                         e, event.target, event.argumentArray, event.javaClassName + event.javaMethodName); e.printStackTrace();
             }

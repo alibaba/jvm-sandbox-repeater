@@ -42,11 +42,10 @@ public class ThriftWrapperTransModel {
             String thriftCode = "";
             String thriftParameterTypes = "";
             String thriftProtocol = "";
-
             Object thriftObj = event.target;
             if (thriftObj != null) {
-                Object inprotocol = MethodUtils.invokeMethod(thriftObj, "getInputProtocol");
-                thriftProtocol = inprotocol.toString();
+                Object inProtocol = MethodUtils.invokeMethod(thriftObj, "getInputProtocol");
+                thriftProtocol = inProtocol.toString();
             }
             if (event.argumentArray != null && argumentArray.length >= 2) {
                 if (RECEIVE.equals(event.javaMethodName)) {
@@ -61,12 +60,10 @@ public class ThriftWrapperTransModel {
                     thriftCode,
                     thriftParameterTypes,
                     thriftProtocol
-
             );
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            log.error(" thrift Wrapper error {},object:{},event arg:{},func:{}",
+            log.error("thrift Wrapper error {}, object:{}, event arg:{}, func:{}",
                     e, event.target, event.argumentArray, event.javaClassName + event.javaMethodName);
-
         }
         return null;
     }

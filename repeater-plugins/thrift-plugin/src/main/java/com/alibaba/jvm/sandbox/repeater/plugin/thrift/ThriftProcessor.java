@@ -42,7 +42,6 @@ class ThriftProcessor extends DefaultInvocationProcessor {
         Map<String, String> extra = new HashMap<String, String>();
         extra.put("Trotocol", wtm.getThriftProtocol());
         return new Identity(InvokeType.THRIFT.name(), wtm.getThriftCode(), wtm.getThriftParameterTypes(), extra);
-
     }
 
     @Override
@@ -73,7 +72,6 @@ class ThriftProcessor extends DefaultInvocationProcessor {
                     event.argumentArray[0] = invocation.getResponse();
                     invocation.getRequest()[0] = invocation.getResponse();
                 }
-
             }
             return null;
         } else {
