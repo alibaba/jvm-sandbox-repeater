@@ -27,6 +27,7 @@
         <module>okhttp-plugin</module>
         <module>couchbase-plugin</module>
         <module>thrift-plugin</module>
+        <module>hikv-plugin</module>
     </modules>
 
     <dependencies>
