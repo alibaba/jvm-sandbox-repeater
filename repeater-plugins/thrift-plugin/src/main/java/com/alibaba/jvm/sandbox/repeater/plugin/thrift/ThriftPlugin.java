@@ -1,4 +1,4 @@
-package com.alibaba.jvm.sandbox.repeater.plugin.rpc;
+package com.alibaba.jvm.sandbox.repeater.plugin.thrift;
 
 import java.util.List;
 
@@ -10,51 +10,49 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractInvokePluginAda
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.EnhanceModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
-
 import com.google.common.collect.Lists;
 import org.kohsuke.MetaInfServices;
 
 /**
  * <p>
  *
- * @author qiyi-wangyeran/fanxiuping
+ * @author wangyeran/fanxiuping
  */
 @MetaInfServices(InvokePlugin.class)
-public class RpcPlugin extends AbstractInvokePluginAdapter {
+public class ThriftPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected List<EnhanceModel> getEnhanceModels() {
         EnhanceModel.MethodPattern mpsend = EnhanceModel.MethodPattern.builder()
                 .methodName("sendBase")
-                .parameterType(new String[]{"java.lang.String","org.apache.thrift.TBase","byte"})
+                .parameterType(new String[]{"java.lang.String", "org.apache.thrift.TBase", "byte"})
                 .build();
-        EnhanceModel emsend = EnhanceModel.builder()
+        EnhanceModel emSend = EnhanceModel.builder()
                 .classPattern("org.apache.thrift.TServiceClient")
                 .methodPatterns(new EnhanceModel.MethodPattern[]{mpsend})
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        EnhanceModel emreceive = EnhanceModel.builder()
+        EnhanceModel emReceive = EnhanceModel.builder()
                 .classPattern("org.apache.thrift.TServiceClient")
                 .methodPatterns(EnhanceModel.MethodPattern.transform("receiveBase"))
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-
-        return Lists.newArrayList(emsend, emreceive);
+        return Lists.newArrayList(emSend, emReceive);
     }
 
     @Override
     protected InvocationProcessor getInvocationProcessor() {
-        return new RpcProcessor(getType());
+        return new ThriftProcessor(getType());
     }
 
     @Override
     public InvokeType getType() {
-        return InvokeType.RPC;
+        return InvokeType.THRIFT;
     }
 
     @Override
     public String identity() {
-        return "rpc";
+        return "thrift";
     }
 
     @Override
@@ -64,7 +62,7 @@ public class RpcPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected EventListener getEventListener(InvocationListener listener) {
-        return new RpcListener(getType(), isEntrance(), listener, getInvocationProcessor());
+        return new ThriftListener(getType(), isEntrance(), listener, getInvocationProcessor());
     }
 
 }

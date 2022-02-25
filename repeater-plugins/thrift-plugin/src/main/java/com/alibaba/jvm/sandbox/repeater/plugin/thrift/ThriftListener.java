@@ -1,4 +1,4 @@
-package com.alibaba.jvm.sandbox.repeater.plugin.rpc;
+package com.alibaba.jvm.sandbox.repeater.plugin.thrift;
 
 import com.alibaba.jvm.sandbox.api.event.ReturnEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
@@ -8,13 +8,14 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListene
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
+
 /**
  * <p>
  *
- * @author qiyi-wangyeran/fanxiuping
+ * @author wangyeran/fanxiuping
  */
-public class RpcListener extends DefaultEventListener {
-    RpcListener(InvokeType invokeType,
+public class ThriftListener extends DefaultEventListener {
+    ThriftListener(InvokeType invokeType,
                 boolean entrance,
                 InvocationListener listener,
                 InvocationProcessor processor) {
@@ -23,7 +24,7 @@ public class RpcListener extends DefaultEventListener {
 
     @Override
     protected void doReturn(ReturnEvent event) {
-        try {
+
             Invocation invocation = RecordCache.getInvocation(event.invokeId);
             if (invocation == null) {
                 log.debug("no valid invocation found in return,type={},traceId={}", invokeType, Tracer.getTraceId());
@@ -38,8 +39,8 @@ public class RpcListener extends DefaultEventListener {
             }
             invocation.setEnd(System.currentTimeMillis());
             listener.onInvocation(invocation);
-        } catch (Exception e) {
-            log.error("error occurred when doReturn:{}", e);
-        }
+
+
     }
+
 }
