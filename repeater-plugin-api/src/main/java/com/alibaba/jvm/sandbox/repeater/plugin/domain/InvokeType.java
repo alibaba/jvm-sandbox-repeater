@@ -41,6 +41,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType THRIFT = new InvokeType("thrift");
 
+    public static InvokeType HIKV = new InvokeType("hikv");
+
     private String name;
 
     public InvokeType(String name) {
