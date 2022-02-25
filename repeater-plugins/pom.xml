@@ -17,6 +17,8 @@
         <module>http-plugin</module>
         <module>dubbo-plugin</module>
         <module>redis-plugin</module>
+        <module>redisson-plugin</module>
+        <module>kafka-plugin</module>
         <module>hibernate-plugin</module>
         <module>spring-data-jpa-plugin</module>
         <module>socketio-plugin</module>

@@ -42,6 +42,8 @@
     "java-subInvoke",
     "mybatis",
     "ibatis",
+    "redisson",
+    "kafka-provider",
     "dubbo-provider",
     "dubbo-consumer"
   ],

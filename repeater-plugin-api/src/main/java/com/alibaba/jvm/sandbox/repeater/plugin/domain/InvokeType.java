@@ -19,6 +19,10 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType REDIS = new InvokeType("redis");
 
+    public static InvokeType REDISSON = new InvokeType("redisson");
+
+    public static InvokeType KAFKA = new InvokeType("kafka");
+
     public static InvokeType DUBBO = new InvokeType("dubbo");
 
     public static InvokeType HIBERNATE = new InvokeType("hibernate");
