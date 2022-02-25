@@ -25,4 +25,20 @@ public class HessianSerializerTest {
             Assert.fail(e.getMessage());
         }
     }
+
+
+    @Test
+    public void deserialize() {
+        HessianSerializeDomainSub domain = new HessianSerializeDomainSub();
+        Serializer serializer = SerializerProvider.instance().provide(Serializer.Type.HESSIAN);
+        String sequence;
+        try {
+            sequence = serializer.serialize2String(domain);
+            Assert.assertNotNull(sequence);
+            HessianSerializeDomainSub deserialize = serializer.deserialize(sequence, HessianSerializeDomainSub.class);
+            Assert.assertEquals(domain, deserialize);
+        } catch (SerializeException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 }
