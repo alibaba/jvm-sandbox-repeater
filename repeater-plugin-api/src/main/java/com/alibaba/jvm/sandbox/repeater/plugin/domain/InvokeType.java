@@ -43,6 +43,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType HIKV = new InvokeType("hikv");
 
+    public static InvokeType MONGO = new InvokeType("mongo");
+
     private String name;
 
     public InvokeType(String name) {
