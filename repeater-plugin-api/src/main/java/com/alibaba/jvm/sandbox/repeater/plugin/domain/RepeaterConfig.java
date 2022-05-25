@@ -43,6 +43,7 @@ public class RepeaterConfig implements java.io.Serializable{
 
     /**
      * 采样率；最小力度万分之一
+     * 10000 代表 100%
      */
     private Integer sampleRate = 10000;
 
@@ -154,5 +155,13 @@ public class RepeaterConfig implements java.io.Serializable{
 
     public void setRepeatIdentities(List<String> repeatIdentities) {
         this.repeatIdentities = repeatIdentities;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "sampleRate=" + sampleRate +
+                ", plugin=" + pluginIdentities +
+                '}';
     }
 }

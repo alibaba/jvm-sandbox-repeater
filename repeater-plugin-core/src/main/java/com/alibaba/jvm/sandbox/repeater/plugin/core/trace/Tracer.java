@@ -67,6 +67,14 @@ public class Tracer {
         return Tracer.getContextCarrie().get();
     }
 
+    public static String getExtra(String key) {
+        return getContext() == null ? null : getContext().getExtra(key);
+    }
+
+    public static String putExtra(String key, String value) {
+        return getContext() == null ? null : getContext().putExtra(key, value);
+    }
+
     /**
      * 获取当前上下文的追踪ID，未开启追踪情况下返回空
      *

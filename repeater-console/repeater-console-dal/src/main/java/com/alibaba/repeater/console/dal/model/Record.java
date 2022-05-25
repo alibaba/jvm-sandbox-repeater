@@ -1,7 +1,12 @@
 package com.alibaba.repeater.console.dal.model;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * {@link Record}
@@ -9,85 +14,43 @@ import java.util.Date;
  *
  * @author zhaoyb1990
  */
-public class Record implements java.io.Serializable{
+@Entity
+@Table(name = "record")
+@Getter
+@Setter
+public class Record implements java.io.Serializable {
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "gmt_create")
     private Date gmtCreate;
 
+    @Column(name = "gmt_record")
     private Date gmtRecord;
 
+    @Column(name = "app_name")
     private String appName;
 
     private String environment;
 
     private String host;
 
+    @Column(name = "trace_id")
     private String traceId;
 
+    @Column(name = "entrance_desc")
+    private String entranceDesc;
+
+    @Column(name = "wrapper_record")
     private String wrapperRecord;
 
-    public Long getId() {
-        return id;
-    }
+    private String request;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String response;
 
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Date getGmtRecord() {
-        return gmtRecord;
-    }
-
-    public void setGmtRecord(Date gmtRecord) {
-        this.gmtRecord = gmtRecord;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getTraceId() {
-        return traceId;
-    }
-
-    public void setTraceId(String traceId) {
-        this.traceId = traceId;
-    }
-
-    public String getWrapperRecord() {
-        return wrapperRecord;
-    }
-
-    public void setWrapperRecord(String wrapperRecord) {
-        this.wrapperRecord = wrapperRecord;
-    }
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Replay> replays;
 }

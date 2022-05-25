@@ -170,6 +170,10 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
     }
 }
 ```
+## 合作共建的公司团队
+<img src="https://raw.githubusercontent.com/lemon-simple/jvm-sandbox-repeater/master/vLogo.png" alt="v" style="width:25%;height:25%;float:left" />
+<br/><br/>
+
 
 ## 已支持的插件列表
 
@@ -192,4 +196,4 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
 - [插件开发手册](/docs/plugin-development.md)
 
 ## 钉钉交流群
-![pic](http://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/DingTalkGroup.png)
+![pic](http://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/DingTalkGroup.jpeg)

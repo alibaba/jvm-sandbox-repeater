@@ -60,6 +60,6 @@ public class DubboConsumerPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected EventListener getEventListener(InvocationListener listener) {
-        return new DubboEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
+        return new DubboConsumerEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
     }
 }

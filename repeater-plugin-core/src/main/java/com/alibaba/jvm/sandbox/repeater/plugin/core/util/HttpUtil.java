@@ -56,6 +56,34 @@ public class HttpUtil {
         return executeRequest(builder.build());
     }
 
+
+    public static String getPureUrL(Object scheme, Object host){
+        return String.valueOf(scheme) + "://" + String.valueOf(host);
+    }
+
+    public static Map<String, String> getParamMap(String paramStr){
+
+        Map<String, String> paramMap = new HashMap<String, String>();
+        if (StringUtils.isBlank(paramStr) || "null".equalsIgnoreCase(paramStr)){
+            return paramMap;
+        }
+
+        String[] split = paramStr.split(PARAM_SEPARATE);
+        if (split.length == 0){
+            return paramMap;
+        }
+
+        for (String s : split) {
+            String[] param = s.split(KV_SEPARATE);
+            if (param.length == 0) {
+                continue;
+            }
+            paramMap.put(param[0], param[1]);
+        }
+
+        return paramMap;
+    }
+
     /**
      * 执行GET请求，返回body的string
      *
@@ -203,7 +231,7 @@ public class HttpUtil {
                                    String body,
                                    int retryTime) {
         if (StringUtils.isNotEmpty(body)) {
-            return invokePostBody(url, headers, body);
+            return invokePostBody(url, headers, paramsMap, body);
         }
         FormBody.Builder fb = new FormBody.Builder();
         if (MapUtils.isNotEmpty(paramsMap)) {
@@ -237,6 +265,7 @@ public class HttpUtil {
         return invokePost(url, headers, paramsMap, body, 3);
     }
 
+
     /**
      * Post方法请求
      *
@@ -248,6 +277,22 @@ public class HttpUtil {
     public static Resp invokePostBody(String url,
                                       Map<String, String> headers,
                                       String body) {
+        return invokePostBody(url, headers, null ,body);
+    }
+
+    /**
+     * Post方法请求
+     *
+     * @param url     url地址
+     * @param headers 请求头
+     * @param paramMap 请求参数
+     * @param body    请求body
+     * @return resp
+     */
+    public static Resp invokePostBody(String url,
+                                      Map<String, String> headers,
+                                      Map<String, String[]> paramMap,
+                                      String body) {
         String contentType = headers.get("Content-Type");
         if (contentType == null) {
             contentType = headers.get("content-type");
@@ -255,14 +300,30 @@ public class HttpUtil {
         if (contentType == null) {
             contentType = "application/x-www-form-urlencoded; charset=utf-8";
         }
+        StringBuilder urlBuilder = new StringBuilder(url);
+        // fix issue #43
+        if (MapUtils.isNotEmpty(paramMap)) {
+            if (!StringUtils.contains(url, QUESTION_SEPARATE)) {
+                urlBuilder.append(QUESTION_SEPARATE).append("_r=1");
+            }
+            for (Map.Entry<String,String[]> entry : paramMap.entrySet()) {
+                for (String value : entry.getValue()) {
+                    urlBuilder.append(PARAM_SEPARATE)
+                            .append(entry.getKey())
+                            .append(KV_SEPARATE)
+                            .append(value);
+                }
+            }
+        }
         RequestBody b = RequestBody.create(MediaType.parse(contentType), body);
-        Request.Builder rb = new Request.Builder().post(b).url(url);
+        Request.Builder rb = new Request.Builder().post(b).url(urlBuilder.toString());
         if (MapUtils.isNotEmpty(headers)) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 rb.header(entry.getKey(), entry.getValue());
             }
         }
-        return executeRequest(rb.build());
+        // fix issue #70
+        return executeRequest(rb.build(), 0);
     }
 
     /**

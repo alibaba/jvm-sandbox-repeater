@@ -8,6 +8,7 @@ import java.util.zip.ZipOutputStream;
 
 import com.google.common.io.BaseEncoding;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@link AbstractSerializerAdapter} 抽象的序列化实现，主要完成byte[]和字符串的转换动作
@@ -37,12 +38,12 @@ public abstract class AbstractSerializerAdapter implements Serializer {
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> type) throws SerializeException {
-        return deserialize(bytes, type, null);
+        return bytes == null ? null : deserialize(bytes, type, null);
     }
 
     @Override
     public <T> T deserialize(String sequence, Class<T> type) throws SerializeException {
-        return deserialize(sequence, type, null);
+        return sequence == null ? null : deserialize(sequence, type, null);
     }
 
     @Override
@@ -50,12 +51,12 @@ public abstract class AbstractSerializerAdapter implements Serializer {
         // sequence -> byte
         // 每次压缩之后base64的结果都不一样；会导致相似度匹配失效
         // return deserialize(decode(sequence), type, classLoader);
-        return deserialize(BaseEncoding.base64().decode(sequence), type, classLoader);
+        return sequence == null ? null : deserialize(BaseEncoding.base64().decode(sequence), type, classLoader);
     }
 
     @Override
     public Object deserialize(String sequence) throws SerializeException{
-        return deserialize(BaseEncoding.base64().decode(sequence));
+        return sequence == null ? null : deserialize(BaseEncoding.base64().decode(sequence));
     }
 
     /**

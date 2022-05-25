@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractRepeater;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
@@ -11,8 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
+import org.apache.dubbo.config.context.ConfigManager;
+import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.service.GenericService;
 import org.kohsuke.MetaInfServices;
+
+import java.util.Optional;
 
 
 /**
@@ -50,7 +55,7 @@ public class DubboRepeater extends AbstractRepeater {
         } else {
             registryConfig.setGroup(dubboInvocation.getGroup());
         }
-        reference.setApplication(applicationConfig);
+        reference.setApplication(ConfigManager.getInstance().getApplication().orElse(applicationConfig));
         reference.setRegistry(registryConfig);
 
         // set protocol / interface / version / timeout
@@ -63,8 +68,16 @@ public class DubboRepeater extends AbstractRepeater {
         reference.setTimeout(context.getMeta().getTimeout());
         // use generic invoke
         reference.setGeneric(true);
-        GenericService genericService = reference.get();
-        return genericService.$invoke(dubboInvocation.getMethodName(), dubboInvocation.getParameterTypes(), invocation.getRequest());
+        // fix issue #45
+        ClassLoader swap = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(GenericService.class.getClassLoader());
+            RpcContext.getContext().setAttachment(Constants.HEADER_TRACE_ID, context.getTraceId());
+            GenericService genericService = reference.get();
+            return genericService.$invoke(dubboInvocation.getMethodName(), dubboInvocation.getParameterTypes(), invocation.getRequest());
+        } finally {
+            Thread.currentThread().setContextClassLoader(swap);
+        }
     }
 
     @Override

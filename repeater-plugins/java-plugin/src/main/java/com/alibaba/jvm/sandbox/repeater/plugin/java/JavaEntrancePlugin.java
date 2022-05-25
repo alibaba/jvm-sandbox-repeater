@@ -8,6 +8,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.model.EnhanceModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Behavior;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
+import com.alibaba.jvm.sandbox.repeater.plugin.exception.PluginLifeCycleException;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
 
 import com.google.common.collect.Lists;
@@ -59,5 +60,20 @@ public class JavaEntrancePlugin extends AbstractInvokePluginAdapter {
     public boolean enable(RepeaterConfig config) {
         this.config = config;
         return super.enable(config);
+    }
+
+    @Override
+    public void onConfigChange(RepeaterConfig config) throws PluginLifeCycleException {
+        if (configTemporary == null) {
+            super.onConfigChange(config);
+        } else {
+            this.config = config;
+            super.onConfigChange(config);
+            List<Behavior> current = config.getJavaEntranceBehaviors();
+            List<Behavior> latest = configTemporary.getJavaEntranceBehaviors();
+            if (JavaPluginUtils.hasDifference(current, latest)) {
+                reWatch0();
+            }
+        }
     }
 }
