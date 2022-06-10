@@ -1,4 +1,4 @@
-![logo](https://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/repeater-logo.png)
+![logo](https://github.com/alibaba/jvm-sandbox-repeater/releases/download/v1.0.0/repeater-logo.png)
 
 [![Build Status](https://travis-ci.org/alibaba/jvm-sandbox-repeater.svg?branch=master)](https://travis-ci.org/alibaba/jvm-sandbox-repeater)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
@@ -196,4 +196,4 @@ public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws 
 - [插件开发手册](/docs/plugin-development.md)
 
 ## 钉钉交流群
-![pic](http://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/DingTalkGroup.jpeg)
+![pic](https://github.com/alibaba/jvm-sandbox-repeater/releases/download/v1.0.0/DingTalkGroup.jpeg)

@@ -65,7 +65,7 @@ public String slogan() {
 #### step0 安装sandbox和插件到应用服务器
 
 ```shell
-curl -s http://sandbox-ecological.oss-cn-hangzhou.aliyuncs.com/install-repeater.sh | sh
+curl -s https://github.com/alibaba/jvm-sandbox-repeater/releases/download/v1.0.0/install-repeater.sh | sh
 ```
 #### step1 修改repeater-config.json，启用拦截点和插件信息
 
