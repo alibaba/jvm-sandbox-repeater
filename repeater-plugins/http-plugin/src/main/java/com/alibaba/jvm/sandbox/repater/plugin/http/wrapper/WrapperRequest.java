@@ -11,7 +11,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.alibaba.jvm.sandbox.repeater.plugin.Constants.REPEAT_RECORD_HTTP_INTERCEPT_BODY_CONTENT_TYPES;
 
 /**
  * <p>
@@ -39,8 +47,14 @@ public class WrapperRequest extends HttpServletRequestWrapper {
         super(request);
         this.response = response;
         this.listener = listener;
-        // application/json的方式提交，需要拦截body
-        this.usingBody = StringUtils.contains(request.getContentType(), "application/json");
+        // 需要拦截body
+        boolean usingBody = false;
+        List<String> interceptBodyContentTypes = Arrays.asList(REPEAT_RECORD_HTTP_INTERCEPT_BODY_CONTENT_TYPES);
+        for (int i = 0; i < interceptBodyContentTypes.size() && !usingBody; i++) {
+            String interceptBodyContentType = interceptBodyContentTypes.get(i);
+            usingBody = StringUtils.contains(request.getContentType(), interceptBodyContentType);
+        }
+        this.usingBody = usingBody;
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
         if (usingBody) {
