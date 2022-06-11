@@ -25,6 +25,8 @@
         <module>eh-cache-plugin</module>
         <module>guava-cache-plugin</module>
         <module>okhttp-plugin</module>
+        <module>mybatis-plus-plugin</module>
+        <module>openfeign-plugin</module>
     </modules>
 
     <dependencies>
