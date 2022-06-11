@@ -25,6 +25,10 @@
         <module>eh-cache-plugin</module>
         <module>guava-cache-plugin</module>
         <module>okhttp-plugin</module>
+        <module>couchbase-plugin</module>
+        <module>thrift-plugin</module>
+        <module>hikv-plugin</module>
+        <module>mongo-plugin</module>
     </modules>
 
     <dependencies>

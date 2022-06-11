@@ -37,6 +37,14 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType CAFFEINE_CACHE = new InvokeType("caffeine-cache");
 
+    public static InvokeType COUCH_BASE = new InvokeType("couchbase");
+
+    public static InvokeType THRIFT = new InvokeType("thrift");
+
+    public static InvokeType HIKV = new InvokeType("hikv");
+
+    public static InvokeType MONGO = new InvokeType("mongo");
+
     private String name;
 
     public InvokeType(String name) {
