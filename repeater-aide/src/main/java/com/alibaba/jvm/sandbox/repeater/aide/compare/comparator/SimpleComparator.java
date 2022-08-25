@@ -34,12 +34,12 @@ public class SimpleComparator implements Comparator {
         }
         Class<?> lCs = left.getClass();
         Class<?> rCs = right.getClass();
+        if (isArray(lCs, rCs) || isCollection(lCs, rCs) || isMap(lCs, rCs)) {
+            return false;
+        }
         // type different
         if (lCs != rCs) {
             return true;
-        }
-        if (isArray(lCs, rCs) || isCollection(lCs, rCs) || isMap(lCs, rCs)) {
-            return false;
         }
         // basic type or java.lang or java.math or java.time or java.util
         return isBasicType(lCs, rCs) || isBothJavaLang(lCs, rCs)
