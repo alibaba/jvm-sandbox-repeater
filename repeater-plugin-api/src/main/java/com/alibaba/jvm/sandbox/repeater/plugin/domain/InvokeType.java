@@ -21,6 +21,9 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType DUBBO = new InvokeType("dubbo");
 
+
+    public static InvokeType ROCKETMQ = new InvokeType("rocketmq");
+
     public static InvokeType HIBERNATE = new InvokeType("hibernate");
 
     public static InvokeType JPA = new InvokeType("jpa");

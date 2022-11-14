@@ -35,15 +35,7 @@ public class DubboConsumerPlugin extends AbstractInvokePluginAdapter {
                 .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        EnhanceModel onResponseV3 = EnhanceModel.builder().classPattern("org.apache.dubbo.rpc.cluster.filter.support.ConsumerContextFilter")
-                .methodPatterns(EnhanceModel.MethodPattern.transform("onResponse"))
-                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
-                .build();
-        EnhanceModel invokeV3 = EnhanceModel.builder().classPattern("org.apache.dubbo.rpc.cluster.filter.support.ConsumerContextFilter")
-                .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
-                .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
-                .build();
-        return Lists.newArrayList(onResponse, invoke,onResponseV3,invokeV3);
+        return Lists.newArrayList(onResponse, invoke);
     }
 
     @Override
