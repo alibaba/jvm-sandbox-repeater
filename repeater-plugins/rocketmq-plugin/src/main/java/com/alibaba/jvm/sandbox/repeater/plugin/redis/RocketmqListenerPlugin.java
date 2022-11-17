@@ -24,7 +24,6 @@ public class RocketmqListenerPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     public boolean isEntrance() {
-        // 消息消費時，會作為調用鏈路的入口
         return true;
     }
 

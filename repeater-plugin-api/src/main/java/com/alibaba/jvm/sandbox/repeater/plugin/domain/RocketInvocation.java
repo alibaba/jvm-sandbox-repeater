@@ -1,7 +1,7 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 
 /**
- * @author hxl
+ * @author deipss
  * @since 1.0.0
  */
 public class RocketInvocation extends Invocation{
