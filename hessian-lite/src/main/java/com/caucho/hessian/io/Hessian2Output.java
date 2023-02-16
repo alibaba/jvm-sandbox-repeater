@@ -1329,23 +1329,15 @@ public class Hessian2Output
   public boolean addRef(Object object)
     throws IOException
   {
-    if (_isUnshared) {
-      _refCount++;
-      return false;
-    }
-    
-    int newRef = _refCount;
+    int ref = _refs.get(object);
 
-    int ref = addRef(object, newRef, false);
-    
-    if (ref != newRef) {
+    if (ref >= 0) {
       writeRef(ref);
 
       return true;
-    }
-    else {
-      _refCount++;
-      
+    } else {
+      _refs.put(object, _refs.size(),false);
+
       return false;
     }
   }
