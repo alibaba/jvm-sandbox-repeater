@@ -234,21 +234,23 @@ public class ApacheHttpClientProcessor extends DefaultInvocationProcessor {
 
         Boolean isRepeatable = (Boolean)MethodUtils.invokeMethod(httpEntity, "isRepeatable");
         if (isRepeatable){
-            return this.getResponseBodyStr(httpEntity, classLoader);
+            return this.getResponseBodyStrAndBytes(httpEntity, classLoader, null);
         }else {
             if (this.canResetContent(httpEntity, classLoader)){
-                String responseBodyStr = this.getResponseBodyStr(httpEntity, classLoader);
+                byte[][] holder = new byte[1][];
+                String responseBodyStr = this.getResponseBodyStrAndBytes(httpEntity, classLoader, holder);
                 // 重新设置返回结果中的流
-                this.reSetResponseStream(classLoader, httpEntity, responseBodyStr, false);
+                this.reSetResponseStream(classLoader, httpEntity, holder[0], false);
                 return responseBodyStr;
             }else {
                 // 如果当前这个wrappedEntity没有setContent方法，就尝试在当前wrappedEntity内部取属性wrappedEntity
                 Object httpEntityInside = this.getWrappedEntity(httpEntity, classLoader);
                 if (this.canResetContent(httpEntityInside, classLoader)){
+                    byte[][] holder = new byte[1][];
                     // 有些压缩数据需要特殊处理，所以还是从最外层的httpEntity获取数据
-                    String responseBodyStr = this.getResponseBodyStr(httpEntity, classLoader);
+                    String responseBodyStr = this.getResponseBodyStrAndBytes(httpEntity, classLoader, holder);
                     // 重新设置返回结果中的流
-                    this.reSetResponseStream(classLoader, httpEntityInside, responseBodyStr, true);
+                    this.reSetResponseStream(classLoader, httpEntityInside, holder[0], true);
                     // org.apache.http.client.entity.DecompressingEntity，将content置为null，下次读取是触发重新执行getDecompressingStream方法
                     this.setContentNull(httpEntity, classLoader);
                     return responseBodyStr;
@@ -259,12 +261,16 @@ public class ApacheHttpClientProcessor extends DefaultInvocationProcessor {
         }
     }
 
-    private String getResponseBodyStr(Object httpEntity, ClassLoader classLoader) throws Exception{
+    private String getResponseBodyStrAndBytes(Object httpEntity, ClassLoader classLoader, byte[][] holder) throws Exception{
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         MethodUtils.invokeMethod(httpEntity, "writeTo", baos);
         Charset charset = this.determineCharset(httpEntity, classLoader);
-        return new String(baos.toByteArray(), charset);
+        byte[] bytes = baos.toByteArray();
+        if(holder != null){
+            holder[0] = bytes;
+        }
+        return new String(bytes, charset);
     }
 
     private boolean canResetContent(Object httpEntity, ClassLoader classLoader) throws Exception{
@@ -282,23 +288,22 @@ public class ApacheHttpClientProcessor extends DefaultInvocationProcessor {
     }
 
     // 这里对请求的流进行了重新复制，不同场景的可靠性需要验证
-    private void reSetResponseStream(ClassLoader classLoader, Object httpEntity, String responseBodyStr, Boolean gizp) throws Exception {
+    private void reSetResponseStream(ClassLoader classLoader, Object httpEntity, byte[] bytes, Boolean gizp) throws Exception {
         Class<?> wrappedEntityClass = classLoader.loadClass("org.apache.http.entity.HttpEntityWrapper");
         Field wrappedEntityField = FieldUtils.getDeclaredField(wrappedEntityClass, "wrappedEntity", true);
         Object wrappedEntity = wrappedEntityField.get(httpEntity);
         if (gizp){
-            MethodUtils.invokeMethod(wrappedEntity, "setContent", this.getGzipByte(responseBodyStr, classLoader, httpEntity));
+            MethodUtils.invokeMethod(wrappedEntity, "setContent", this.getGzipByte(bytes, classLoader, httpEntity));
         }else {
-            MethodUtils.invokeMethod(wrappedEntity, "setContent", new ByteArrayInputStream(responseBodyStr.getBytes()));
+            MethodUtils.invokeMethod(wrappedEntity, "setContent", new ByteArrayInputStream(bytes));
         }
     }
 
-    private InputStream getGzipByte(String responseBodyStr, ClassLoader classLoader, Object httpEntity) throws Exception{
+    private InputStream getGzipByte(byte[] bytes, ClassLoader classLoader, Object httpEntity) throws Exception{
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream gzip;
-        Charset charset = this.determineCharset(httpEntity, classLoader);
         gzip = new GZIPOutputStream(out);
-        gzip.write(responseBodyStr.getBytes(charset));
+        gzip.write(bytes);
         gzip.close();
 
         return new ByteArrayInputStream(out.toByteArray());
