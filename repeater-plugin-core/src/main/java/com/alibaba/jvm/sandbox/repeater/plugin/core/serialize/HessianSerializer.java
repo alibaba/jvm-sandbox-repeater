@@ -7,6 +7,7 @@ import org.kohsuke.MetaInfServices;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -37,12 +38,17 @@ public class HessianSerializer extends AbstractSerializerAdapter {
         output.setSerializerFactory(getFactory(classLoader));
         try {
             output.writeObject(object);
-            output.close();
+            return byteArray.toByteArray();
         } catch (Throwable t) {
             // may produce sof exception
             throw new SerializeException("[Error-1001]-hessian-serialize-error", t);
+        } finally {
+            try {
+                output.close();
+            } catch (IOException e) {
+                // ignore
+            }
         }
-        return byteArray.toByteArray();
     }
 
     @Override
@@ -53,11 +59,16 @@ public class HessianSerializer extends AbstractSerializerAdapter {
         Object readObject;
         try {
             readObject = input.readObject(type);
-            input.close();
+            return (T) readObject;
         } catch (Throwable t) {
             throw new SerializeException("[Error-1002]-hessian-deserialize-error", t);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException e) {
+                // ignore
+            }
         }
-        return (T) readObject;
     }
 
     @Override
@@ -67,11 +78,16 @@ public class HessianSerializer extends AbstractSerializerAdapter {
         Object readObject;
         try {
             readObject = input.readObject();
-            input.close();
+            return readObject;
         } catch (Throwable t) {
             throw new SerializeException("[Error-1002]-hessian-deserialize-error", t);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException e) {
+                // ignore
+            }
         }
-        return readObject;
     }
 
     /**
