@@ -159,7 +159,7 @@ public class OkhttpInvocationProcessor extends DefaultInvocationProcessor {
             // 构建返回body体
             Map<String, Object> responseMap = (Map<String, Object>) invocation.getResponse();
             if (MapUtils.isEmpty(responseMap)){
-                new Object();
+                return new Object();
             }
 
             String responseStr = (String)responseMap.get("responseBody");
