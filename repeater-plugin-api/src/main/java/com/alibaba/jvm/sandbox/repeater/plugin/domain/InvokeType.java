@@ -37,6 +37,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType CAFFEINE_CACHE = new InvokeType("caffeine-cache");
 
+    public static InvokeType FEIGN_DEFAULT_CLIENT = new InvokeType("feign-default");
+
     private String name;
 
     public InvokeType(String name) {
