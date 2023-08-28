@@ -78,7 +78,17 @@ public class PluginClassRouting {
                 .matcher(Matcher.REPEATER)
                 .block(false)
                 .build();
-        return transformRouting(Lists.newArrayList(httpPluginRouting, dubboRepeaterRouting), isPreloading, timeout);
+
+        // mybatis 插件对mybatis进行路由
+        PluginClassRouting mybatisPluginRouting = PluginClassRouting.builder()
+                .targetClass("org.apache.ibatis.session.Configuration")
+                .classPattern("^org.apache.ibatis..*")
+                .identity("mybatis")
+                .matcher(Matcher.PLUGIN)
+                .block(true)
+                .build();
+
+        return transformRouting(Lists.newArrayList(httpPluginRouting, dubboRepeaterRouting, mybatisPluginRouting), isPreloading, timeout);
     }
 
     /**
