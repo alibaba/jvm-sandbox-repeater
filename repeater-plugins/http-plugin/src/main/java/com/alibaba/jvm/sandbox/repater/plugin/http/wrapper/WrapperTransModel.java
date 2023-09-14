@@ -134,4 +134,8 @@ public class WrapperTransModel {
     public void setResponse(String response) {
         this.response = response;
     }
+
+    public WrapperRequest getRequest() {
+        return request;
+    }
 }

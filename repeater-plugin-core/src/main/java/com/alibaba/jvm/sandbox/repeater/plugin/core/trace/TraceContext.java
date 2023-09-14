@@ -35,7 +35,7 @@ public class TraceContext {
     private volatile boolean sampled;
 
     /**
-     * 调用的类型{@link com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType}
+     * 调用的类型{@link InvokeType}
      */
     private InvokeType invokeType;
 

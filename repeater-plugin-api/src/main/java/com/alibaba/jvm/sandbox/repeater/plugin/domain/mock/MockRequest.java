@@ -53,8 +53,8 @@ public class MockRequest {
         this.modifiedInvocationIdentity = modifiedInvocationIdentity;
     }
 
-    public static MockRequest.MockRequestBuilder builder() {
-        return new MockRequest.MockRequestBuilder();
+    public static MockRequestBuilder builder() {
+        return new MockRequestBuilder();
     }
     public BeforeEvent getEvent() {
         return event;
@@ -151,52 +151,52 @@ public class MockRequest {
         MockRequestBuilder() {
         }
 
-        public MockRequest.MockRequestBuilder event(BeforeEvent event) {
+        public MockRequestBuilder event(BeforeEvent event) {
             this.event = event;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder argumentArray(Object[] argumentArray) {
+        public MockRequestBuilder argumentArray(Object[] argumentArray) {
             this.argumentArray = argumentArray;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder type(InvokeType type) {
+        public MockRequestBuilder type(InvokeType type) {
             this.type = type;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder recordModel(RecordModel recordModel) {
+        public MockRequestBuilder recordModel(RecordModel recordModel) {
             this.recordModel = recordModel;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder meta(RepeatMeta meta) {
+        public MockRequestBuilder meta(RepeatMeta meta) {
             this.meta = meta;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder identity(Identity identity) {
+        public MockRequestBuilder identity(Identity identity) {
             this.identity = identity;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder traceId(String traceId) {
+        public MockRequestBuilder traceId(String traceId) {
             this.traceId = traceId;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder repeatId(String repeatId) {
+        public MockRequestBuilder repeatId(String repeatId) {
             this.repeatId = repeatId;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder index(int index) {
+        public MockRequestBuilder index(int index) {
             this.index = index;
             return this;
         }
 
-        public MockRequest.MockRequestBuilder modifiedInvocationIdentity(Set<Identity> modifiedInvocationIdentity) {
+        public MockRequestBuilder modifiedInvocationIdentity(Set<Identity> modifiedInvocationIdentity) {
             this.modifiedInvocationIdentity = modifiedInvocationIdentity;
             return this;
         }

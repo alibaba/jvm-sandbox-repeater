@@ -1,8 +1,13 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.model;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import com.alibaba.fastjson2.JSONReader;
+import com.alibaba.fastjson2.filter.Filter;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.util.IpUtil;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.DynamicConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.ExceptionAware;
 
@@ -30,26 +35,55 @@ public class ApplicationModel {
 
     private volatile RepeaterConfig config;
 
+    private volatile DynamicConfig dynamicConfig;
+
     private ExceptionAware ea = new ExceptionAware();
 
     private volatile boolean fusing = false;
 
     private static ApplicationModel instance = new ApplicationModel();
 
+    private static Filter autoTypeFilter;
+
     private ApplicationModel() {
         // for example, you can define it your self
         this.appName = getSystemPropertyOrDefault("app.name", "unknown");
         this.environment = getSystemPropertyOrDefault("app.env", "unknown");
-        try {
-            this.host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            // default value for disaster
-            this.host = "127.0.0.1";
-        }
+        this.host = IpUtil.getLocalIp();
     }
 
     public static ApplicationModel instance() {
         return instance;
+    }
+
+    public static Filter getAutoTypeFilter() {
+        if (autoTypeFilter!=null) {
+            return autoTypeFilter;
+        }
+
+        if (instance==null||instance.getConfig()==null) {
+            autoTypeFilter = JSONReader.autoTypeFilter(
+                    // 按需加上需要支持自动类型的类名前缀，范围越小越安全
+                    "com.",
+                    "org.",
+                    "java."
+            );
+        } else {
+            String[] autoTypes = instance.getConfig().getAutoTypes();
+            List<String> configs = new ArrayList<>();
+            configs.add("com.");
+            configs.add("org.");
+            if (autoTypes!=null && autoTypes.length>0) {
+                configs.addAll(Arrays.asList(autoTypes));
+            }
+            String[] a = new String[configs.size()];
+            configs.toArray(a);
+            autoTypeFilter = JSONReader.autoTypeFilter(
+                   a
+            );
+        }
+
+        return autoTypeFilter;
     }
 
     /**
@@ -132,5 +166,13 @@ public class ApplicationModel {
 
     public void setFusing(boolean fusing) {
         this.fusing = fusing;
+    }
+
+    public DynamicConfig getDynamicConfig() {
+        return dynamicConfig;
+    }
+
+    public void setDynamicConfig(DynamicConfig dynamicConfig) {
+        this.dynamicConfig = dynamicConfig;
     }
 }

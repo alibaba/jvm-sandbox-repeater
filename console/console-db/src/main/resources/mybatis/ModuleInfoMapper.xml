@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.ModuleInfoMapper">
+
+
+    <insert id="insertModuleInfo"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `module_info`
+        (
+        <trim suffixOverrides=",">
+                    <if test="id!=null">
+                        `id`,
+                    </if>
+                    <if test="gmtCreate!=null">
+                        `gmt_create`,
+                    </if>
+                    <if test="gmtModified!=null">
+                        `gmt_modified`,
+                    </if>
+                    <if test="appName!=null">
+                        `app_name`,
+                    </if>
+                    <if test="environment!=null">
+                        `environment`,
+                    </if>
+                    <if test="ip!=null">
+                        `ip`,
+                    </if>
+                    <if test="port!=null">
+                        `port`,
+                    </if>
+                    <if test="version!=null">
+                        `version`,
+                    </if>
+                    <if test="status!=null">
+                        `status`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="id!=null">
+                    #{id},
+                </if>
+                <if test="gmtCreate!=null">
+                    #{gmtCreate},
+                </if>
+                <if test="gmtModified!=null">
+                    #{gmtModified},
+                </if>
+                <if test="appName!=null">
+                    #{appName},
+                </if>
+                <if test="environment!=null">
+                    #{environment},
+                </if>
+                <if test="ip!=null">
+                    #{ip},
+                </if>
+                <if test="port!=null">
+                    #{port},
+                </if>
+                <if test="version!=null">
+                    #{version},
+                </if>
+                <if test="status!=null">
+                    #{status},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateModuleInfo">
+        UPDATE `module_info`
+        SET
+        <trim suffixOverrides=",">
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate},
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified},
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName},
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment},
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip},
+            </if>
+            <if test="port != null and port!=''">
+                `port` = #{port},
+            </if>
+            <if test="version != null and version!=''">
+                `version` = #{version},
+            </if>
+            <if test="status != null and status!=''">
+                `status` = #{status},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `id` = #{id} and
+        </trim>
+    </update>
+
+    <resultMap type="ModuleInfo" id="ModuleInfoMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="appName" column="app_name"/>
+        <result property="environment" column="environment"/>
+        <result property="ip" column="ip"/>
+        <result property="port" column="port"/>
+        <result property="version" column="version"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <select id="count" resultType="java.lang.Long">
+        select
+        count(1)
+        from  `module_info`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip} and
+            </if>
+            <if test="port != null and port!=''">
+                `port` = #{port} and
+            </if>
+            <if test="version != null and version!=''">
+                `version` = #{version} and
+            </if>
+            <if test="status != null and status!=''">
+                `status` = #{status} and
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryModuleInfo" resultMap="ModuleInfoMap">
+        select
+        *
+        from  `module_info`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip} and
+            </if>
+            <if test="port != null and port!=''">
+                `port` = #{port} and
+            </if>
+            <if test="version != null and version!=''">
+                `version` = #{version} and
+            </if>
+            <if test="status != null and status!=''">
+                `status` = #{status} and
+            </if>
+        </trim>
+        <if test="offset!=null and pageSize!=null">
+            limit #{offset}, #{pageSize}
+        </if>
+        order by gmt_modified desc;
+    </select>
+
+    <select id="queryModuleInfoLimit1" resultMap="ModuleInfoMap">
+        select
+        *
+        from  `module_info`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip} and
+            </if>
+            <if test="port != null and port!=''">
+                `port` = #{port} and
+            </if>
+            <if test="version != null and version!=''">
+                `version` = #{version} and
+            </if>
+            <if test="status != null and status!=''">
+                `status` = #{status} and
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `id`,
+        `gmt_create`,
+        `gmt_modified`,
+        `app_name`,
+        `environment`,
+        `ip`,
+        `port`,
+        `version`,
+        `status`,
+        </trim>
+    </sql>
+
+    <delete id="deleteById">
+        DELETE from module_info where id=#{id}
+    </delete>
+</mapper>

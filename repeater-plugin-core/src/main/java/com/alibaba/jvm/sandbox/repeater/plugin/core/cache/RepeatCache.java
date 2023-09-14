@@ -1,10 +1,14 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.cache;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.MockInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
@@ -32,18 +36,23 @@ public class RepeatCache {
             @Override
             public RepeatContext load(String s) throws Exception {
                 RepeatMeta meta = new RepeatMeta();
-                return new RepeatContext(meta, null, null);
+                return new RepeatContext(meta, null, null, false);
             }
         });
+
+    /**
+     * 单次回放，避免debug过程中LoadingCache的超时失效策略，而单独设计的
+     */
+    private static final Map<String, RepeatContext> SINGLE_REPLAY_CACHE = new ConcurrentHashMap<>();
 
     private static final LoadingCache<String, List<MockInvocation>> MOCK_INVOCATION_CONTEXT = CacheBuilder
         .newBuilder()
         .maximumSize(4096)
-        .expireAfterWrite(30, TimeUnit.SECONDS)
+        .expireAfterWrite(90, TimeUnit.SECONDS)
         .build(new CacheLoader<String, List<MockInvocation>>() {
             @Override
             public List<MockInvocation> load(String s) throws Exception {
-                return Lists.newArrayList();
+                return Collections.synchronizedList(Lists.newArrayList());
             }
         });
 
@@ -56,7 +65,9 @@ public class RepeatCache {
      * @return 是否回放流量
      */
     public static boolean isRepeatFlow(String traceId) {
-        return StringUtils.isNotEmpty(traceId) && CONTEXT_CACHE.getIfPresent(traceId) != null;
+
+        boolean v= StringUtils.isNotEmpty(traceId) && ((CONTEXT_CACHE.getIfPresent(traceId) != null) || SINGLE_REPLAY_CACHE.containsKey(traceId));
+        return v;
     }
 
 
@@ -68,7 +79,7 @@ public class RepeatCache {
      * @return 是否回放流量
      */
     public static boolean isRepeatFlow() {
-        return StringUtils.isNotEmpty(Tracer.getTraceId()) && CONTEXT_CACHE.getIfPresent(Tracer.getTraceId()) != null;
+        return StringUtils.isNotEmpty(Tracer.getTraceId()) && ((CONTEXT_CACHE.getIfPresent(Tracer.getTraceId()) != null) || SINGLE_REPLAY_CACHE.containsKey(Tracer.getTraceId()));
     }
 
     /**
@@ -78,7 +89,11 @@ public class RepeatCache {
      * @param context 上下文
      */
     public static void putRepeatContext(RepeatContext context) {
-        CONTEXT_CACHE.put(context.getTraceId(), context);
+        if (context.isSingleReplay()) {
+            SINGLE_REPLAY_CACHE.put(context.getTraceId(), context);
+        } else {
+            CONTEXT_CACHE.put(context.getTraceId(), context);
+        }
     }
 
     /**
@@ -88,7 +103,21 @@ public class RepeatCache {
      * @return 回放上下文
      */
     public static RepeatContext getRepeatContext(String traceId) {
-        return StringUtils.isNotEmpty(traceId) ? CONTEXT_CACHE.getIfPresent(traceId) : null;
+
+        if (StringUtils.isEmpty(traceId)) {
+            return null;
+        }
+
+        RepeatContext context = CONTEXT_CACHE.getIfPresent(traceId);
+        if (context!=null) {
+            return context;
+        }
+
+        if (SINGLE_REPLAY_CACHE.containsKey(traceId)) {
+            return SINGLE_REPLAY_CACHE.get(traceId);
+        }
+
+        return null;
     }
 
     public static void addMockInvocation(MockInvocation invocation) {
@@ -99,7 +128,25 @@ public class RepeatCache {
         }
     }
 
+    public static void removeInvocation(String traceId) {
+        try {
+            MOCK_INVOCATION_CONTEXT.get(traceId).clear();
+        } catch (ExecutionException e) {
+            // impossible
+        }
+    }
+
     public static List<MockInvocation> getMockInvocation(String traceId) {
         return MOCK_INVOCATION_CONTEXT.getIfPresent(traceId);
+    }
+
+    public static void removeRepeatContext(String traceId) {
+        if (StringUtils.isNotEmpty(traceId)) {
+            CONTEXT_CACHE.invalidate(traceId);
+
+            if (SINGLE_REPLAY_CACHE.containsKey(traceId)) {
+                SINGLE_REPLAY_CACHE.remove(traceId);
+            }
+        }
     }
 }

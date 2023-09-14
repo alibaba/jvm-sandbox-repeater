@@ -5,6 +5,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.api.Broadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.KafkaBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.standalone.StandaloneBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.standalone.StandaloneConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
@@ -36,7 +37,7 @@ public class StandaloneSwitch {
             configManager = new StandaloneConfigManager();
         } else {
             configManager = new DefaultConfigManager();
-            broadcaster = new DefaultBroadcaster();
+            broadcaster = new KafkaBroadcaster();
         }
     }
 

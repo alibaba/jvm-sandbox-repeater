@@ -8,6 +8,8 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,8 @@ import static com.alibaba.jvm.sandbox.repeater.plugin.Constants.REPEAT_HEARTBEAT
  */
 public class HeartbeatHandler {
 
+    private final static Logger log = LoggerFactory.getLogger(HeartbeatHandler.class);
+
     private static final long FREQUENCY = 10;
 
     private final static String HEARTBEAT_DOMAIN = PropertyUtil.getPropertyOrDefault(REPEAT_HEARTBEAT_URL, "");
@@ -43,12 +47,13 @@ public class HeartbeatHandler {
     }
 
     public synchronized void start() {
+        log.info("began to start heartbeat");
         if (initialize.compareAndSet(false, true)) {
             executorService.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        innerReport();
+                        innerReport(false);
                     } catch (Exception e) {
                         LogUtil.error("error occurred when report heartbeat", e);
                     }
@@ -58,12 +63,13 @@ public class HeartbeatHandler {
     }
 
     public void stop() {
+        innerReport(true);
         if (initialize.compareAndSet(true, false)) {
             executorService.shutdown();
         }
     }
 
-    private void innerReport() {
+    private void innerReport(boolean shutdown) {
         Map<String, String> params = new HashMap<String, String>(8);
         params.put("appName", ApplicationModel.instance().getAppName());
         params.put("ip", ApplicationModel.instance().getHost());
@@ -71,10 +77,21 @@ public class HeartbeatHandler {
         params.put("port", configInfo.getServerAddress().getPort() + "");
         params.put("version", Constants.VERSION);
         try {
-            params.put("status", moduleManager.isActivated(Constants.MODULE_ID) ? "ACTIVE" : "FROZEN");
+            if (shutdown) {
+                params.put("status", "OFFLINE");
+            } else {
+                params.put("status", moduleManager.isActivated(Constants.MODULE_ID) ? "ACTIVE" : "FROZEN");
+            }
+
         } catch (ModuleException e) {
             // ignore
         }
-        HttpUtil.doGet(HEARTBEAT_DOMAIN, params);
+        HttpUtil.Resp resp = HttpUtil.doGet(HEARTBEAT_DOMAIN, params);
+        if (resp.isSuccess() && resp.getCode() == 200) {
+            log.debug("success report to remote server {} the endpoint info {}", HEARTBEAT_DOMAIN, params);
+        } else {
+            log.error("failed report to remote server {} the endpoint info {}", HEARTBEAT_DOMAIN, params);
+        }
+
     }
 }

@@ -17,8 +17,8 @@ import com.alibaba.ttl.TtlRunnable;
  * {@link TtlConcurrentAdvice} {@code TransmittableThreadLocal} 多线程适配
  *
  * <p>
- * {@link com.alibaba.ttl.TransmittableThreadLocal}对线程上下文进行拷贝要求使用{@link com.alibaba.ttl.TtlRunnable} or {@link
- * com.alibaba.ttl.TtlCallable}
+ * {@link com.alibaba.ttl.TransmittableThreadLocal}对线程上下文进行拷贝要求使用{@link TtlRunnable} or {@link
+ * TtlCallable}
  *
  * 对于动态attach的模块，无法保障业务使用这个能力，ttl提供了{@link com.alibaba.ttl.threadpool.agent.TtlAgent}动态包装;
  *

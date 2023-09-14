@@ -17,7 +17,7 @@ public interface Serializer {
      * 获取序列化器的类型
      *
      * @return type 类型
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.Serializer.Type
+     * @see Type
      */
     Type type();
 
@@ -126,6 +126,7 @@ public interface Serializer {
     enum Type {
         HESSIAN,
         JSON,
+        JSONB,
         JAVA,
         NONE
     }

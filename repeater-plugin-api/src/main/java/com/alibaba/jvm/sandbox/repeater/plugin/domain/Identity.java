@@ -144,4 +144,8 @@ public class Identity implements java.io.Serializable{
     public int hashCode() {
         return Arrays.hashCode(new Object[]{uri, scheme, location, endpoint, extra});
     }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 }

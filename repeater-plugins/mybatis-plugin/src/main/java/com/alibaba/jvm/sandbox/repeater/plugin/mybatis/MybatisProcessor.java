@@ -100,6 +100,13 @@ class MybatisProcessor extends DefaultInvocationProcessor {
             return true;
         }
 
+        DynamicConfig dynamicConfig = ApplicationModel.instance().getDynamicConfig();
+        Set<String> skipMockIdentities = dynamicConfig.getSkipMockIdentities2();
+        Identity identity = assembleIdentity(event);
+        if (skipMockIdentities.contains(identity.getUri())) {
+            return true;
+        }
+
         return false;
     }
 }

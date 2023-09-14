@@ -79,7 +79,7 @@ public class HessianSerializer extends AbstractSerializerAdapter {
      *
      * @param classLoader 类加载器
      * @return 序列化工厂
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge
+     * @see ClassloaderBridge
      */
     private SerializerFactory getFactory(ClassLoader classLoader) {
         String token = getToken(classLoader);

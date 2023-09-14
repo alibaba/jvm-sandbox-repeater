@@ -34,7 +34,7 @@ public class ReflectCompareStrategy extends AbstractMockStrategy {
             return null;
         }
         Object[] current = request.getArgumentArray();
-        java.util.List<Invocation> target = Lists.newArrayList();
+        List<Invocation> target = Lists.newArrayList();
         // step1:URI匹配,目前做精确匹配，后续可能需要考虑替换
         for (Invocation invocation : subInvocations) {
             if (StringUtils.equals(invocation.getIdentity().getUri(), request.getIdentity().getUri())) {

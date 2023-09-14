@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.RecordMapper">
+    <resultMap type="Record" id="RecordMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtRecord" column="gmt_record"/>
+        <result property="appName" column="app_name"/>
+        <result property="environment" column="environment"/>
+        <result property="host" column="host"/>
+        <result property="traceId" column="trace_id"/>
+        <result property="entranceDesc" column="entrance_desc"/>
+        <result property="wrapperRecord" column="wrapper_record"/>
+        <result property="request" column="request"/>
+        <result property="response" column="response"/>
+        <result property="add" column="add"/>
+        <result property="version" column="version"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <insert id="insertRecord"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `record`
+        (
+        <trim suffixOverrides=",">
+                    <if test="id!=null">
+                        `id`,
+                    </if>
+                    <if test="gmtCreate!=null">
+                        `gmt_create`,
+                    </if>
+                    <if test="gmtRecord!=null">
+                        `gmt_record`,
+                    </if>
+                    <if test="appName!=null">
+                        `app_name`,
+                    </if>
+                    <if test="environment!=null">
+                        `environment`,
+                    </if>
+                    <if test="host!=null">
+                        `host`,
+                    </if>
+                    <if test="traceId!=null">
+                        `trace_id`,
+                    </if>
+                    <if test="entranceDesc!=null">
+                        `entrance_desc`,
+                    </if>
+                    <if test="wrapperRecord!=null">
+                        `wrapper_record`,
+                    </if>
+                    <if test="request!=null">
+                        `request`,
+                    </if>
+                    <if test="response!=null">
+                        `response`,
+                    </if>
+                    <if test="version!=null">
+                        `version`,
+                    </if>
+                    <if test="type!=null">
+                        `type`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="id!=null">
+                    #{id},
+                </if>
+                <if test="gmtCreate!=null">
+                    #{gmtCreate},
+                </if>
+                <if test="gmtRecord!=null">
+                    #{gmtRecord},
+                </if>
+                <if test="appName!=null">
+                    #{appName},
+                </if>
+                <if test="environment!=null">
+                    #{environment},
+                </if>
+                <if test="host!=null">
+                    #{host},
+                </if>
+                <if test="traceId!=null">
+                    #{traceId},
+                </if>
+                <if test="entranceDesc!=null">
+                    #{entranceDesc},
+                </if>
+                <if test="wrapperRecord!=null">
+                    #{wrapperRecord},
+                </if>
+                <if test="request!=null">
+                    #{request},
+                </if>
+                <if test="response!=null">
+                    #{response},
+                </if>
+                <if test="version!=null">
+                    #{version},
+                </if>
+                <if test="type!=null">
+                    #{type},
+                </if>
+        </trim>
+        )
+    </insert>
+
+    <update id="updateRecord">
+        UPDATE `record`
+        SET
+        <trim suffixOverrides=",">
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate},
+            </if>
+            <if test="gmtRecord != null">
+                `gmt_record` = #{gmtRecord},
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName},
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment},
+            </if>
+            <if test="host != null and host!=''">
+                `host` = #{host},
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId},
+            </if>
+            <if test="entranceDesc != null and entranceDesc!=''">
+                `entrance_desc` = #{entranceDesc},
+            </if>
+            <if test="wrapperRecord != null and wrapperRecord!=''">
+                `wrapper_record` = #{wrapperRecord},
+            </if>
+            <if test="request != null and request!=''">
+                `request` = #{request},
+            </if>
+            <if test="response != null and response!=''">
+                `response` = #{response},
+            </if>
+            <if test="add != null">
+                `add` = #{add},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `id` = #{id} and
+        </trim>
+    </update>
+
+    <select id="count" resultType="java.lang.Long">
+        select
+            count(1)
+        from  `record`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="host != null and host!=''">
+                `host` = #{host} and
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId} and
+            </if>
+            <if test="entranceDesc != null and entranceDesc!=''">
+                `entrance_desc` like concat('%',#{entranceDesc,jdbcType=VARCHAR},'%') and
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryRecord" resultMap="RecordMap">
+        select
+        *
+        from  `record`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="host != null and host!=''">
+                `host` = #{host} and
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId} and
+            </if>
+            <if test="requestId != null and requestId!=''">
+                `request_id` = #{requestId} and
+            </if>
+            <if test="entranceDesc != null and entranceDesc!=''">
+                `entrance_desc` like concat('%',#{entranceDesc,jdbcType=VARCHAR},'%') and
+            </if>
+            <if test="recordIdList!=null">
+                id in
+                <foreach collection="recordIdList" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="traceIdList!=null">
+                `trace_id` in
+                <foreach collection="traceIdList" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="gmtCreateLt!=null">
+                <![CDATA[`gmt_create` < #{gmtCreateLt,jdbcType=TIMESTAMP} and]]>
+            </if>
+        </trim>
+        <if test="orderByGmtCreateDesc!=null" >
+            order by gmt_create desc
+        </if>
+        <if test="offset!=null and pageSize!=null">
+            limit #{offset}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="queryRecordLimit1" resultMap="RecordMap">
+        select
+        *
+        from  `record`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtRecord != null">
+                `gmt_record` = #{gmtRecord} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="host != null and host!=''">
+                `host` = #{host} and
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId} and
+            </if>
+            <if test="entranceDesc != null and entranceDesc!=''">
+                `entrance_desc` = #{entranceDesc} and
+            </if>
+            <if test="wrapperRecord != null and wrapperRecord!=''">
+                `wrapper_record` = #{wrapperRecord} and
+            </if>
+            <if test="request != null and request!=''">
+                `request` = #{request} and
+            </if>
+            <if test="response != null and response!=''">
+                `response` = #{response} and
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <select id="queryById" resultMap="RecordMap">
+        select * from `record` where id=#{id}
+    </select>
+
+    <update id="batchUpdateRecord" >
+        <foreach collection="list" item="item">
+            update `record` set `add`=#{item.add} where id=#{item.id};
+        </foreach>
+    </update>
+
+    <delete id="batchRemove">
+        <foreach collection="list" item="item">
+            delete from `record` where trace_id = #{item};
+        </foreach>
+    </delete>
+
+    <delete id="removeById">
+        delete from record where id=#{id}
+    </delete>
+</mapper>

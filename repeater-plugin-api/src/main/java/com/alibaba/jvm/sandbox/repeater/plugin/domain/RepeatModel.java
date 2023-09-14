@@ -1,6 +1,8 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,6 +28,12 @@ public class RepeatModel implements java.io.Serializable {
     private String traceId;
 
     private List<MockInvocation> mockInvocations;
+
+    private String throwableSerialized;
+    /**
+     * 扩展信息
+     */
+    private Map<String,String> extension = new HashMap<String, String>();
 
     public String getRepeatId() {
         return repeatId;
@@ -89,5 +97,24 @@ public class RepeatModel implements java.io.Serializable {
 
     public void setMockInvocations(List<MockInvocation> mockInvocations) {
         this.mockInvocations = mockInvocations;
+    }
+
+    public Map<String, String> getExtension() {
+        if (extension==null) {
+            extension = new HashMap<>();
+        }
+        return extension;
+    }
+
+    public void setExtension(Map<String, String> extension) {
+        this.extension = extension;
+    }
+
+    public String getThrowableSerialized() {
+        return throwableSerialized;
+    }
+
+    public void setThrowableSerialized(String throwableSerialized) {
+        this.throwableSerialized = throwableSerialized;
     }
 }

@@ -34,6 +34,9 @@ public class HttpRepeater extends AbstractRepeater {
         Map<String, String> extra = new HashMap<String, String>(2);
         // 透传当前生成的traceId到http线程 HttpStandaloneListener#initConetxt
         extra.put(Constants.HEADER_TRACE_ID, context.getTraceId());
+        if (context.isSingleReplay()) {
+            extra.put(Constants.HEADER_SINGLE, "1");
+        }
         // 直接访问本机,默认全都走http，不关心protocol
         StringBuilder builder = new StringBuilder()
                 .append("http")
@@ -44,7 +47,14 @@ public class HttpRepeater extends AbstractRepeater {
                 .append(hi.getRequestURI());
         String url = builder.toString();
         Map<String, String> headers = rebuildHeaders(hi.getHeaders(), extra);
-        HttpUtil.Resp resp = HttpUtil.invoke(url, hi.getMethod(), headers, hi.getParamsMap(), hi.getBody());
+        HttpUtil.Resp resp;
+        if (hi.isMultipart()) {
+            resp = HttpUtil.fileUpload(url, hi.getMethod(), headers, hi.getParamsMap(), hi.getFilename(), hi.getPartName(), hi.getFileContent());
+        } else {
+            resp = HttpUtil.invoke(url, hi.getMethod(), headers, hi.getParamsMap(), hi.getBody());
+        }
+
+
         return resp.isSuccess() ? resp.getBody() : resp.getMessage();
     }
 

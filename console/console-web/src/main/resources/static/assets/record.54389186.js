@@ -1,0 +1,1 @@
+import{e}from"./base.3c7b4f95.js";function o(t){return e({url:"/api/v1/record/list",method:"post",data:t})}function i(t,r){return e({url:"/api/v1/record/detail",method:"post",data:{appName:t,traceId:r}})}export{o as a,i as g};

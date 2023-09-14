@@ -110,4 +110,9 @@ public abstract class AbstractBroadcaster implements Broadcaster {
             }
         }
     }
+
+    //默认初始化什么都不干
+    public void init() {
+
+    }
 }

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!-- 动态日志级别 -->
+    <jmxConfigurator/>
+
+    <!-- 定义日志文件 输出位置 -->
+    <property name="log.home_dir" value="/data/logs/repeater"/>
+    <property name="log.app_name" value="repeater"/>
+    <!-- 日志最大的历史 20天 -->
+    <property name="log.maxHistory" value="7"/>
+    <property name="log.level" value="info"/>
+    <property name="log.maxSize" value="50MB" />
+
+    <!-- ConsoleAppender 控制台输出日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                <!-- 设置日志输出格式 -->
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="app" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home_dir}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.home_dir}/application.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="message" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home_dir}/message.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.home_dir}/message.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="command" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home_dir}/command.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.home_dir}/command.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>7</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--org.springframework.web包下的类的日志输出-->
+    <logger name="org.springframework" additivity="false" level="ERROR">
+        <appender-ref ref="app"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+
+    <logger name="com.alibaba.fastjson2" additivity="false" level="ERROR">
+        <appender-ref ref="app"/>
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <logger name="org.apache.kafka" additivity="false" level="ERROR">
+        <appender-ref ref="app"/>
+    </logger>
+
+    <logger name="com.caucho.hessian" additivity="false" level="ERROR">
+        <appender-ref ref="app" />
+    </logger>
+
+    <logger name="org.tony.console.biz.Impl.CommandBizServiceImpl" additivity="false" level="INFO">
+        <appender-ref ref="command" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!--com.zgd包下的类的日志输出-->
+    <logger name="org.tony" additivity="false" level="INFO" >
+        <appender-ref ref="app" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!--com.zgd包下的类的日志输出-->
+    <logger name="org.tony.console.biz.kafka" additivity="false" level="INFO" >
+        <appender-ref ref="message" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <logger name="org.tony.console.service.kafka" additivity="false" level="INFO" >
+        <appender-ref ref="message" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <!-- root级别   DEBUG -->
+    <root>
+        <level value="INFO"/>
+        <!-- 控制台输出 -->
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

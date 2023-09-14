@@ -40,7 +40,7 @@ public class EnhanceModel {
      * 如果基于回调的情况，例如onRequest/onResponse，则只需关注BEFORE事件，通过两个BEFORE去组装，但注意这种情况需要重写{@link
      * com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListener#isEntranceFinish(Event)}方法
      */
-    private Event.Type[] watchTypes;
+    private Type[] watchTypes;
 
     /**
      * 是否包含子类
@@ -49,16 +49,21 @@ public class EnhanceModel {
      */
     private boolean includeSubClasses;
 
-    @ConstructorProperties({"classPattern", "methodPatterns", "watchTypes", "includeSubClasses"})
-    EnhanceModel(String classPattern, EnhanceModel.MethodPattern[] methodPatterns, Type[] watchTypes, boolean includeSubClasses) {
+    private boolean includeBootstrap = false;
+
+    private String[] parameterTypes;
+
+    @ConstructorProperties({"classPattern", "methodPatterns", "watchTypes", "includeSubClasses", "includeBootstrap"})
+    EnhanceModel(String classPattern, MethodPattern[] methodPatterns, Type[] watchTypes, boolean includeSubClasses, boolean includeBootstrap) {
         this.classPattern = classPattern;
         this.methodPatterns = methodPatterns;
         this.watchTypes = watchTypes;
         this.includeSubClasses = includeSubClasses;
+        this.includeBootstrap = includeBootstrap;
     }
 
-    public static EnhanceModel.EnhanceModelBuilder builder() {
-        return new EnhanceModel.EnhanceModelBuilder();
+    public static EnhanceModelBuilder builder() {
+        return new EnhanceModelBuilder();
     }
 
     /**
@@ -72,6 +77,7 @@ public class EnhanceModel {
                 .classPattern(behavior.getClassPattern())
                 .methodPatterns(MethodPattern.transform(behavior.getMethodPatterns()))
                 .includeSubClasses(behavior.isIncludeSubClasses())
+                .includeBootstrap(behavior.isIncludeBootstrapClasses())
                 .watchTypes(Type.BEFORE, Type.RETURN, Type.THROWS)
                 .build();
     }
@@ -80,7 +86,7 @@ public class EnhanceModel {
         return this.classPattern;
     }
 
-    public EnhanceModel.MethodPattern[] getMethodPatterns() {
+    public MethodPattern[] getMethodPatterns() {
         return this.methodPatterns;
     }
 
@@ -92,37 +98,51 @@ public class EnhanceModel {
         return this.includeSubClasses;
     }
 
+    public boolean isIncludeBootstrap() {
+        return includeBootstrap;
+    }
+
+    public void setIncludeBootstrap(boolean includeBootstrap) {
+        this.includeBootstrap = includeBootstrap;
+    }
+
     public static class EnhanceModelBuilder {
         private String classPattern;
-        private EnhanceModel.MethodPattern[] methodPatterns;
+        private MethodPattern[] methodPatterns;
         private Type[] watchTypes;
         private boolean includeSubClasses;
+        private boolean includeBootstrap;
 
         EnhanceModelBuilder() {
         }
 
-        public EnhanceModel.EnhanceModelBuilder classPattern(String classPattern) {
+        public EnhanceModelBuilder classPattern(String classPattern) {
             this.classPattern = classPattern;
             return this;
         }
 
-        public EnhanceModel.EnhanceModelBuilder methodPatterns(EnhanceModel.MethodPattern[] methodPatterns) {
+        public EnhanceModelBuilder methodPatterns(MethodPattern[] methodPatterns) {
             this.methodPatterns = methodPatterns;
             return this;
         }
 
-        public EnhanceModel.EnhanceModelBuilder watchTypes(Type... watchTypes) {
+        public EnhanceModelBuilder watchTypes(Type... watchTypes) {
             this.watchTypes = watchTypes;
             return this;
         }
 
-        public EnhanceModel.EnhanceModelBuilder includeSubClasses(boolean includeSubClasses) {
+        public EnhanceModelBuilder includeSubClasses(boolean includeSubClasses) {
             this.includeSubClasses = includeSubClasses;
             return this;
         }
 
+        public EnhanceModelBuilder includeBootstrap(boolean includeBootstrap) {
+            this.includeBootstrap = includeBootstrap;
+            return this;
+        }
+
         public EnhanceModel build() {
-            return new EnhanceModel(this.classPattern, this.methodPatterns, this.watchTypes, this.includeSubClasses);
+            return new EnhanceModel(this.classPattern, this.methodPatterns, this.watchTypes, this.includeSubClasses, this.includeBootstrap);
         }
 
         @Override
@@ -137,11 +157,20 @@ public class EnhanceModel {
         String[] parameterType;
         String[] annotationTypes;
 
+        private Boolean emptyParameter;
+
         @ConstructorProperties({"methodName", "parameterType", "annotationTypes"})
-        MethodPattern(String methodName, String[] parameterType, String[] annotationTypes) {
+        public MethodPattern(String methodName, String[] parameterType, String[] annotationTypes) {
             this.methodName = methodName;
             this.parameterType = parameterType;
             this.annotationTypes = annotationTypes;
+        }
+
+        public MethodPattern(String methodName, String[] parameterType, String[] annotationTypes, Boolean emptyParameter) {
+            this.methodName = methodName;
+            this.parameterType = parameterType;
+            this.annotationTypes = annotationTypes;
+            this.emptyParameter = emptyParameter;
         }
 
         public static MethodPattern[] transform(String... methodNames) {
@@ -155,8 +184,8 @@ public class EnhanceModel {
             return methodPatterns.toArray(new MethodPattern[0]);
         }
 
-        public static EnhanceModel.MethodPattern.MethodPatternBuilder builder() {
-            return new EnhanceModel.MethodPattern.MethodPatternBuilder();
+        public static MethodPatternBuilder builder() {
+            return new MethodPatternBuilder();
         }
 
         public String getMethodName() {
@@ -171,6 +200,10 @@ public class EnhanceModel {
             return this.annotationTypes;
         }
 
+        public Boolean getEmptyParameter() {
+            return emptyParameter;
+        }
+
         public static class MethodPatternBuilder {
             private String methodName;
             private String[] parameterType;
@@ -179,23 +212,23 @@ public class EnhanceModel {
             MethodPatternBuilder() {
             }
 
-            public EnhanceModel.MethodPattern.MethodPatternBuilder methodName(String methodName) {
+            public MethodPatternBuilder methodName(String methodName) {
                 this.methodName = methodName;
                 return this;
             }
 
-            public EnhanceModel.MethodPattern.MethodPatternBuilder parameterType(String[] parameterType) {
+            public MethodPatternBuilder parameterType(String[] parameterType) {
                 this.parameterType = parameterType;
                 return this;
             }
 
-            public EnhanceModel.MethodPattern.MethodPatternBuilder annotationTypes(String[] annotationTypes) {
+            public MethodPatternBuilder annotationTypes(String[] annotationTypes) {
                 this.annotationTypes = annotationTypes;
                 return this;
             }
 
-            public EnhanceModel.MethodPattern build() {
-                return new EnhanceModel.MethodPattern(this.methodName, this.parameterType, this.annotationTypes);
+            public MethodPattern build() {
+                return new MethodPattern(this.methodName, this.parameterType, this.annotationTypes);
             }
 
             @Override

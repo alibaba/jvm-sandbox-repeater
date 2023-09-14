@@ -89,14 +89,23 @@ public class DefaultEventListener implements EventListener {
                 return;
             }
             /*
+             * 回放流量不进行采样计算
              * 执行采样计算（只有entrance插件负责计算采样，子调用插件不计算)
              */
-            if (!sample(event)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("event missing sample rule,type={},event={}", invokeType, event);
+            if (!RepeatCache.isRepeatFlow(Tracer.getTraceId())) {
+                if (!sample(event)) {
+                    //主调用不采样的前提下，直接清理当前上下文
+                    if (entrance) {
+                        Tracer.end();
+                    }
+
+                    if (log.isDebugEnabled() && !("JAVA_DATE".equals(InvokeType.JAVA_DATE.name()))) {
+                        log.debug("event missing sample rule,type={},event={}", invokeType, event);
+                    }
+                    return;
                 }
-                return;
             }
+
             /*
              * processor filter
              */
@@ -162,8 +171,17 @@ public class DefaultEventListener implements EventListener {
         invocation.setProcessId(event.processId);
         invocation.setInvokeId(event.invokeId);
         invocation.setRequest(processor.assembleRequest(event));
-        invocation.setResponse(processor.assembleResponse(event));
+        //切记，跟上面的代码是有先后关系的，这里主要是为了解决JSON序列化枚举类反序列化失败的问题
+        invocation.parseRequestClassName(invocation.getRequest());
+
+        Object response = processor.assembleResponse(event);
+        invocation.setResponse(response);
+        if(response!=null) {
+            invocation.setResponseCls(response.getClass().getName());
+        }
+
         invocation.setSerializeToken(ClassloaderBridge.instance().encode(event.javaClassLoader));
+        invocation.setClassLoader(event.javaClassLoader);
         try {
             // fix issue#14 : useGeneratedKeys
             if (processor.inTimeSerializeRequest(invocation, event)) {
@@ -216,7 +234,11 @@ public class DefaultEventListener implements EventListener {
             log.debug("no valid invocation found in return,type={},traceId={}", invokeType, Tracer.getTraceId());
             return;
         }
-        invocation.setResponse(processor.assembleResponse(event));
+        Object response = processor.assembleResponse(event);
+        invocation.setResponse(response);
+        if (response!=null) {
+            invocation.setResponseCls(response.getClass().getName());
+        }
         invocation.setEnd(System.currentTimeMillis());
         listener.onInvocation(invocation);
     }
@@ -308,6 +330,10 @@ public class DefaultEventListener implements EventListener {
      * @return true/false
      */
     protected boolean isEntranceFinish(Event event) {
+        if (Tracer.getContext()==null) {
+            return false;
+        }
+
         return event.type != Type.BEFORE
                 // 开启trace的类型负责清理
                 && Tracer.getContext().getInvokeType() == invokeType;

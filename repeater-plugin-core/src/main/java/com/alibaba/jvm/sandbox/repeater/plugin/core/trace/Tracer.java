@@ -1,6 +1,7 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.trace;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import org.slf4j.Logger;
@@ -34,6 +35,19 @@ public class Tracer {
      */
     public static TraceContext start() {
         return start(null);
+    }
+
+    /**
+     * 仅入口插件才可以调用这里
+     * @param traceId
+     * @return
+     */
+    public static TraceContext startAfterClean(String traceId) {
+        TraceContext context = getContextCarrie().get();
+        if (context != null) {
+            getContextCarrie().remove();
+        }
+        return start(traceId);
     }
 
     /**
@@ -99,7 +113,7 @@ public class Tracer {
      * 根据用户是否开启ttl选择合适的载体
      *
      * @return 上下文threadLocal载体
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig#useTtl
+     * @see RepeaterConfig#useTtl
      */
     private static ThreadLocal<TraceContext> getContextCarrie() {
         return ApplicationModel.instance().getConfig().isUseTtl() ? ttlContext : normalContext;

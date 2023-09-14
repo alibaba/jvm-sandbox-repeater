@@ -3,11 +3,13 @@ package com.alibaba.jvm.sandbox.repeater.module.classloader;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.Repeater;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -61,7 +63,7 @@ public class PluginClassRouting {
      * @param timeout      超时时间
      * @return 路由表
      */
-    public static PluginClassLoader.Routing[] wellKnownRouting(boolean isPreloading, Long timeout) {
+    public static PluginClassLoader.Routing[] wellKnownRouting(boolean isPreloading, Long timeout, RepeaterConfig repeaterConfig) {
         // http插件对servlet-api路由
         PluginClassRouting httpPluginRouting = PluginClassRouting.builder()
                 .targetClass("javax.servlet.http.HttpServlet")
@@ -88,7 +90,35 @@ public class PluginClassRouting {
                 .block(true)
                 .build();
 
-        return transformRouting(Lists.newArrayList(httpPluginRouting, dubboRepeaterRouting, mybatisPluginRouting), isPreloading, timeout);
+        PluginClassRouting springAsyncPluginRouting = PluginClassRouting.builder()
+                .targetClass("org.springframework.aop.framework.CglibAopProxy")
+                .classPattern("^org.aopalliance..*")
+                .identity("spring-async")
+                .matcher(Matcher.PLUGIN)
+                .block(true)
+                .build();
+
+        List<PluginClassRouting> list = new LinkedList<>();
+        if (repeaterConfig.getPluginIdentities().contains("http")) {
+            list.add(httpPluginRouting);
+        }
+
+        if (
+                repeaterConfig.getPluginIdentities().contains("mybatis") ||
+                        repeaterConfig.getPluginIdentities().contains("mybatis-plus")
+        ) {
+            list.add(mybatisPluginRouting);
+        }
+
+        if (
+                repeaterConfig.getPluginIdentities().contains("spring-async")
+                        || repeaterConfig.getPluginIdentities().contains("spring-cache")
+                        || repeaterConfig.getPluginIdentities().contains("spring-data")
+        ) {
+            list.add(springAsyncPluginRouting);
+        }
+
+        return transformRouting(list, isPreloading, timeout);
     }
 
     /**
@@ -132,7 +162,7 @@ public class PluginClassRouting {
         if (routing.match()) {
             while (isPreloading && --timeout > 0 && ClassloaderBridge.instance().findClassInstances(routing.targetClass).size() == 0) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                     LogUtil.info("{} required {} class router,waiting for class loading", routing.identity, routing.targetClass);
                 } catch (InterruptedException e) {
                     // ignore

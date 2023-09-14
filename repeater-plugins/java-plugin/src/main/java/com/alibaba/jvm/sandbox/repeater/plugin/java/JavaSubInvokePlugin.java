@@ -33,6 +33,9 @@ public class JavaSubInvokePlugin extends AbstractInvokePluginAdapter {
         }
         List<EnhanceModel> ems = Lists.newArrayList();
         for (Behavior behavior : config.getJavaSubInvokeBehaviors()) {
+            if (behavior.getClassPattern().startsWith("java.util.")) {
+                behavior.setIncludeBootstrapClasses(true);
+            }
             ems.add(EnhanceModel.convert(behavior));
         }
         return ems;

@@ -28,7 +28,7 @@ public interface Repeater {
      * 流量回放器类型
      *
      * @return 回放器类型
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType
+     * @see InvokeType
      */
     InvokeType getType();
 

@@ -36,7 +36,7 @@ public abstract class AbstractInvokePluginAdapter implements InvokePlugin {
 
     protected volatile RepeaterConfig configTemporary;
 
-    private ModuleEventWatcher watcher;
+    protected ModuleEventWatcher watcher;
 
     private List<Integer> watchIds = Lists.newCopyOnWriteArrayList();
 
@@ -122,17 +122,31 @@ public abstract class AbstractInvokePluginAdapter implements InvokePlugin {
                 if (em.isIncludeSubClasses()) {
                     builder4Class = builder4Class.includeSubClasses();
                 }
+
+                //对Bootstrap加载的方法也支持录制&回放，这个主要解决new Date()带来的问题
+                if (em.isIncludeBootstrap()) {
+                    builder4Class = builder4Class.includeBootstrap();
+                }
+
                 for (EnhanceModel.MethodPattern mp : em.getMethodPatterns()) {
                     behavior = builder4Class.onBehavior(mp.getMethodName());
                     if (ArrayUtils.isNotEmpty(mp.getParameterType())) {
                         behavior.withParameterTypes(mp.getParameterType());
                     }
+
+                    if (mp.getEmptyParameter()!=null && mp.getEmptyParameter()) {
+                        behavior.withEmptyParameterTypes();
+                    }
+
                     if (ArrayUtils.isNotEmpty(mp.getAnnotationTypes())) {
                         behavior.hasAnnotationTypes(mp.getAnnotationTypes());
                     }
                 }
                 if (behavior != null) {
-                    int watchId = behavior.onWatch(getEventListener(listener), em.getWatchTypes()).getWatchId();
+                    int watchId = behavior.onWatch(
+                            getEventListener(listener),
+                            em.getWatchTypes()
+                    ).getWatchId();
                     watchIds.add(watchId);
                     log.info("add watcher success,type={},watcherId={}", getType().name(), watchId);
                 }

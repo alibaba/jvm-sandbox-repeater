@@ -1,6 +1,10 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 
 
+import com.alibaba.jvm.sandbox.repeater.plugin.diff.DifferenceDO;
+
+import java.util.List;
+
 /**
  * <p>
  *
@@ -17,6 +21,13 @@ public class MockInvocation implements java.io.Serializable {
     private String currentUri;
     private Object[] originArgs;
     private Object[] currentArgs;
+    private int originIndex;
+    private List<DifferenceDO> diffs;
+
+    /**
+     * 序列化之后的请求值
+     */
+    private String currentRequestSerialized;
 
     public int getIndex() {
         return index;
@@ -96,5 +107,29 @@ public class MockInvocation implements java.io.Serializable {
 
     public void setCurrentArgs(Object[] currentArgs) {
         this.currentArgs = currentArgs;
+    }
+
+    public int getOriginIndex() {
+        return originIndex;
+    }
+
+    public void setOriginIndex(int originIndex) {
+        this.originIndex = originIndex;
+    }
+
+    public List<DifferenceDO> getDiffs() {
+        return diffs;
+    }
+
+    public void setDiffs(List<DifferenceDO> diffs) {
+        this.diffs = diffs;
+    }
+
+    public String getCurrentRequestSerialized() {
+        return currentRequestSerialized;
+    }
+
+    public void setCurrentRequestSerialized(String currentRequestSerialized) {
+        this.currentRequestSerialized = currentRequestSerialized;
     }
 }

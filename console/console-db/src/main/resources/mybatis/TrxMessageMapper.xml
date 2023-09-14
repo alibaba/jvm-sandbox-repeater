@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.TrxMessageMapper">
+    <resultMap type="TrxMsgDO" id="TrxMsgMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtUpdate" column="gmt_update"/>
+        <result property="gmtExec" column="gmt_exec"/>
+        <result property="topic" column="topic"/>
+        <result property="execTime" column="exec_time"/>
+        <result property="content" column="content"/>
+        <result property="group" column="group"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.tony.console.db.model.TrxMsgDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO trx_msg
+            ( gmt_create,gmt_update,gmt_exec,`topic`,`exec_time`,`content`,`group`,`status`)
+            values
+            ( now(),now(), #{gmtExec},#{topic},#{execTime},#{content},#{group},#{status} )
+    </insert>
+
+    <update id="update">
+        update trx_msg
+        set
+        gmt_update = now(),
+        gmt_exec = #{gmtExec},
+        exec_time =exec_time + 1,
+        `status`= #{status}
+        where id=#{id}
+    </update>
+
+    <select id="query" resultMap="TrxMsgMap">
+        SELECT * FROM trx_msg where 1=1
+        <if test="status!=null">
+            and `status`=#{status}
+        </if>
+        <if test="statusList!=null">
+            and `status` in
+            <foreach collection="statusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gmtExecLt!=null">
+           and <![CDATA[`gmt_exec` < #{gmtExecLt,jdbcType=TIMESTAMP}]]>
+        </if>
+    </select>
+
+    <delete id="deleteById">
+        delete from trx_msg where id=#{id}
+    </delete>
+</mapper>

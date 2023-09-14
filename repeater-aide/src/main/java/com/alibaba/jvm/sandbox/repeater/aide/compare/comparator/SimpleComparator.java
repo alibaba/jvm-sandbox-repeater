@@ -5,7 +5,11 @@ import com.alibaba.jvm.sandbox.repeater.aide.compare.Difference;
 import com.alibaba.jvm.sandbox.repeater.aide.compare.path.Path;
 import org.kohsuke.MetaInfServices;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.alibaba.jvm.sandbox.repeater.aide.compare.TypeUtils.*;
 
@@ -32,8 +36,23 @@ public class SimpleComparator implements Comparator {
         if (left == null || right == null) {
             return true;
         }
+
         Class<?> lCs = left.getClass();
         Class<?> rCs = right.getClass();
+
+        if (left instanceof Map && right instanceof Map) {
+            return false;
+        }
+
+        if (left instanceof BigDecimal || right instanceof BigDecimal) {
+            return false;
+        }
+
+        if ((Collection.class.isAssignableFrom(lCs) && rCs.isArray()) || (Collection.class.isAssignableFrom(rCs) && lCs.isArray()))
+        {
+            return false;
+        }
+
         // type different
         if (lCs != rCs) {
             return true;
@@ -61,7 +80,30 @@ public class SimpleComparator implements Comparator {
         Class<?> lCs = left.getClass();
         Class<?> rCs = right.getClass();
         if (lCs != rCs) {
-            comparator.addDifference(left, right, Difference.Type.TYPE_DIFF, paths);
+
+            if (isDateCompare(lCs, rCs)) {
+                if (lCs.equals(Date.class)) {
+                    if (!right.equals(((Date)left).getTime())) {
+                        comparator.addDifference(left, right, Difference.Type.FILED_DIFF, paths);
+                    }
+                } else {
+                    if (!left.equals(((Date)right).getTime())) {
+                        comparator.addDifference(left, right, Difference.Type.FILED_DIFF, paths);
+                    }
+                }
+                return;
+            }
+
+            //如果都是简单类型，直接转换成String进行比较, 因为可能是序列化问题出现类型不一致
+            if (isSimpleClass(lCs) && isSimpleClass(rCs)) {
+                if (!left.toString().equals(right.toString())) {
+                    comparator.addDifference(left, right, Difference.Type.FILED_DIFF, paths);
+                }
+
+            } else {
+                comparator.addDifference(left, right, Difference.Type.TYPE_DIFF, paths);
+            }
+
             return;
         }
         // basic type using == to compare
@@ -78,5 +120,38 @@ public class SimpleComparator implements Comparator {
     @Override
     public boolean support(CompareMode compareMode) {
         return true;
+    }
+
+    private boolean isSimpleClass(Class<?> cls) {
+        if (cls.equals(Long.class)) {
+            return true;
+        }
+
+        if (cls.equals(Integer.class)) {
+            return true;
+        }
+
+        if (cls.equals(Short.class)) {
+            return true;
+        }
+
+        if (cls.equals(Byte.class)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isDateCompare(Class<?> cls,  Class<?> cls2) {
+
+        if (cls.equals(Date.class) && cls2.equals(Long.class)) {
+            return true;
+        }
+
+        if (cls.equals(Long.class) && cls2.equals(Date.class)) {
+            return true;
+        }
+
+        return false;
     }
 }
