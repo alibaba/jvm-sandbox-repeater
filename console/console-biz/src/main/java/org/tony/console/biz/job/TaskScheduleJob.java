@@ -1,7 +1,7 @@
 package org.tony.console.biz.job;
 
-import com.nio.ndsp.core.handler.annotation.NdspJob;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tony.console.biz.TestTaskBizService;
@@ -31,7 +31,7 @@ public class TaskScheduleJob {
     @Resource
     TestTaskBizService testTaskBizService;
 
-    @NdspJob(value = "task_running_job")
+    @Scheduled(cron = "5 * * * * ?")
     public void runningTaskJob() {
         try {
             //先查询需要初始化的任务
@@ -62,7 +62,7 @@ public class TaskScheduleJob {
     }
 
 
-    @NdspJob(value = "task_init_job")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void initTaskJob() {
 
         try {

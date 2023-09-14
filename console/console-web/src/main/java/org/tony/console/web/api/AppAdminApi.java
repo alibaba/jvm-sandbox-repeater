@@ -2,8 +2,6 @@ package org.tony.console.web.api;
 
 import org.springframework.web.bind.annotation.*;
 import org.tony.console.biz.AppBizService;
-import org.tony.console.biz.facade.LubanFacade;
-import org.tony.console.biz.facade.model.LuBanService;
 import org.tony.console.biz.model.TestSetConfig;
 import org.tony.console.biz.request.app.AddAppRequest;
 import org.tony.console.biz.request.app.UpdateAdminRequest;
@@ -22,8 +20,10 @@ import org.tony.console.service.model.config.AppDailyTestConfigDTO;
 import org.tony.console.service.model.config.AppTestTaskSetDTO;
 import org.tony.console.common.enums.Env;
 import org.tony.console.web.auth.UserInfoCache;
+import org.tony.console.web.model.AppInfo;
 
 import javax.annotation.Resource;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -35,9 +35,6 @@ public class AppAdminApi {
 
     @Resource
     AppBizService appBizService;
-
-    @Resource
-    LubanFacade lubanFacade;
 
     @Resource
     AppConfigService appConfigService;
@@ -138,7 +135,17 @@ public class AppAdminApi {
     }
 
     @RequestMapping(value = "search/luban", method = RequestMethod.GET)
-    public Result<List<LuBanService>> searchServiceList(@RequestParam String name) {
-        return Result.buildSuccess(lubanFacade.queryWithServiceName(name), "查询成功");
+    public Result<List<AppInfo>> searchServiceList(@RequestParam String name) {
+
+        List<AppInfo> appInfoList = new LinkedList<>();
+
+        AppInfo appInfo = new AppInfo();
+        appInfo.setId(1L);
+        appInfo.setName("test");
+        appInfo.setMgr_list("xiuzhu");
+
+        appInfoList.add(appInfo);
+
+        return Result.buildSuccess(appInfoList, "查询成功");
     }
 }

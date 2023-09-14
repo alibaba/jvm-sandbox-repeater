@@ -26,13 +26,6 @@ public interface TestTaskBizService {
     public Result<Long> createTask(CreateTestTaskBizRequest createTestTaskBizRequest) throws BizException;
 
     /**
-     * 部署成功之后，创建自动化回放任务
-     * @param request
-     * @return
-     */
-    public Result<Long> createTaskOfCallBack(DeployCallbackRequest request) throws BizException;
-
-    /**
      * 执行某一个任务
      * @param taskDTO
      * @throws BizException

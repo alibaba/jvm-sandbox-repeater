@@ -1,11 +1,10 @@
 package org.tony.console.biz.job;
 
-import com.nio.ndsp.core.handler.annotation.NdspJob;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.tony.console.biz.job.clean.CleanStrategy;
 import org.tony.console.service.redis.RedisUtil;
@@ -33,7 +32,7 @@ public class DataCleanJob implements InitializingBean {
 
     final static String REDIS_PREFIX = "CLEAN-";
 
-    @NdspJob(value = "cleanRecord")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void cleanRecord() {
 
         log.info("began to clean data");

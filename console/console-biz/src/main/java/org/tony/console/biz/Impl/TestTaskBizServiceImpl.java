@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.tony.console.biz.Constant;
 import org.tony.console.biz.FeiShuBizService;
 import org.tony.console.biz.TestTaskBizService;
@@ -16,8 +14,6 @@ import org.tony.console.biz.components.BizSession;
 import org.tony.console.biz.components.BizTemplate;
 import org.tony.console.biz.components.createTask.CreateTaskComponent;
 import org.tony.console.biz.components.runTaskItem.RunTaskItemComponent;
-import org.tony.console.biz.facade.VenusFacade;
-import org.tony.console.biz.facade.model.DeployTask;
 import org.tony.console.biz.model.TaskVO;
 import org.tony.console.biz.model.TestCaseExecResultVO;
 import org.tony.console.biz.model.convert.TaskVOConvert;
@@ -78,8 +74,6 @@ public class TestTaskBizServiceImpl implements TestTaskBizService {
     @Resource
     AppConfigService appConfigService;
 
-    @Resource
-    VenusFacade venusFacade;
 
     @Resource
     FeiShuBizService feiShuBizService;
@@ -97,48 +91,6 @@ public class TestTaskBizServiceImpl implements TestTaskBizService {
             }
 
         }.execute();
-
-        return Result.buildSuccess(taskIdList.get(0), "创建成功");
-    }
-
-    @Override
-    public Result<Long> createTaskOfCallBack(DeployCallbackRequest request) throws BizException {
-
-        DeployTask deployTask = venusFacade.queryTask(request.getId(), request.getInstanceName());
-
-        String appName = deployTask.getServiceName();
-        AppTestTaskSetDTO appTestTaskSetDTO = appConfigService.queryTestTaskSet(appName, Env.fromString(deployTask.getEnvironment()));
-        if (!appTestTaskSetDTO.getOpen()) {
-            log.warn("app={} env={} 未开启回调自动化", appName, deployTask.getEnvironment());
-            return Result.buildSuccess(null, "成功");
-        }
-
-        if (CollectionUtils.isEmpty(appTestTaskSetDTO.getTaskIdSet())){
-            log.warn("app={} env={} 未配置回归用例集合", appName, deployTask.getEnvironment());
-            return Result.buildSuccess(null, "成功");
-        }
-
-        CreateTestTaskBizRequest createTestTaskBizRequest = convert(request, deployTask);
-        createTestTaskBizRequest.setTestTaskIdList(Lists.newArrayList(appTestTaskSetDTO.getTaskIdSet()));
-
-        List<Long> taskIdList = new ArrayList<>();
-        new BizTemplate() {
-            @Override
-            public void execute(BizSession session) throws BizException {
-                session.put(CreateTaskComponent.KEY_DEPLOY_TASK, deployTask);
-                bizFactory.execute(CreateTaskComponent.class, createTestTaskBizRequest);
-                taskIdList.add((Long) session.getData(CreateTaskComponent.KEY_TASK_ID));
-            }
-
-        }.execute();
-
-        log.info("app={} inst={} env={} deploy={} 部署之后创建任务成功 task={}",
-                appName,
-                deployTask.getInstanceName(),
-                deployTask.getEnvironment(),
-                deployTask.getId(),
-                taskIdList.get(0)
-                );
 
         return Result.buildSuccess(taskIdList.get(0), "创建成功");
     }
@@ -384,18 +336,5 @@ public class TestTaskBizServiceImpl implements TestTaskBizService {
         }
 
         return list;
-    }
-
-    private CreateTestTaskBizRequest convert(DeployCallbackRequest deployCallbackRequest, DeployTask deployTask) {
-        CreateTestTaskBizRequest request = new CreateTestTaskBizRequest();
-
-        request.setCreator("SYSTEM");
-        request.setAppName(deployTask.getServiceName());
-        request.setDeployTaskId(deployCallbackRequest.getId());
-        request.setDeployInstName(deployTask.getInstanceName());
-        request.setName(String.format("部署任务[部署id=%s]", deployTask.getId()));
-        request.setEnvironment(deployTask.getEnvironment());
-
-        return request;
     }
 }

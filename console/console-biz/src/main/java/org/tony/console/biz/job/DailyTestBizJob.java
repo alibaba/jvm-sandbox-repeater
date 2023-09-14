@@ -1,8 +1,8 @@
 package org.tony.console.biz.job;
 
-import com.nio.ndsp.core.handler.annotation.NdspJob;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.tony.console.common.utils.DateUtil;
 import org.tony.console.service.AppConfigService;
@@ -33,7 +33,7 @@ public class DailyTestBizJob {
     TrxMsgService trxMsgService;
 
 
-    @NdspJob(value = "dailyTestBizJob")
+    @Scheduled(cron = "0 1 0 * * ?")
     public void execute() throws ParseException {
         Map<String, AppDailyTestConfigDTO> configMap = appConfigService.queryDailyTestConfig();
         if (MapUtils.isEmpty(configMap)) {

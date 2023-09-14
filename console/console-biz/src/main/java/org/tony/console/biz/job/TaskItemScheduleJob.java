@@ -1,8 +1,8 @@
 package org.tony.console.biz.job;
 
-import com.nio.ndsp.core.handler.annotation.NdspJob;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tony.console.biz.TestTaskBizService;
@@ -32,7 +32,7 @@ public class TaskItemScheduleJob {
     @Value("${task.item.run.batch.size}")
     private Integer batchSize = 100;
 
-    @NdspJob(value = "task_item_run")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void runTaskItem() {
         try {
 

@@ -1,6 +1,5 @@
 package org.tony.console.biz.job.clean;
 
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tony.console.common.utils.DateUtil;
