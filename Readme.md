@@ -40,5 +40,6 @@
 - 升级序列化方式为fastjson2, 支持jdk17
 - 支持spring @Async @Cache 注解的拦截
 - 支持webflux
+- 支持流量标签+基于标签的流量推荐
 ![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/60edf4a3-340f-4fa6-8a2e-80bbbe8a6ca9)
 
