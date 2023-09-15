@@ -42,4 +42,7 @@
 - 支持webflux
 - 支持流量标签+基于标签的流量推荐
 ![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/60edf4a3-340f-4fa6-8a2e-80bbbe8a6ca9)
+![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/ef6fa85d-ad0b-4554-a4e1-ba86186f0e8f)
+![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/2f099cb2-9626-4368-9a3d-623c4c3cb8eb)
+![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/f07294ee-db10-40f6-866d-81ed5f4ac54a)
 
