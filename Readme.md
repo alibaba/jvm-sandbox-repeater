@@ -41,6 +41,7 @@
 - 支持spring @Async @Cache 注解的拦截
 - 支持webflux
 - 支持流量标签+基于标签的流量推荐
+- 支持spring mvc match pattern提取
 ![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/60edf4a3-340f-4fa6-8a2e-80bbbe8a6ca9)
 ![image](https://github.com/penghu2/sandbox-repeater/assets/10905318/02ec69ad-e957-43ae-9664-9ab3d1a60c5e)
 
