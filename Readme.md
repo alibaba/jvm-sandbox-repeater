@@ -27,6 +27,7 @@
 - 支持java bootstap classloader的相关class的采集+mock
 - 支持Java Exception的mock + 比对
 - 支持采集使用kafka作为传播媒介，降低对宿主应用的性能的影响
+- 解决部分线程安全问题
 - 支持子调用比对
 - 支持主子调用结果的替换
 - 支持自定义忽略比对 +  自定义子调用比对
