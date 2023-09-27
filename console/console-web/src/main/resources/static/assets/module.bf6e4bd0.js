@@ -1,0 +1,1 @@
+import{e as t}from"./base.3c7b4f95.js";function u(e,o){return t({url:"/api/v1/module/byApp",method:"get",params:{appName:e,env:o}})}function r(e){return t({url:"/api/v1/module/list",method:"post",data:{appName:e}})}export{u as g,r as q};

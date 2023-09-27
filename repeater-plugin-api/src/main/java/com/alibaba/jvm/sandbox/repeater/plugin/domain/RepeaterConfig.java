@@ -1,8 +1,11 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.kafka.KafkaConfig;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link RepeaterConfig} 基础配置项
@@ -32,8 +35,9 @@ public class RepeaterConfig implements java.io.Serializable{
      * 是否执行录制降级策略
      * <p>
      * 开启之后，不进行录制，只处理回放请求
+     * 默认为true
      */
-    private boolean degrade;
+    private boolean degrade = true;
 
     /**
      * 异常发生阈值；默认1000
@@ -48,6 +52,11 @@ public class RepeaterConfig implements java.io.Serializable{
     private Integer sampleRate = 10000;
 
     /**
+     * 延迟注入时间
+     */
+    private Integer delayTime = 0;
+
+    /**
      * 插件地址
      */
     private String pluginsPath;
@@ -56,6 +65,8 @@ public class RepeaterConfig implements java.io.Serializable{
      * 由于HTTP接口的量太大（前后端未分离的情况可能还有静态资源）因此必须走白名单匹配模式才录制
      */
     private List<String> httpEntrancePatterns = Lists.newArrayList();
+
+    private Map<String, Long> httpEntrancePatternsWithSampleRate = Maps.newHashMap();
 
     /**
      * java入口插件动态增强的行为
@@ -76,6 +87,23 @@ public class RepeaterConfig implements java.io.Serializable{
      * 回放器插件
      */
     private List<String> repeatIdentities = Lists.newArrayList();
+
+    /**
+     * kafka地址
+     */
+    private KafkaConfig kafkaConfig;
+
+    /**
+     * 自定义配置项
+     */
+    private Map<String, String> selfConfig;
+
+    /**
+     * 序列化类型
+     */
+    private String serializeType;
+
+    private String[] autoTypes;
 
     public boolean isUseTtl() {
         return useTtl;
@@ -163,5 +191,59 @@ public class RepeaterConfig implements java.io.Serializable{
                 "sampleRate=" + sampleRate +
                 ", plugin=" + pluginIdentities +
                 '}';
+    }
+
+    public Map<String, Long> getHttpEntrancePatternsWithSampleRate() {
+        return httpEntrancePatternsWithSampleRate;
+    }
+
+    public void setHttpEntrancePatternsWithSampleRate(Map<String, Long> httpEntrancePatternsWithSampleRate) {
+        this.httpEntrancePatternsWithSampleRate = httpEntrancePatternsWithSampleRate;
+    }
+
+    public KafkaConfig getKafkaConfig() {
+        if (kafkaConfig == null) {
+            this.kafkaConfig = new KafkaConfig();
+        }
+        return kafkaConfig;
+    }
+
+    public void setKafkaConfig(KafkaConfig kafkaConfig) {
+        this.kafkaConfig = kafkaConfig;
+    }
+
+    public Map<String, String> getSelfConfig() {
+        return selfConfig;
+    }
+
+    public void setSelfConfig(Map<String, String> selfConfig) {
+        this.selfConfig = selfConfig;
+    }
+
+    public Integer getDelayTime() {
+        return delayTime;
+    }
+
+    public void setDelayTime(Integer delayTime) {
+        this.delayTime = delayTime;
+    }
+
+    public String getSerializeType() {
+        if (serializeType==null) {
+            serializeType = "HESSIAN";
+        }
+        return serializeType;
+    }
+
+    public void setSerializeType(String serializeType) {
+        this.serializeType = serializeType;
+    }
+
+    public String[] getAutoTypes() {
+        return autoTypes;
+    }
+
+    public void setAutoTypes(String[] autoTypes) {
+        this.autoTypes = autoTypes;
     }
 }

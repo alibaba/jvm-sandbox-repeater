@@ -1,8 +1,10 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.alibaba.jvm.sandbox.repeater.plugin.core.util.MethodSignatureParser;
+
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.HttpInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
@@ -46,7 +48,7 @@ public class RecordWrapper {
         this.host = recordModel.getHost();
         this.traceId = recordModel.getTraceId();
         if (recordModel.getEntranceInvocation() instanceof HttpInvocation) {
-            this.entranceDesc = ((HttpInvocation)recordModel.getEntranceInvocation()).getRequestURL();
+            this.entranceDesc = ((HttpInvocation)recordModel.getEntranceInvocation()).getRequestURI();
         } else {
             this.entranceDesc = recordModel.getEntranceInvocation().getIdentity().getUri();
         }
@@ -56,7 +58,7 @@ public class RecordWrapper {
 
     /**
      * 将{@link RecordWrapper} 转换成 {@link RecordModel}
-     * 
+     *
      * @return Record
      */
     public RecordModel reTransform() {
@@ -67,7 +69,11 @@ public class RecordWrapper {
         recordModel.setEnvironment(this.environment);
         recordModel.setHost(this.host);
         recordModel.setEntranceInvocation(this.entranceInvocation);
-        recordModel.setSubInvocations(this.subInvocations);
+        //这里将subInvocations转化为线程安全的
+        if (this.subInvocations!=null) {
+            recordModel.setSubInvocations(Collections.synchronizedList(this.subInvocations));
+        }
+
         return recordModel;
     }
 

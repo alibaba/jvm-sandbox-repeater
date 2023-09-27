@@ -43,7 +43,7 @@ public class SpringInstantiateAdvice {
                         String beanName = advice.getParameterArray()[1].toString();
                         Object target = advice.getReturnObj();
                         SpringContextInnerContainer.addBean(beanName, advice.getReturnObj());
-                        log.info("Register bean:name={},instance={}", beanName, target);
+                        log.debug("Register bean:name={},instance={}", beanName, target);
                     } catch (Exception e) {
                         log.error("[Error-2000]-register spring bean occurred error.", e);
                     }

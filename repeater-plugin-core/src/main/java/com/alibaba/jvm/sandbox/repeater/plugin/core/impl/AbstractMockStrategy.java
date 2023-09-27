@@ -1,7 +1,9 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.impl;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.Serializer;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.SequenceGenerator;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.MockInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.mock.MockRequest;
@@ -32,6 +34,15 @@ public abstract class AbstractMockStrategy implements MockStrategy {
      */
     protected abstract SelectResult select(final MockRequest request);
 
+    /**
+     * 子调用找不到情况下的处理类
+     * @param request
+     * @return
+     */
+    protected MockResponse executeWithOutInvocation(final MockRequest request) {
+        return null;
+    }
+
     @Override
     public MockResponse execute(final MockRequest request) {
         MockResponse response;
@@ -44,7 +55,7 @@ public abstract class AbstractMockStrategy implements MockStrategy {
              * do select
              */
             SelectResult select = select(request);
-            Invocation invocation = select.getInvocation();
+
             MockInvocation mi = new MockInvocation();
             mi.setIndex(SequenceGenerator.generate(request.getTraceId() + "#"));
             mi.setCurrentUri(request.getIdentity().getUri());
@@ -54,6 +65,8 @@ public abstract class AbstractMockStrategy implements MockStrategy {
             mi.setRepeatId(request.getRepeatId());
             // add mock invocation
             RepeatCache.addMockInvocation(mi);
+
+            Invocation invocation = select.getInvocation();
             // matching success
             if (select.isMatch() && invocation != null) {
                 response = MockResponse.builder()
@@ -64,10 +77,39 @@ public abstract class AbstractMockStrategy implements MockStrategy {
                 mi.setSuccess(true);
                 mi.setOriginUri(invocation.getIdentity().getUri());
                 mi.setOriginArgs(invocation.getRequest());
+                mi.setOriginIndex(invocation.getIndex());
+
+                //这里设置序列化之后的，用于子调用替换逻辑
+                Serializer serializer = SerializerWrapper.getSerializer(invocation.getSerializeType());
+                mi.setCurrentRequestSerialized(serializer.serialize2String(mi.getCurrentArgs(), request.getEvent().javaClassLoader));
             } else {
+                //子调用找不到处理类
+                response = executeWithOutInvocation(request);
+                if (response != null) {
+                    if (Action.SKIP_IMMEDIATELY.equals( response.getAction())) {
+                        mi.setSkip(true);
+                        mi.setSuccess(false);
+                        mi.setOriginIndex(1);
+                        mi.setOriginUri(request.getIdentity().getUri());
+                        mi.setOriginArgs(request.getArgumentArray());
+                    }
+
+                    if (Action.RETURN_IMMEDIATELY.equals( response.getAction())) {
+                        mi.setSkip(false);
+                        mi.setSuccess(true);
+                        mi.setOriginIndex(1);
+                        mi.setOriginUri(request.getIdentity().getUri());
+                        mi.setOriginArgs(request.getArgumentArray());
+                    }
+
+                    return response;
+                }
+
                 response = MockResponse.builder()
                         .action(Action.THROWS_IMMEDIATELY)
-                        .throwable(new RepeatException("no matching invocation found")).build();
+                        .throwable(new RepeatException("no matching invocation found" + request.getIdentity().getUri()))
+                        .isInvocationNotFund(true)
+                        .build();
             }
             /*
              * before return hook;

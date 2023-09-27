@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.tony.console.db.mapper.MysqlSequenceMapper" >
+    <resultMap id="BaseResultMap" type="org.tony.console.db.sequence.MysqlSequenceBO" >
+        <result column="SEQ_NAME" property="seqName" jdbcType="VARCHAR" />
+        <result column="SEQ_VALUE" property="seqValue" jdbcType="BIGINT" />
+        <result column="MIN_VALUE" property="minValue" jdbcType="BIGINT" />
+        <result column="MAX_VALUE" property="maxValue" jdbcType="BIGINT" />
+        <result column="STEP" property="step" jdbcType="BIGINT" />
+        <result column="TM_CREATE" property="tmCreate" jdbcType="TIMESTAMP" />
+        <result column="TM_SMP" property="tmSmp" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <delete id="delSequence" parameterType="java.lang.String" >
+        delete from t_pub_sequence
+        where SEQ_NAME = #{seqName,jdbcType=VARCHAR}
+    </delete>
+    <insert id="createSequence" parameterType="org.tony.console.db.sequence.MysqlSequenceBO" >
+        insert into t_pub_sequence (SEQ_NAME,SEQ_VALUE,MIN_VALUE,MAX_VALUE,STEP,TM_CREATE)
+        values (#{seqName,jdbcType=VARCHAR}, #{seqValue,jdbcType=BIGINT},
+                #{minValue,jdbcType=BIGINT}, #{maxValue,jdbcType=BIGINT}, #{step,jdbcType=BIGINT},
+                now())
+    </insert>
+    <update id="updSequence" parameterType="org.tony.console.db.sequence.MysqlSequenceBO" >
+        update t_pub_sequence
+        set SEQ_VALUE = #{newValue,jdbcType=BIGINT}
+        where SEQ_NAME = #{seqName,jdbcType=VARCHAR} and SEQ_VALUE = #{oldValue,jdbcType=BIGINT}
+    </update>
+
+    <select id="getAll" resultMap="BaseResultMap" >
+        select SEQ_NAME, SEQ_VALUE, MIN_VALUE, MAX_VALUE, STEP
+        from t_pub_sequence
+    </select>
+
+    <select id="getSequence" resultMap="BaseResultMap" >
+        select SEQ_NAME, SEQ_VALUE, MIN_VALUE, MAX_VALUE, STEP
+        from t_pub_sequence
+        where SEQ_NAME = #{seqName,jdbcType=VARCHAR}
+    </select>
+</mapper>

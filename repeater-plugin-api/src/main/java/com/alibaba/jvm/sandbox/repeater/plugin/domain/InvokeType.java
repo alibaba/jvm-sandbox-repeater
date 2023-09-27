@@ -13,6 +13,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType JAVA = new InvokeType("java");
 
+    public static InvokeType JAVA_DATE = new InvokeType("JAVA_DATE");
+
     public static InvokeType MYBATIS = new InvokeType("mybatis");
 
     public static InvokeType IBATIS = new InvokeType("ibatis");
@@ -36,6 +38,18 @@ public class InvokeType implements java.io.Serializable {
     public static InvokeType EH_CACHE = new InvokeType("eh-cache");
 
     public static InvokeType CAFFEINE_CACHE = new InvokeType("caffeine-cache");
+
+    public static InvokeType FEIGN_DEFAULT_CLIENT = new InvokeType("feign-default");
+
+    public static InvokeType SPRING_REDIS_TEMPLATE = new InvokeType("spring-redis-template");
+
+    public static InvokeType SPRING_ASYNC = new InvokeType("spring-async");
+
+    public static InvokeType SPRING_CACHE = new InvokeType("spring-cache");
+
+    public static InvokeType SPRING_DATA = new InvokeType("spring-data");
+
+    public static InvokeType MYBATIS_PLUS = new InvokeType("mybatis-plus");
 
     private String name;
 

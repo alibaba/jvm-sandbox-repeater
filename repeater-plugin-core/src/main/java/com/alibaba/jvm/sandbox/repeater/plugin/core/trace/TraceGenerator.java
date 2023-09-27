@@ -77,7 +77,7 @@ public class TraceGenerator {
         return builder.toString();
     }
 
-    static String getSampleBit(String traceId) {
+    public static String getSampleBit(String traceId) {
         return isValid(traceId) ? traceId.substring(25, 30) : "9999";
     }
 }

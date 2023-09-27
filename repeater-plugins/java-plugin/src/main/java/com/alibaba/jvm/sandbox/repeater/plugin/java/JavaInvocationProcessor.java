@@ -24,6 +24,10 @@ class JavaInvocationProcessor extends DefaultInvocationProcessor {
         } catch (Exception e) {
             // ignore
         }
-        return super.assembleIdentity(event);
+        String className = event.javaClassName;
+        if (event.target!=null) {
+            className = event.target.getClass().getName();
+        }
+        return new Identity(getType().name(), className, event.javaMethodName + "~" + event.javaMethodDesc, getExtra());
     }
 }

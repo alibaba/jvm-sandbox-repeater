@@ -16,7 +16,7 @@ public class Invocation implements java.io.Serializable {
     /**
      * 调用类型
      *
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType
+     * @see InvokeType
      */
     private InvokeType type;
 
@@ -38,7 +38,7 @@ public class Invocation implements java.io.Serializable {
     /**
      * 调用的身份识别
      *
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity
+     * @see Identity
      */
     private Identity identity;
 
@@ -60,6 +60,11 @@ public class Invocation implements java.io.Serializable {
     private transient Object[] request;
 
     /**
+     * 请求参数的类型列表
+     */
+    private String[] requestCls;
+
+    /**
      * 序列化之后的请求值，录制时候作为{@link Invocation#request}的载体传输；回放时候需要还原成{@link Invocation#request}
      */
     private String requestSerialized;
@@ -68,6 +73,11 @@ public class Invocation implements java.io.Serializable {
      * 返回结果 - snapshot 不做传输使用
      */
     private transient Object response;
+
+    /**
+     * 返回结果的cls
+     */
+    private String responseCls;
 
     /**
      * 序列化之后的请求值，录制时候作为{@link Invocation#response}的载体传输；回放时候需要还原成{@link Invocation#response}
@@ -103,6 +113,11 @@ public class Invocation implements java.io.Serializable {
      * 目标调用的类加载（透传不做传输）
      */
     private transient ClassLoader classLoader;
+
+    /**
+     * 序列化类型
+     */
+    private String serializeType;
 
     public InvokeType getType() {
         return type;
@@ -238,5 +253,46 @@ public class Invocation implements java.io.Serializable {
 
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
+    }
+
+    public String getSerializeType() {
+        if (serializeType == null) {
+            serializeType = "HESSIAN";
+        }
+        return serializeType;
+    }
+
+    public void setSerializeType(String serializeType) {
+        this.serializeType = serializeType;
+    }
+
+    public String[] getRequestCls() {
+        return requestCls;
+    }
+
+    public void setRequestCls(String[] requestCls) {
+        this.requestCls = requestCls;
+    }
+
+    public void parseRequestClassName(Object[] request) {
+        String[] clsNames = new String[request.length];
+        for (int i=0; i<request.length; i++) {
+
+            if (request[i]!=null) {
+                clsNames[i] = request[i].getClass().getName();
+            } else {
+                clsNames[i] = null;
+            }
+        }
+
+        this.requestCls = clsNames;
+    }
+
+    public String getResponseCls() {
+        return responseCls;
+    }
+
+    public void setResponseCls(String responseCls) {
+        this.responseCls = responseCls;
     }
 }

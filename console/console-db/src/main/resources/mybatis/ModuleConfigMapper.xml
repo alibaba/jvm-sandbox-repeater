@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.ModuleConfigMapper">
+
+    <resultMap type="ModuleConfig" id="ModuleConfigMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="appName" column="app_name"/>
+        <result property="environment" column="environment"/>
+        <result property="config" column="config"/>
+    </resultMap>
+
+
+    <insert id="insertModuleConfig"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `module_config`
+        (
+        <trim suffixOverrides=",">
+                    <if test="id!=null">
+                        `id`,
+                    </if>
+                    <if test="gmtCreate!=null">
+                        `gmt_create`,
+                    </if>
+                    <if test="gmtModified!=null">
+                        `gmt_modified`,
+                    </if>
+                    <if test="appName!=null">
+                        `app_name`,
+                    </if>
+                    <if test="environment!=null">
+                        `environment`,
+                    </if>
+                    <if test="config!=null">
+                        `config`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="id!=null">
+                    #{id},
+                </if>
+                <if test="gmtCreate!=null">
+                    #{gmtCreate},
+                </if>
+                <if test="gmtModified!=null">
+                    #{gmtModified},
+                </if>
+                <if test="appName!=null">
+                    #{appName},
+                </if>
+                <if test="environment!=null">
+                    #{environment},
+                </if>
+                <if test="config!=null">
+                    #{config},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateModuleConfig">
+        UPDATE `module_config`
+        SET
+        <trim suffixOverrides=",">
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate},
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified},
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName},
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment},
+            </if>
+            <if test="config != null and config!=''">
+                `config` = #{config},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `id` = #{id} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `module_config`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.gmtCreate != null">
+            `gmt_create` = #{set.gmtCreate},
+        </if>
+        <if test="set.gmtModified != null">
+            `gmt_modified` = #{set.gmtModified},
+        </if>
+        <if test="set.appName != null and set.appName!=''">
+            `app_name` = #{set.appName},
+        </if>
+        <if test="set.environment != null and set.environment!=''">
+            `environment` = #{set.environment},
+        </if>
+        <if test="set.config != null and set.config!=''">
+            `config` = #{set.config},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.idList != null">
+                    `id` in
+                    <foreach collection="where.idList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.idSt !=null">
+                `id` >= #{where.idSt} and
+            </if>
+            <if test="where.idEd!=null">
+                `id` &lt;= #{where.idEd} and
+            </if>
+                <if test="where.gmtCreateList != null">
+                    `gmt_create` in
+                    <foreach collection="where.gmtCreateList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.gmtCreateSt !=null">
+                `gmt_create` >= #{where.gmtCreateSt} and
+            </if>
+            <if test="where.gmtCreateEd!=null">
+                `gmt_create` &lt;= #{where.gmtCreateEd} and
+            </if>
+                <if test="where.gmtModifiedList != null">
+                    `gmt_modified` in
+                    <foreach collection="where.gmtModifiedList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.gmtModifiedSt !=null">
+                `gmt_modified` >= #{where.gmtModifiedSt} and
+            </if>
+            <if test="where.gmtModifiedEd!=null">
+                `gmt_modified` &lt;= #{where.gmtModifiedEd} and
+            </if>
+                <if test="where.appNameList != null">
+                    `app_name` in
+                    <foreach collection="where.appNameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyAppName!=null and where.fuzzyAppName.size()>0">
+                (
+                <foreach collection="where.fuzzyAppName"  separator="or" item="item">
+                    `App_name` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyAppName!=null and where.rightFuzzyAppName.size()>0">
+                (
+                <foreach collection="where.rightFuzzyAppName"  separator="or" item="item">
+                    `App_name` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.environmentList != null">
+                    `environment` in
+                    <foreach collection="where.environmentList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyEnvironment!=null and where.fuzzyEnvironment.size()>0">
+                (
+                <foreach collection="where.fuzzyEnvironment"  separator="or" item="item">
+                    `Environment` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyEnvironment!=null and where.rightFuzzyEnvironment.size()>0">
+                (
+                <foreach collection="where.rightFuzzyEnvironment"  separator="or" item="item">
+                    `Environment` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.configList != null">
+                    `config` in
+                    <foreach collection="where.configList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyConfig!=null and where.fuzzyConfig.size()>0">
+                (
+                <foreach collection="where.fuzzyConfig"  separator="or" item="item">
+                    `Config` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyConfig!=null and where.rightFuzzyConfig.size()>0">
+                (
+                <foreach collection="where.rightFuzzyConfig"  separator="or" item="item">
+                    `Config` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+        </trim>
+    </update>
+
+
+
+
+    <select id="count" resultType="java.lang.Long">
+        select
+               count(1)
+        from module_config
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="config != null and config!=''">
+                `config` = #{config} and
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryModuleConfig" resultMap="ModuleConfigMap">
+        select
+        *
+        from  `module_config`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="config != null and config!=''">
+                `config` = #{config} and
+            </if>
+        </trim>
+        <if test="offset!=null and pageSize!=null">
+            limit #{offset}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="queryModuleConfigLimit1" resultMap="ModuleConfigMap">
+        select
+        *
+        from  `module_config`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="config != null and config!=''">
+                `config` = #{config} and
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+</mapper>

@@ -20,7 +20,7 @@ public class RepeaterBridge {
     private volatile Map<InvokeType, Repeater> cached = new HashMap<InvokeType, Repeater>();
 
     public static RepeaterBridge instance() {
-        return RepeaterBridge.LazyInstanceHolder.INSTANCE;
+        return LazyInstanceHolder.INSTANCE;
     }
 
     public void build(List<Repeater> rs) {

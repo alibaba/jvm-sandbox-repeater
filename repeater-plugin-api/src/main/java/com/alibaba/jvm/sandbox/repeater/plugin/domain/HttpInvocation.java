@@ -56,6 +56,14 @@ public class HttpInvocation extends Invocation implements java.io.Serializable {
      */
     private transient boolean init;
 
+    private boolean multipart;
+
+    private String filename;
+
+    private byte[] fileContent;
+
+    private String partName;
+
     public String getRequestURL() {
         return requestURL;
     }
@@ -134,5 +142,37 @@ public class HttpInvocation extends Invocation implements java.io.Serializable {
 
     public void setInit(boolean init) {
         this.init = init;
+    }
+
+    public boolean isMultipart() {
+        return multipart;
+    }
+
+    public void setMultipart(boolean multipart) {
+        this.multipart = multipart;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public byte[] getFileContent() {
+        return fileContent;
+    }
+
+    public void setFileContent(byte[] fileContent) {
+        this.fileContent = fileContent;
+    }
+
+    public String getPartName() {
+        return partName;
+    }
+
+    public void setPartName(String partName) {
+        this.partName = partName;
     }
 }

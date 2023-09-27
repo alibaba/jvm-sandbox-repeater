@@ -44,6 +44,14 @@ public class HttpOkUtil {
             Object bodyByte = content.get(body);
             Object charset = MethodUtils.invokeMethod(MediaType, "charset");
 
+            if (bodyByte == null) {
+                return StringUtils.EMPTY;
+            }
+
+            if (charset == null) {
+                return new String((byte[])bodyByte);
+            }
+
             return new String((byte[])bodyByte, charset.toString());
         } catch (Exception e) {
             LogUtil.error("HttpOkRecordModifierHandler.getBody error:", e);

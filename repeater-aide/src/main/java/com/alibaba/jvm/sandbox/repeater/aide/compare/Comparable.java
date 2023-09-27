@@ -1,5 +1,7 @@
 package com.alibaba.jvm.sandbox.repeater.aide.compare;
 
+import java.util.List;
+
 /**
  * {@link Comparable}
  * <p>
@@ -16,4 +18,10 @@ public interface Comparable {
      * @return compare result
      */
     CompareResult compare(Object left, Object right);
+
+    /**
+     * 设置忽略比对的节点
+     * @param ignoreCompareString
+     */
+    public void setIgnoreCompareString(List<String> ignoreCompareString);
 }

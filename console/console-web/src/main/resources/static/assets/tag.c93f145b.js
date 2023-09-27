@@ -1,0 +1,1 @@
+import{e as t}from"./base.3c7b4f95.js";function r(a){return t({url:"/api/v1/tag/query",method:"get",params:{appName:a}})}function u(a){return t({url:"/api/v1/tag/add",method:"post",data:a})}function o(a){return t({url:"/api/v1/tag/update",method:"post",data:a})}function p(a){return t({url:"/api/v1/tag/remove",method:"post",data:a})}export{u as a,r as g,p as r,o as u};

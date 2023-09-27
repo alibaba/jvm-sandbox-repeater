@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <sandbox.api.version>1.2.0</sandbox.api.version>
+        <sandbox.api.version>1.4.0</sandbox.api.version>
         <metainf-services.version>1.8</metainf-services.version>
         <org.slf4j.version>1.7.24</org.slf4j.version>
         <logback.version>1.2.1</logback.version>
@@ -32,28 +32,10 @@
         <module>repeater-plugins</module>
         <module>repeater-module</module>
         <module>repeater-client</module>
-        <module>repeater-console</module>
         <module>hessian-lite</module>
         <module>repeater-aide</module>
+        <module>console</module>
     </modules>
-
-    <developers>
-        <developer>
-            <id>zhaoyb1990</id>
-            <name>赵跃兵</name>
-            <email>zhaoyb1990(AT)foxmail(DOT)com</email>
-            <organization>Alibaba Open Source</organization>
-            <organizationUrl>https://github.com/alibaba</organizationUrl>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <organization>
-        <name>Alibaba Open Source</name>
-        <url>https://github.com/alibaba</url>
-    </organization>
 
     <dependencyManagement>
         <dependencies>
@@ -152,6 +134,18 @@
                 <version>${testng.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>2.0.39</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2-extension</artifactId>
+                <version>2.0.21</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -162,35 +156,35 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-javadoc-plugin</artifactId>-->
-                <!--<version>3.0.0-M1</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>attach-javadocs</id>-->
-                        <!--<goals>-->
-                            <!--<goal>jar</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-javadoc-plugin</artifactId>-->
+            <!--<version>3.0.0-M1</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>attach-javadocs</id>-->
+            <!--<goals>-->
+            <!--<goal>jar</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
             <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-source-plugin</artifactId>-->
-                <!--<version>3.0.1</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>jar-no-fork</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-source-plugin</artifactId>-->
+            <!--<version>3.0.1</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<goals>-->
+            <!--<goal>jar-no-fork</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

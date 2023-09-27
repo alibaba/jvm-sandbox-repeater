@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.TagConfigMapper">
+
+    <resultMap type="TagConfigDO" id="TagConfigMap">
+        <result property="id" column="id"/>
+        <result property="appName" column="app_name"/>
+        <result property="name" column="name"/>
+        <result property="scope" column="scope"/>
+        <result property="nick" column="nick"/>
+        <result property="identity" column="identity"/>
+        <result property="jsonpath" column="jsonpath"/>
+    </resultMap>
+
+    <select id="select" resultMap="TagConfigMap">
+        select * from tag_config where 1=1
+        <if test="appName!=null">
+            and app_name = #{appName}
+        </if>
+    </select>
+
+    <select id="selectById" resultMap="TagConfigMap">
+        SELECT * FROM tag_config WHERE id=#{id}
+    </select>
+
+    <insert id="insert" parameterType="org.tony.console.db.model.TagConfigDO">
+        INSERT INTO tag_config
+        (app_name, name, scope, nick, identity, jsonpath)
+        values
+        (#{appName}, #{name}, #{scope}, #{nick}, #{identity}, #{jsonpath})
+    </insert>
+
+    <update id="update">
+        update tag_config
+        set
+        `name`=#{name},
+        `nick`=#{nick},
+        `identity`=#{identity},
+        `jsonpath`=#{jsonpath}
+        where id=#{id} limit 1
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tag_config where id=#{id}
+    </delete>
+</mapper>

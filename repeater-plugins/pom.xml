@@ -25,6 +25,13 @@
         <module>eh-cache-plugin</module>
         <module>guava-cache-plugin</module>
         <module>okhttp-plugin</module>
+        <module>date-plugin</module>
+        <module>feign-plugin</module>
+        <module>redis-template-plugin</module>
+        <module>springAsync-plugin</module>
+        <module>springCache-plugin</module>
+        <module>mybatis-plus</module>
+        <module>spring-data-plugin</module>
     </modules>
 
     <dependencies>

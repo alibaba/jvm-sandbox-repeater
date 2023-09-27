@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.ReplayMapper">
+
+    <resultMap type="Replay" id="ReplayMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="appName" column="app_name"/>
+        <result property="environment" column="environment"/>
+        <result property="ip" column="ip"/>
+        <result property="repeatId" column="repeat_id"/>
+        <result property="status" column="status"/>
+        <result property="traceId" column="trace_id"/>
+        <result property="cost" column="cost"/>
+        <result property="diffResult" column="diff_result"/>
+        <result property="response" column="response"/>
+        <result property="mockInvocation" column="mock_invocation"/>
+        <result property="success" column="success"/>
+        <result property="recordId" column="record_id"/>
+        <result property="type" column="type"/>
+        <result property="caseId" column="case_id"/>
+    </resultMap>
+
+    <insert id="insertReplay"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `replay`
+        (
+        <trim suffixOverrides=",">
+                    <if test="id!=null">
+                        `id`,
+                    </if>
+                    <if test="gmtCreate!=null">
+                        `gmt_create`,
+                    </if>
+                    <if test="gmtModified!=null">
+                        `gmt_modified`,
+                    </if>
+                    <if test="appName!=null">
+                        `app_name`,
+                    </if>
+                    <if test="environment!=null">
+                        `environment`,
+                    </if>
+                    <if test="ip!=null">
+                        `ip`,
+                    </if>
+                    <if test="repeatId!=null">
+                        `repeat_id`,
+                    </if>
+                    <if test="status!=null">
+                        `status`,
+                    </if>
+                    <if test="traceId!=null">
+                        `trace_id`,
+                    </if>
+                    <if test="cost!=null">
+                        `cost`,
+                    </if>
+                    <if test="diffResult!=null">
+                        `diff_result`,
+                    </if>
+                    <if test="response!=null">
+                        `response`,
+                    </if>
+                    <if test="mockInvocation!=null">
+                        `mock_invocation`,
+                    </if>
+                    <if test="success!=null">
+                        `success`,
+                    </if>
+                    <if test="recordId!=null">
+                        `record_id`,
+                    </if>
+                    <if test="type!=null">
+                        `type`,
+                    </if>
+                    <if test="caseId!=null">
+                        `case_id`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="id!=null">
+                    #{id},
+                </if>
+                <if test="gmtCreate!=null">
+                    #{gmtCreate},
+                </if>
+                <if test="gmtModified!=null">
+                    #{gmtModified},
+                </if>
+                <if test="appName!=null">
+                    #{appName},
+                </if>
+                <if test="environment!=null">
+                    #{environment},
+                </if>
+                <if test="ip!=null">
+                    #{ip},
+                </if>
+                <if test="repeatId!=null">
+                    #{repeatId},
+                </if>
+                <if test="status!=null">
+                    #{status},
+                </if>
+                <if test="traceId!=null">
+                    #{traceId},
+                </if>
+                <if test="cost!=null">
+                    #{cost},
+                </if>
+                <if test="diffResult!=null">
+                    #{diffResult},
+                </if>
+                <if test="response!=null">
+                    #{response},
+                </if>
+                <if test="mockInvocation!=null">
+                    #{mockInvocation},
+                </if>
+                <if test="success!=null">
+                    #{success},
+                </if>
+                <if test="recordId!=null">
+                    #{recordId},
+                </if>
+                <if test="type!=null">
+                    #{type},
+                </if>
+                <if test="caseId!=null">
+                    #{caseId},
+                </if>
+        </trim>
+        )
+    </insert>
+
+    <update id="updateReplay">
+        UPDATE `replay`
+        SET
+        <trim suffixOverrides=",">
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate},
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified},
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName},
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment},
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip},
+            </if>
+            <if test="repeatId != null and repeatId!=''">
+                `repeat_id` = #{repeatId},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId},
+            </if>
+            <if test="cost != null">
+                `cost` = #{cost},
+            </if>
+            <if test="diffResult != null and diffResult!=''">
+                `diff_result` = #{diffResult},
+            </if>
+            <if test="response != null and response!=''">
+                `response` = #{response},
+            </if>
+            <if test="mockInvocation != null and mockInvocation!=''">
+                `mock_invocation` = #{mockInvocation},
+            </if>
+            <if test="success != null">
+                `success` = #{success},
+            </if>
+            <if test="recordId != null">
+                `record_id` = #{recordId},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `id` = #{id} and
+        </trim>
+    </update>
+
+    <select id="queryReplay" resultMap="ReplayMap">
+        select
+        *
+        from  `replay`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip} and
+            </if>
+            <if test="repeatId != null and repeatId!=''">
+                `repeat_id` = #{repeatId} and
+            </if>
+            <if test="status != null">
+                `status` = #{status} and
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId} and
+            </if>
+            <if test="cost != null">
+                `cost` = #{cost} and
+            </if>
+            <if test="diffResult != null and diffResult!=''">
+                `diff_result` = #{diffResult} and
+            </if>
+            <if test="response != null and response!=''">
+                `response` = #{response} and
+            </if>
+            <if test="mockInvocation != null and mockInvocation!=''">
+                `mock_invocation` = #{mockInvocation} and
+            </if>
+            <if test="success != null">
+                `success` = #{success} and
+            </if>
+            <if test="recordId != null">
+                `record_id` = #{recordId} and
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryReplayLimit1" resultMap="ReplayMap">
+        select
+        *
+        from  `replay`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="gmtCreate != null">
+                `gmt_create` = #{gmtCreate} and
+            </if>
+            <if test="gmtModified != null">
+                `gmt_modified` = #{gmtModified} and
+            </if>
+            <if test="appName != null and appName!=''">
+                `app_name` = #{appName} and
+            </if>
+            <if test="environment != null and environment!=''">
+                `environment` = #{environment} and
+            </if>
+            <if test="ip != null and ip!=''">
+                `ip` = #{ip} and
+            </if>
+            <if test="repeatId != null and repeatId!=''">
+                `repeat_id` = #{repeatId} and
+            </if>
+            <if test="status != null">
+                `status` = #{status} and
+            </if>
+            <if test="traceId != null and traceId!=''">
+                `trace_id` = #{traceId} and
+            </if>
+            <if test="cost != null">
+                `cost` = #{cost} and
+            </if>
+            <if test="diffResult != null and diffResult!=''">
+                `diff_result` = #{diffResult} and
+            </if>
+            <if test="response != null and response!=''">
+                `response` = #{response} and
+            </if>
+            <if test="mockInvocation != null and mockInvocation!=''">
+                `mock_invocation` = #{mockInvocation} and
+            </if>
+            <if test="success != null">
+                `success` = #{success} and
+            </if>
+            <if test="recordId != null">
+                `record_id` = #{recordId} and
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <select id="queryReplayWithSize" resultMap="ReplayMap">
+        select * from  `replay` Limit #{size}
+    </select>
+
+
+    <delete id="delete">
+        delete from `replay` where id=#{id} limit 1;
+    </delete>
+
+</mapper>

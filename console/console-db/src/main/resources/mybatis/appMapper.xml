@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.AppMapper">
+
+    <resultMap type="App" id="AppMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="name" column="app"/>
+        <result property="appId" column="app_id"/>
+        <result property="buId" column="bu"/>
+        <result property="region" column="region"/>
+    </resultMap>
+
+    <resultMap type="Bu" id="BuMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="pid" column="pid"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.tony.console.db.model.App"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO app (gmt_create, app, app_id, bu, region)
+        values (now(), #{name}, #{appId}, #{buId}, #{region})
+    </insert>
+
+    <select id="searchAppList" resultMap="AppMap">
+        select * FROM app
+        <if test="name!=null">
+            where app like concat('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+    </select>
+
+    <select id="queryByIdList" resultMap="AppMap">
+        select * from app where id in
+        <foreach collection="idList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectByName" resultMap="AppMap">
+        select * from app where app=#{name}
+    </select>
+
+    <select id="queryBuList" resultMap="BuMap">
+        select * from app_bu
+    </select>
+
+    <select id="queryByBuId"  resultMap="AppMap">
+        SELECT * FROM app WHERE bu=#{buId}
+    </select>
+
+    <update id="update">
+        update app set `bu`=#{buId} Where id=#{id}
+    </update>
+</mapper>

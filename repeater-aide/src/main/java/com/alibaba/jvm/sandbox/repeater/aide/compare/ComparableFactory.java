@@ -2,10 +2,8 @@ package com.alibaba.jvm.sandbox.repeater.aide.compare;
 
 import com.alibaba.jvm.sandbox.repeater.aide.compare.comparator.Comparator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * {@link ComparableFactory}
@@ -48,5 +46,34 @@ public class ComparableFactory {
             }
         }
         return new IntegratedComparator(comparators);
+    }
+
+    public Comparable create(
+            Comparator.CompareMode compareMode,
+            List<String> ignoreCompareString,
+            List<Pattern> ignoreComparePattern,
+            Map<String, String> arraySortConfig
+    ) {
+        List<Comparator> comparators = new ArrayList<Comparator>();
+        for (Comparator comparator : this.comparators) {
+            if (comparator.support(compareMode)) {
+                comparators.add(comparator);
+            }
+        }
+        IntegratedComparator comparator = new IntegratedComparator(comparators);
+
+        if (ignoreComparePattern!=null) {
+            comparator.getIgnoreComparePattern().addAll(ignoreComparePattern);
+        }
+
+        if (ignoreCompareString!=null) {
+            comparator.getIgnoreCompareString().addAll(ignoreCompareString);
+        }
+
+        if (arraySortConfig!=null) {
+            comparator.setArraySortConfig(arraySortConfig);
+        }
+
+        return comparator;
     }
 }

@@ -56,7 +56,7 @@ public class RepeatSubscribeSupporter implements SubscribeSupporter<RepeatEvent>
                 log.info("invalid request cause meta is null, params={}", req);
                 return;
             }
-            log.info("subscribe success params={}", req);
+            log.debug("subscribe success params={}", req);
             final RepeatMeta meta = SerializerWrapper.hessianDeserialize(data, RepeatMeta.class);
             RepeaterResult<RecordModel> pr = StandaloneSwitch.instance().getBroadcaster().pullRecord(meta);
             if (pr.isSuccess()){

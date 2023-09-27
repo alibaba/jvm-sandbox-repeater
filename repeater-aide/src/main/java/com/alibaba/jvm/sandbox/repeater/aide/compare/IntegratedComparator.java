@@ -7,8 +7,8 @@ import com.alibaba.jvm.sandbox.repeater.aide.compare.path.JsonPathLocator;
 import com.alibaba.jvm.sandbox.repeater.aide.compare.path.Path;
 import com.alibaba.jvm.sandbox.repeater.aide.compare.path.PathLocator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * {@link IntegratedComparator}
@@ -18,7 +18,15 @@ import java.util.List;
  */
 public class IntegratedComparator implements Comparable {
 
+    private final List<Pattern> ignoreComparePattern = new LinkedList<>();
+    private List<String> ignoreCompareString = new LinkedList<>();
     private final List<Comparator> comparators;
+
+    /**
+     * 需要排序的节点
+     */
+    private Map<String, String> arraySortConfig = new HashMap<>();
+
     private final PathLocator pathLocator = new JsonPathLocator();
     private final CycleReferenceDetector leftDetector = new CycleReferenceDetector();
     private final CycleReferenceDetector rightDetector = new CycleReferenceDetector();
@@ -35,6 +43,11 @@ public class IntegratedComparator implements Comparable {
         // cycle reference detect
         try {
             String nodeName = pathLocator.encode(paths);
+
+            if (ignore(nodeName)) {
+                return;
+            }
+
             leftDetector.detect(left, nodeName);
             rightDetector.detect(right, nodeName);
         } catch (CycleReferenceException e) {
@@ -48,6 +61,22 @@ public class IntegratedComparator implements Comparable {
                 break;
             }
         }
+    }
+
+    public boolean ignore(String nodeName) {
+        if (this.ignoreCompareString.contains(nodeName)) {
+            return true;
+        }
+
+        if (ignoreComparePattern.size()>0) {
+            for (Pattern pattern : ignoreComparePattern) {
+                if (pattern.matcher(nodeName).matches()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -85,5 +114,30 @@ public class IntegratedComparator implements Comparable {
         List<Path> target = new ArrayList<Path>(paths);
         target.add(Path.nodePath(key));
         return target;
+    }
+
+    public List<Pattern> getIgnoreComparePattern() {
+        return ignoreComparePattern;
+    }
+
+    public List<String> getIgnoreCompareString() {
+        return ignoreCompareString;
+    }
+
+    @Override
+    public void setIgnoreCompareString(List<String> ignoreCompareString) {
+        this.ignoreCompareString = ignoreCompareString;
+    }
+
+    public Map<String, String> getArraySortConfig() {
+        return arraySortConfig;
+    }
+
+    public void setArraySortConfig(Map<String, String> arraySortConfig) {
+        this.arraySortConfig = arraySortConfig;
+    }
+
+    public String getNodeNameByPaths(List<Path> paths) {
+        return pathLocator.encode(paths);
     }
 }

@@ -14,6 +14,16 @@ public class Constants {
     public static final String DATA_TRANSPORT_IDENTIFY = "_data";
 
     /**
+     * 通信协议版本
+     */
+    public static final String DATA_TRANSPORT_VERSION = "_version";
+
+    /**
+     * 批量执行回放
+     */
+    public static final String BATCH_REPEAT = "_batch_repeat";
+
+    /**
      * 默认数据源地址
      */
     public static final String DEFAULT_REPEAT_DATASOURCE = "repeat.record.url";
@@ -22,6 +32,11 @@ public class Constants {
      * 默认配置拉取地址
      */
     public static final String DEFAULT_CONFIG_DATASOURCE = "repeat.config.url";
+
+    /**
+     * 默认配置拉取地址
+     */
+    public static final String DEFAULT_CONFIG_DYNAMIC_DATASOURCE = "repeat.config.dynamic.url";
 
     /**
      * 默认回放消息投递地址
@@ -49,6 +64,16 @@ public class Constants {
     public static final String REPEAT_HEARTBEAT_URL= "repeat.heartbeat.url";
 
     /**
+     * groovy配置拉取的地址
+     */
+    public static final String GROOVY_LIST_URL = "groovy.list.url";
+
+    /**
+     * groovy配置拉取的地址
+     */
+    public static final String GROOVY_SINGLE_URL = "groovy.single.url";
+
+    /**
      * 插件自有类正则
      */
     public static final String[] PLUGIN_CLASS_PATTERN = new String[]{
@@ -59,7 +84,8 @@ public class Constants {
             "^com.alibaba.jvm.sandbox.repeater.plugin.exception..*",
             "^org.slf4j..*",
             "^ch.qos.logback..*",
-            "^org.apache.commons..*"
+            "^org.apache.commons..*",
+            "^groovy.*"
     };
 
     /**
@@ -76,4 +102,9 @@ public class Constants {
      * 透传给下游的traceId；跟{@code HEADER_TRACE_ID}的差异在于，{@code HEADER_TRACE_ID_X}表示一次回放请求；需要进行Mock
      */
     public static final String HEADER_TRACE_ID_X = "Repeat-TraceId-X";
+
+    /**
+     * 表示本次回放是否是单次回放，单次回放换缓存
+     */
+    public static final String HEADER_SINGLE = "Repeat-Single";
 }

@@ -38,7 +38,7 @@ public class ClassloaderBridge {
      * 初始化内容；需要再模块加载的时候进行显示初始化
      *
      * @param loadedClassDataSource sandbox-api提供的已加载的类集合
-     * @see com.alibaba.jvm.sandbox.api.resource.LoadedClassDataSource
+     * @see LoadedClassDataSource
      */
     public synchronized static void init(LoadedClassDataSource loadedClassDataSource) {
         instance = new ClassloaderBridge(loadedClassDataSource);
@@ -71,7 +71,11 @@ public class ClassloaderBridge {
         if (loader == null) {
             cacheClassLoader();
         }
-        return clsCached.get(token);
+        loader = clsCached.get(token);
+        if (loader == null) {
+            return clsCached.get("sun.misc.Launcher$AppClassLoader");
+        }
+        return loader;
     }
 
     /**

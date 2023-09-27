@@ -1,0 +1,1 @@
+import{e as r}from"./base.3c7b4f95.js";function i(t){return r({url:"/api/v1/script/groovy/list",method:"get",params:{appName:t}})}function p(t){return r({url:"/api/v1/script/groovy/detail",method:"get",params:{id:t}})}function a(t){return r({url:"/api/v1/script/groovy/update",method:"post",data:t})}export{p as a,i as g,a as u};

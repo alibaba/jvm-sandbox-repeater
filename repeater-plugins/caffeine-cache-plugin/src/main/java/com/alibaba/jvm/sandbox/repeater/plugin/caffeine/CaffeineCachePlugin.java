@@ -23,7 +23,7 @@ import org.kohsuke.MetaInfServices;
 public class CaffeineCachePlugin extends AbstractInvokePluginAdapter {
     @Override
     protected List<EnhanceModel> getEnhanceModels() {
-        MethodPattern[] methodPatterns = EnhanceModel.MethodPattern.transform("getIfPresent","get","getAllPresent","getAll", "asMap");
+        MethodPattern[] methodPatterns = MethodPattern.transform("getIfPresent","get","getAllPresent","getAll", "asMap");
         String[] classArray = {"com.github.benmanes.caffeine.cache.LocalManualCache"
         , "com.github.benmanes.caffeine.cache.LocalLoadingCache"
                 , "com.github.benmanes.caffeine.cache.LocalAsyncCache"

@@ -50,7 +50,7 @@ public class OkhttpInvocationProcessor extends DefaultInvocationProcessor {
                     MethodUtils.invokeMethod(url, "host"));
             Collection<String>collection = (Collection<String>) MethodUtils.invokeMethod(url, "pathSegments");
             if(collection !=null && collection.size() >0) {
-                urlStr = urlStr + joiner.join(collection);
+                urlStr = urlStr + "/" +joiner.join(collection);
             }
 
         } catch (Exception e) {
@@ -68,13 +68,13 @@ public class OkhttpInvocationProcessor extends DefaultInvocationProcessor {
             Object request = this.getRequestFromEvent(event);
             Object url = MethodUtils.invokeMethod(request, "url");
             Object method = MethodUtils.invokeMethod(request, "method");
-            Object header = MethodUtils.invokeMethod(request, "headers");
+            //Object header = MethodUtils.invokeMethod(request, "headers");
             Object paramsStr = MethodUtils.invokeMethod(url, "query");
 
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("requestMethod", String.valueOf(method));
             // request的header可以简单处理，就用string即可
-            params.put("requestHeaders", String.valueOf(header));
+            // params.put("requestHeaders", String.valueOf(header));
             params.put("requestParams", HttpUtil.getParamMap(String.valueOf(paramsStr)));
             params.put("requestBody", HttpOkUtil.getBody(request));
 
@@ -175,7 +175,11 @@ public class OkhttpInvocationProcessor extends DefaultInvocationProcessor {
             MethodUtils.invokeMethod(buffer, "readFrom", inputStream);
             Class<?> realResponseBodyClass = event.javaClassLoader.loadClass("okhttp3.internal.http.RealResponseBody");
             Constructor<?>[] constructors = realResponseBodyClass.getConstructors();
-            Object responseBody = constructors[0].newInstance("", responseContentLength, buffer);
+            int paramsCount = constructors[0].getParameterCount();
+            Object responseBody = null;
+
+            responseBody = constructors[0].newInstance("", responseContentLength, buffer);
+
             Class<?> protocolClass = event.javaClassLoader.loadClass("okhttp3.Protocol");
 
             // 构建返回协议

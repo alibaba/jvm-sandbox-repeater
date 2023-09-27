@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.module;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.jvm.sandbox.api.Information;
 import com.alibaba.jvm.sandbox.api.Information.Mode;
 import com.alibaba.jvm.sandbox.api.Module;
@@ -22,6 +23,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.RepeaterBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.eventbus.EventBusInner;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.eventbus.RepeatEvent;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.groovy.GroovyEngine;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultInvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
@@ -33,9 +35,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.util.ExecutorInner;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PathUtils;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.*;
 import com.alibaba.jvm.sandbox.repeater.plugin.exception.PluginLifeCycleException;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.Repeater;
@@ -129,22 +129,44 @@ public class RepeaterModule implements Module, ModuleLifecycle {
 
     @Override
     public void loadCompleted() {
+        configManager = StandaloneSwitch.instance().getConfigManager();
+        broadcaster = StandaloneSwitch.instance().getBroadcaster();
+        invocationListener = new DefaultInvocationListener(broadcaster);
         ExecutorInner.execute(new Runnable() {
             @Override
             public void run() {
-                configManager = StandaloneSwitch.instance().getConfigManager();
-                broadcaster = StandaloneSwitch.instance().getBroadcaster();
-                invocationListener = new DefaultInvocationListener(broadcaster);
-                RepeaterResult<RepeaterConfig> pr = configManager.pullConfig();
-                if (pr.isSuccess()) {
-                    log.info("pull repeater config success,config={}", pr.getData());
-                    ClassloaderBridge.init(loadedClassDataSource);
-                    initialize(pr.getData());
+                try {
+                    RepeaterResult<RepeaterConfig> pr = configManager.pullConfig();
+                    if (pr.isSuccess()) {
+                        log.info("pull repeater config success,config={}", JSON.toJSONString(pr.getData()));
+                        ClassloaderBridge.init(loadedClassDataSource);
+                        initialize(pr.getData());
+                    }
+
+                    RepeaterResult<DynamicConfig> pr2 = configManager.pullDynamicConfig();
+                    if (pr2.isSuccess()) {
+                        log.info("pull repeater dynamic config success,config={}", JSON.toJSONString(pr2.getData()));
+                        initDynamic(pr2.getData());
+                    }
+
+                    RepeaterResult<List<GroovyConfig>> pr3 = configManager.pullGroovyConfig();
+                    if (pr3.isSuccess()) {
+                        log.info("pull repeater groovy config success");
+                        GroovyEngine.init(pr3.getData());
+                    }
+
+                } catch (Exception e) {
+                    log.error("system error", e);
                 }
             }
         });
         heartbeatHandler = new HeartbeatHandler(configInfo, moduleManager);
         heartbeatHandler.start();
+    }
+
+    private synchronized void initDynamic(DynamicConfig dynamicConfig) {
+        LogbackUtils.refreshLogLevel(dynamicConfig.getLogLevel());
+        ApplicationModel.instance().setDynamicConfig(dynamicConfig);
     }
 
     /**
@@ -155,9 +177,16 @@ public class RepeaterModule implements Module, ModuleLifecycle {
     private synchronized void initialize(RepeaterConfig config) {
         if (initialized.compareAndSet(false, true)) {
             try {
+                if (config.getDelayTime()!=null && config.getDelayTime()>0) {
+                    log.info("===================开始延迟注入等待==================");
+                    Thread.sleep(config.getDelayTime()*1000);
+                    log.info("======================等待结束======================");
+                }
+
+                //缓存配置
                 ApplicationModel.instance().setConfig(config);
                 // 特殊路由表;
-                PluginClassLoader.Routing[] routingArray = PluginClassRouting.wellKnownRouting(configInfo.getMode() == Mode.AGENT, 20L);
+                PluginClassLoader.Routing[] routingArray = PluginClassRouting.wellKnownRouting(configInfo.getMode() == Mode.AGENT, 60L, config);
                 String pluginsPath;
                 if (StringUtils.isEmpty(config.getPluginsPath())) {
                     pluginsPath = PathUtils.getPluginPath();
@@ -173,6 +202,7 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                             log.info("enable plugin {} success", invokePlugin.identity());
                             invokePlugin.watch(eventWatcher, invocationListener);
                             invokePlugin.onConfigChange(config);
+                            invokePlugin.onLoaded();
                         }
                     } catch (PluginLifeCycleException e) {
                         log.info("watch plugin occurred error", e);
@@ -186,6 +216,8 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                     }
                 }
                 RepeaterBridge.instance().build(repeaters);
+                //广播器初始化
+                broadcaster.init();
                 // 装载消息订阅器
                 List<SubscribeSupporter> subscribes = lifecycleManager.loadSubscribes();
                 for (SubscribeSupporter subscribe : subscribes) {
@@ -213,6 +245,29 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                 writer.write("invalid request, cause parameter {" + Constants.DATA_TRANSPORT_IDENTIFY + "} is required");
                 return;
             }
+
+
+            String version =  req.get(Constants.DATA_TRANSPORT_VERSION);
+
+            /**
+             * 批量回放，批量发生事件
+             */
+            if (req.containsKey(Constants.BATCH_REPEAT) && version!=null) {
+                String dataString = req.get(Constants.DATA_TRANSPORT_IDENTIFY);
+                String[] dataList = dataString.split(",");
+                for (String dataItem : dataList) {
+                    RepeatEvent event = new RepeatEvent();
+                    Map<String, String> requestParams = new HashMap<String, String>(16);
+                    for (Map.Entry<String, String> entry : req.entrySet()) {
+                        requestParams.put(entry.getKey(), entry.getValue());
+                    }
+                    requestParams.put(Constants.DATA_TRANSPORT_IDENTIFY, dataItem);
+                    event.setRequestParams(requestParams);
+                    EventBusInner.post(event);
+                }
+                return;
+            }
+
             RepeatEvent event = new RepeatEvent();
             Map<String, String> requestParams = new HashMap<String, String>(16);
             for (Map.Entry<String, String> entry : req.entrySet()) {
@@ -244,6 +299,30 @@ public class RepeaterModule implements Module, ModuleLifecycle {
             initialized.compareAndSet(false, true);
         }
     }
+
+    @Command("reloadStatic")
+    public void reloadStatic(final Map<String, String> req, final PrintWriter writer) {
+        RepeaterResult<RepeaterConfig> pr = configManager.pullConfig();
+        if(pr.isSuccess()) {
+            RepeaterConfig config = pr.getData();
+            if (config==null) {
+                return;
+            }
+            ApplicationModel.instance().setConfig(config);
+        }
+    }
+
+    @Command("reloadDynamic")
+    public void reloadLogLevel(final Map<String, String> req, final PrintWriter writer) {
+        RepeaterResult<DynamicConfig> pr = configManager.pullDynamicConfig();
+        if (!pr.isSuccess()) {
+            log.error("reloadDynamic failed");
+            return;
+        }
+
+        initDynamic(pr.getData());
+    }
+
 
     private synchronized void reload() throws ModuleException {
         moduleController.frozen();
@@ -308,6 +387,24 @@ public class RepeaterModule implements Module, ModuleLifecycle {
         } catch (SerializeException e) {
             writer.write("invalid request, cause deserialize config failed, reason = {" + e.getMessage() + "}");
         }
+    }
+
+    @Command("reloadGroovy")
+    public void reloadGroovy(final Map<String, String> req, final PrintWriter write) {
+        if (!req.containsKey("id")) {
+            return;
+        }
+
+        ExecutorInner.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                RepeaterResult<GroovyConfig> pr = configManager.pullGroovyConfig(req.get("id"));
+                if (pr.isSuccess()) {
+                    GroovyEngine.flush(pr.getData());
+                }
+            }
+        });
     }
 
     /**

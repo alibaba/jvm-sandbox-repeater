@@ -27,15 +27,21 @@ public class MockResponse {
      */
     public Throwable throwable;
 
-    @ConstructorProperties({"action", "invocation", "throwable"})
-    MockResponse(MockResponse.Action action, Invocation invocation, Throwable throwable) {
+    /**
+     * 是否子调用找不到
+     */
+    public boolean isInvocationNotFund;
+
+    @ConstructorProperties({"action", "invocation", "throwable", "isInvocationNotFund"})
+    MockResponse(Action action, Invocation invocation, Throwable throwable, boolean isInvocationNotFund) {
         this.action = action;
         this.invocation = invocation;
         this.throwable = throwable;
+        this.isInvocationNotFund = isInvocationNotFund;
     }
 
-    public static MockResponse.MockResponseBuilder builder() {
-        return new MockResponse.MockResponseBuilder();
+    public static MockResponseBuilder builder() {
+        return new MockResponseBuilder();
     }
 
     public enum Action {
@@ -67,31 +73,57 @@ public class MockResponse {
         return throwable;
     }
 
+    public boolean isInvocationNotFund() {
+        return isInvocationNotFund;
+    }
+
+    public void setInvocationNotFund(boolean invocationNotFund) {
+        isInvocationNotFund = invocationNotFund;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    public void setInvocation(Invocation invocation) {
+        this.invocation = invocation;
+    }
+
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
+    }
+
     public static class MockResponseBuilder {
-        private MockResponse.Action action;
+        private Action action;
         private Invocation invocation;
         private Throwable throwable;
+        private boolean isInvocationNotFund = false;
 
         MockResponseBuilder() {
         }
 
-        public MockResponse.MockResponseBuilder action(MockResponse.Action action) {
+        public MockResponseBuilder action(Action action) {
             this.action = action;
             return this;
         }
 
-        public MockResponse.MockResponseBuilder invocation(Invocation invocation) {
+        public MockResponseBuilder invocation(Invocation invocation) {
             this.invocation = invocation;
             return this;
         }
 
-        public MockResponse.MockResponseBuilder throwable(Throwable throwable) {
+        public MockResponseBuilder throwable(Throwable throwable) {
             this.throwable = throwable;
             return this;
         }
 
+        public MockResponseBuilder isInvocationNotFund(boolean isInvocationNotFund) {
+            this.isInvocationNotFund = isInvocationNotFund;
+            return this;
+        }
+
         public MockResponse build() {
-            return new MockResponse(this.action, this.invocation, this.throwable);
+            return new MockResponse(this.action, this.invocation, this.throwable, this.isInvocationNotFund);
         }
 
         @Override
@@ -99,4 +131,6 @@ public class MockResponse {
             return "MockResponse.MockResponseBuilder(action=" + this.action + ", invocation=" + this.invocation + ", throwable=" + this.throwable + ")";
         }
     }
+
+
 }

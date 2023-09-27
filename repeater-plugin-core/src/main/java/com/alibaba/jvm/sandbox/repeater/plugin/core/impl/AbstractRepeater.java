@@ -1,10 +1,12 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.impl;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.api.Broadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
@@ -32,6 +34,7 @@ public abstract class AbstractRepeater implements Repeater {
         RepeatModel record = new RepeatModel();
         record.setRepeatId(context.getMeta().getRepeatId());
         record.setTraceId(context.getTraceId());
+        copyExtension(record, context.getMeta());
         try {
             // 根据之前生成的traceId开启追踪
             Tracer.start(context.getTraceId());
@@ -48,11 +51,31 @@ public abstract class AbstractRepeater implements Repeater {
         } catch (Exception e) {
             stopwatch.stop();
             record.setCost(stopwatch.elapsed(TimeUnit.MILLISECONDS));
-            record.setResponse(e);
+
+            if (context.getThrowableSerialized()==null) {
+                record.setResponse(e);
+            } else {
+                //说明是预期内的异常，这个时候mock过程也需要体现
+                record.setResponse(null);
+                record.setMockInvocations(RepeatCache.getMockInvocation(context.getTraceId()));
+                record.setThrowableSerialized(context.getThrowableSerialized());
+            }
+            record.setFinish(true);
+
         } finally {
+            //这里主动清理一次缓存
+            //RepeatCache.removeInvocation(context.getTraceId());
             Tracer.end();
         }
         sendRepeat(record);
+        RepeatCache.removeInvocation(context.getTraceId());
+        RepeatCache.removeRepeatContext(context.getTraceId());
+    }
+
+    private void copyExtension(RepeatModel repeatModel, RepeatMeta meta) {
+        for (Map.Entry<String, String> entry : meta.getExtension().entrySet()) {
+            repeatModel.getExtension().put(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override

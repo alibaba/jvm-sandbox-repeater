@@ -36,4 +36,10 @@ public interface Broadcaster {
      * @return 回放数据
      */
     RepeaterResult<RecordModel> pullRecord(RepeatMeta meta);
+
+
+    /**
+     * 初始化
+     */
+    public void init();
 }

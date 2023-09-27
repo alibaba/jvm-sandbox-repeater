@@ -10,6 +10,7 @@ public class Behavior {
     private String classPattern;
     private String[] methodPatterns;
     private boolean includeSubClasses;
+    private boolean includeBootstrapClasses;
 
     public Behavior() {
     }
@@ -45,7 +46,15 @@ public class Behavior {
         return includeSubClasses;
     }
 
+    public boolean isIncludeBootstrapClasses() {
+        return includeBootstrapClasses;
+    }
+
     public void setIncludeSubClasses(boolean includeSubClasses) {
         this.includeSubClasses = includeSubClasses;
+    }
+
+    public void setIncludeBootstrapClasses(boolean includeBootstrapClasses) {
+        this.includeBootstrapClasses = includeBootstrapClasses;
     }
 }

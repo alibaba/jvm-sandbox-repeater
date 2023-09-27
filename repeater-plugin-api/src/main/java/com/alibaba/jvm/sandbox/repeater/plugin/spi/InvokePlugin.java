@@ -20,7 +20,7 @@ public interface InvokePlugin {
      * 调用类型
      *
      * @return 调用类型
-     * @see com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType
+     * @see InvokeType
      */
     InvokeType getType();
 

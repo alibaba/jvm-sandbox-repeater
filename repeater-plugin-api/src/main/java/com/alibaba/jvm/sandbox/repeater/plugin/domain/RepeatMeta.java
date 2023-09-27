@@ -47,6 +47,8 @@ public class RepeatMeta implements java.io.Serializable {
      */
     private Integer timeout = 30000;
 
+    private Boolean single;
+
     private Map<String,String> extension = new HashMap<String, String>();
 
     public String getAppName() {
@@ -106,6 +108,9 @@ public class RepeatMeta implements java.io.Serializable {
     }
 
     public Map<String, String> getExtension() {
+        if (extension==null) {
+            extension = new HashMap<>();
+        }
         return extension;
     }
 
@@ -119,5 +124,16 @@ public class RepeatMeta implements java.io.Serializable {
 
     public void setTimeout(Integer timeout) {
         this.timeout = timeout;
+    }
+
+    public Boolean getSingle() {
+        if (single == null) {
+            single = false;
+        }
+        return single;
+    }
+
+    public void setSingle(Boolean single) {
+        this.single = single;
     }
 }

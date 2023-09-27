@@ -14,5 +14,4 @@ class RedisProcessor extends DefaultInvocationProcessor {
     RedisProcessor(InvokeType type) {
         super(type);
     }
-
 }

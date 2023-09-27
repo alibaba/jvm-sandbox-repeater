@@ -25,8 +25,8 @@ public class SelectResult {
         this.cost = cost;
     }
 
-    public static SelectResult.SelectResultBuilder builder() {
-        return new SelectResult.SelectResultBuilder();
+    public static SelectResultBuilder builder() {
+        return new SelectResultBuilder();
     }
 
     public boolean isMatch() {
@@ -49,17 +49,17 @@ public class SelectResult {
         SelectResultBuilder() {
         }
 
-        public SelectResult.SelectResultBuilder match(boolean match) {
+        public SelectResultBuilder match(boolean match) {
             this.match = match;
             return this;
         }
 
-        public SelectResult.SelectResultBuilder invocation(Invocation invocation) {
+        public SelectResultBuilder invocation(Invocation invocation) {
             this.invocation = invocation;
             return this;
         }
 
-        public SelectResult.SelectResultBuilder cost(Long cost) {
+        public SelectResultBuilder cost(Long cost) {
             this.cost = cost;
             return this;
         }

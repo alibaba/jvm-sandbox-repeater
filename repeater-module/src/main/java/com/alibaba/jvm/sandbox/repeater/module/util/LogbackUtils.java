@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.module.util;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import org.apache.commons.io.IOUtils;
@@ -17,6 +18,11 @@ import java.io.InputStream;
  * @author zhaoyb1990
  */
 public class LogbackUtils {
+
+    public static void refreshLogLevel(String level) {
+        final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        loggerContext.getLogger("com.alibaba.jvm.sandbox.repeater").setLevel(Level.valueOf(level));
+    }
 
     /**
      * 初始化日志框架

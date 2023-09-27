@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.TestCaseMapper">
+
+    <resultMap type="org.tony.console.db.model.TestCaseDO" id="TestCaseMap">
+        <result property="id" column="id"/>
+        <result property="caseId" column="case_id"/>
+        <result property="caseName" column="case_name"/>
+        <result property="suitId" column="suit_id"/>
+        <result property="delete" column="delete"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtRecord" column="gmt_record"/>
+        <result property="appName" column="app_name"/>
+        <result property="environment" column="environment"/>
+        <result property="host" column="host"/>
+        <result property="traceId" column="trace_id"/>
+        <result property="entranceDesc" column="entrance_desc"/>
+        <result property="extend" column="extend"/>
+        <result property="recordId" column="record_id"/>
+        <result property="user" column="user"/>
+    </resultMap>
+
+    <insert id="insertCaseList" parameterType="java.util.List">
+        INSERT INTO test_case (
+                               case_id,
+                               case_name,
+                               suit_id,
+                               `delete`,
+                               gmt_create,
+                               gmt_record,
+                               app_name,
+                               environment,
+                               host,
+                               trace_id,
+                               entrance_desc,
+                               extend,
+                               record_id,
+                               user
+        ) values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (
+            #{item.caseId},
+            #{item.caseName},
+            #{item.suitId},
+            #{item.delete},
+            now(),
+            #{item.gmtRecord},
+            #{item.appName},
+            #{item.environment},
+            #{item.host},
+            #{item.traceId},
+            #{item.entranceDesc},
+            #{item.extend},
+            #{item.recordId},
+            #{item.user}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectTestCaseById" resultMap="TestCaseMap">
+        SELECT * FROM test_case where `case_id`=#{caseId}
+    </select>
+
+    <select id="selectTestCaseList" resultMap="TestCaseMap">
+        SELECT * FROM test_case where 1=1
+        <if test="id!=null">
+            and id=#{id}
+        </if>
+        <if test="appName!=null">
+            and app_name=#{appName}
+        </if>
+        <if test="suitIdList!=null">
+            and suit_id in
+            <foreach collection="suitIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="caseIdList!=null">
+            and case_id in
+            <foreach collection="caseIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="caseId!=null">
+            and case_id=#{caseId}
+        </if>
+        <if test="caseName!=null">
+            and case_name like concat('%', #{caseName},'%')
+        </if>
+        <if test="entrance!=null">
+            and entrance_desc  like concat('%', #{entrance},'%')
+        </if>
+        <if test="delete!=null">
+            and `delete`=#{delete}
+        </if>
+        <if test="orderByGmtCreateDesc!=null">
+           order by gmt_create desc
+        </if>
+        <if test="offset!=null and pageSize!=null">
+            limit #{offset}, #{pageSize}
+        </if>
+    </select>
+
+
+    <select id="count" resultType="java.lang.Long">
+        SELECT count(1) FROM test_case where 1=1
+        <if test="id!=null">
+            and id=#{id}
+        </if>
+        <if test="appName!=null">
+            and app_name=#{appName}
+        </if>
+        <if test="suitIdList!=null">
+           and suit_id in
+            <foreach collection="suitIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="caseId!=null">
+            and case_id=#{caseId}
+        </if>
+        <if test="caseName!=null">
+            and case_name like concat('%', #{caseName},'%')
+        </if>
+        <if test="entrance!=null">
+            and entrance_desc  like concat('%', #{entrance},'%')
+        </if>
+        <if test="delete!=null">
+            and `delete`=#{delete}
+        </if>
+    </select>
+
+    <delete id="removeCaseList" >
+        delete from test_case where case_id in
+        <foreach collection="list" item="item" index="index" open="(" close=")"
+                 separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="updateCaseList" >
+        <foreach collection="list" item="item" separator=";">
+            update
+                test_case
+            set
+                case_name = #{item.caseName},
+                suit_id = #{item.suitId},
+                `delete` = #{item.delete}
+            where
+                id = #{item.id}
+        </foreach>
+    </update>
+
+    <update id="removeTestCaseOfSuit" >
+            update
+            test_case
+            set
+            `delete` = 1
+            where
+            suit_id = #{suitId}
+    </update>
+</mapper>

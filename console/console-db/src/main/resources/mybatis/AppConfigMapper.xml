@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tony.console.db.mapper.AppConfigMapper">
+
+    <resultMap type="AppConfig" id="AppConfigMap">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="appName" column="app"/>
+        <result property="config" column="config"/>
+        <result property="type" column="type"/>
+        <result property="env" column="env"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.tony.console.db.model.AppConfig">
+        INSERT INTO app_config (gmt_create, app, type, config, env)
+        values (now(), #{appName}, #{type}, #{config}, #{env})
+    </insert>
+
+    <select id="queryAppConfig" resultMap="AppConfigMap">
+        select * FROM app_config
+        WHERE 1=1
+        <if test="appName!=null">
+            and app=#{appName}
+        </if>
+        <if test="type!=null">
+            and `type`=#{type}
+        </if>
+        <if test="env!=null">
+            and env=#{env}
+        </if>
+    </select>
+
+    <select id="queryAppConfigByTye" resultMap="AppConfigMap">
+        select * FROM app_config where `type`=#{type}
+    </select>
+
+    <update id="update" parameterType="org.tony.console.db.model.AppConfig">
+        update app_config set config=#{config} where type=#{type} and app=#{appName} and env=#{env}
+    </update>
+
+</mapper>

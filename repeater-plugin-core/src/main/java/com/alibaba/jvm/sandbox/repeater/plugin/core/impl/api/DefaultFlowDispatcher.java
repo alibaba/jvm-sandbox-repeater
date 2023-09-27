@@ -21,7 +21,7 @@ public class DefaultFlowDispatcher implements FlowDispatcher {
     private DefaultFlowDispatcher() { }
 
     public static FlowDispatcher instance() {
-        return DefaultFlowDispatcher.LazyInstanceHolder.INSTANCE;
+        return LazyInstanceHolder.INSTANCE;
     }
 
     private final static class LazyInstanceHolder {
@@ -37,7 +37,7 @@ public class DefaultFlowDispatcher implements FlowDispatcher {
         if (repeater == null) {
             throw new RepeatException("no valid repeat found for invoke type:" + recordModel.getEntranceInvocation().getType());
         }
-        RepeatContext context = new RepeatContext(meta, recordModel, TraceGenerator.generate());
+        RepeatContext context = new RepeatContext(meta, recordModel, TraceGenerator.generate(), meta.getSingle());
         // 放置到回放缓存中
         RepeatCache.putRepeatContext(context);
         repeater.repeat(context);
