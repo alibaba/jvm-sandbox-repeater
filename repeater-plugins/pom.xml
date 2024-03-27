@@ -25,6 +25,7 @@
         <module>eh-cache-plugin</module>
         <module>guava-cache-plugin</module>
         <module>okhttp-plugin</module>
+        <module>hbase-plugin</module>
     </modules>
 
     <dependencies>
