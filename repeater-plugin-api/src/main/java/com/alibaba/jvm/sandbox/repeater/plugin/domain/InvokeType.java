@@ -37,6 +37,8 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType CAFFEINE_CACHE = new InvokeType("caffeine-cache");
 
+    public static InvokeType HBASE = new InvokeType("hbase");
+
     private String name;
 
     public InvokeType(String name) {
